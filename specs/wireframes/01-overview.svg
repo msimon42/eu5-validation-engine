@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img">
+<title>Playset overview</title><desc>Illustrative EU5 compatibility application frontend wireframe. All displayed data is synthetic.</desc>
+<rect x="0" y="0" width="1440" height="980" rx="0" fill="#f4f6f9" stroke="#f4f6f9"/>
+<rect x="0" y="0" width="230" height="980" rx="0" fill="#172334" stroke="#172334"/>
+<text x="25" y="45" fill="#ffffff" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">EU5 Compatibility</text>
+<text x="25" y="72" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Local workspace</text>
+<rect x="14" y="95" width="202" height="42" rx="7" fill="#304762" stroke="#304762"/>
+<text x="27" y="120" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Overview</text>
+<text x="27" y="173" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Findings</text>
+<text x="27" y="226" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Design decisions</text>
+<text x="27" y="279" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Validation</text>
+<text x="27" y="332" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Rules &amp; evidence</text>
+<text x="25" y="820" fill="#b2bfce" font-size="12" font-weight="700" font-family="Arial, Helvetica, sans-serif">DEMO WORKSPACE</text>
+<text x="25" y="850" fill="#ffffff" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Synthetic contract v1</text>
+<text x="25" y="875" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Game: not connected</text>
+<text x="266" y="48" fill="#1c2c42" font-size="29" font-weight="700" font-family="Arial, Helvetica, sans-serif">Playset overview</text>
+<text x="266" y="78" fill="#526174" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">A frozen snapshot makes every finding and proposed repair reproducible.</text>
+<rect x="1145" y="29" width="257" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="1157" y="50" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Synthetic demo · no game run</text>
+<path d="M264 104H1402" stroke="#dce1e8"/>
+<text x="267" y="951" fill="#65758a" font-size="13" font-weight="400" font-family="Arial, Helvetica, sans-serif">Illustrative wireframe · values and outcomes are synthetic · no EU5 experiment executed</text>
+<rect x="265" y="124" width="1138" height="145" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="155" fill="#263244" font-size="19" font-weight="700" font-family="Arial, Helvetica, sans-serif">Selected inputs</text>
+<text x="286" y="188" fill="#263244" font-size="16" font-weight="600" font-family="Arial, Helvetica, sans-serif">Example local playset</text>
+<text x="286" y="218" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Base → Mod A → Mod B → Mod C → Mod D</text>
+<text x="730" y="188" fill="#263244" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Rule profile</text>
+<text x="730" y="218" fill="#263244" font-size="17" font-weight="600" font-family="Arial, Helvetica, sans-serif">synthetic-contract-v1</text>
+<rect x="1205" y="167" width="172" height="42" rx="7" fill="#285ab0" stroke="#285ab0"/>
+<text x="1219" y="194" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Scan changes</text>
+<text x="286" y="246" fill="#526174" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Snapshots retained · original sources preserved · last scan: complete (demo)</text>
+<rect x="265" y="288" width="271" height="102" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="285" y="330" fill="#263244" font-size="30" font-weight="700" font-family="Arial, Helvetica, sans-serif">2</text>
+<text x="285" y="363" fill="#263244" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Design conflicts</text>
+<rect x="554" y="288" width="271" height="102" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="574" y="330" fill="#263244" font-size="30" font-weight="700" font-family="Arial, Helvetica, sans-serif">4</text>
+<text x="574" y="363" fill="#263244" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Potential risks</text>
+<rect x="843" y="288" width="271" height="102" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="863" y="330" fill="#263244" font-size="30" font-weight="700" font-family="Arial, Helvetica, sans-serif">7</text>
+<text x="863" y="363" fill="#263244" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Compatible overlaps</text>
+<rect x="1132" y="288" width="271" height="102" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="1152" y="330" fill="#263244" font-size="30" font-weight="700" font-family="Arial, Helvetica, sans-serif">3</text>
+<text x="1152" y="363" fill="#263244" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Needs runtime checks</text>
+<rect x="265" y="411" width="744" height="489" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="445" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Findings by connected conflict</text>
+<rect x="286" y="463" width="174" height="30" rx="15" fill="#edf0f4" stroke="#edf0f4"/>
+<text x="298" y="484" fill="#526174" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">All stages &amp; families</text>
+<rect x="474" y="463" width="172" height="30" rx="15" fill="#e8f0ff" stroke="#e8f0ff"/>
+<text x="486" y="484" fill="#285ab0" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Show unresolved</text>
+<path d="M285 515H986" stroke="#dce1e8"/>
+<text x="286" y="539" fill="#263244" font-size="17" font-weight="600" font-family="Arial, Helvetica, sans-serif">Harbor cost</text>
+<text x="286" y="563" fill="#65758a" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Mod A + Mod B</text>
+<rect x="780" y="525" width="198" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="792" y="546" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Design choice</text>
+<path d="M285 593H986" stroke="#dce1e8"/>
+<text x="286" y="617" fill="#263244" font-size="17" font-weight="600" font-family="Arial, Helvetica, sans-serif">Nested block reader</text>
+<text x="286" y="641" fill="#65758a" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Mod B</text>
+<rect x="780" y="603" width="198" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="792" y="624" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Unknown rule</text>
+<path d="M285 671H986" stroke="#dce1e8"/>
+<text x="286" y="695" fill="#263244" font-size="17" font-weight="600" font-family="Arial, Helvetica, sans-serif">Shared helper</text>
+<text x="286" y="719" fill="#65758a" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Mod A + Mod C</text>
+<rect x="780" y="681" width="198" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="792" y="702" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Missing reference</text>
+<path d="M285 749H986" stroke="#dce1e8"/>
+<text x="286" y="773" fill="#263244" font-size="17" font-weight="600" font-family="Arial, Helvetica, sans-serif">Repeated callback</text>
+<text x="286" y="797" fill="#65758a" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Mod A + Mod D</text>
+<rect x="780" y="759" width="198" height="30" rx="15" fill="#e8f0ff" stroke="#e8f0ff"/>
+<text x="792" y="780" fill="#285ab0" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Needs observation</text>
+<rect x="286" y="839" width="190" height="42" rx="7" fill="#285ab0" stroke="#285ab0"/>
+<text x="300" y="866" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Inspect selected</text>
+<rect x="1028" y="411" width="375" height="489" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="1048" y="445" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Analysis coverage</text>
+<text x="1048" y="488" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">3 resource stages inventoried</text>
+<text x="1048" y="523" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Known synthetic reader: 86%</text>
+<rect x="1048" y="543" width="329" height="14" rx="7" fill="#dce4ee" stroke="#dce4ee"/>
+<rect x="1048" y="543" width="282" height="14" rx="7" fill="#7893bc" stroke="#7893bc"/>
+<text x="1048" y="594" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Unknown readers remain visible.</text>
+<text x="1048" y="618" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Opaque files are preserved.</text>
+<path d="M1048 645H1381" stroke="#dce1e8"/>
+<text x="1048" y="684" fill="#263244" font-size="17" font-weight="700" font-family="Arial, Helvetica, sans-serif">Evidence status</text>
+<text x="1048" y="720" fill="#263244" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Production game rules: 0 conformed</text>
+<text x="1048" y="757" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Synthetic results validate this</text>
+<text x="1048" y="781" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">demo contract. They do not certify</text>
+<text x="1048" y="805" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">EU5 behavior.</text>
+<rect x="1048" y="838" width="200" height="42" rx="7" fill="#ffffff" stroke="#285ab0"/>
+<text x="1062" y="865" fill="#285ab0" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">View coverage</text>
+</svg>

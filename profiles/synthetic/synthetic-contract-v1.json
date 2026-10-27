@@ -1,0 +1,15 @@
+{
+  "id": "synthetic-contract-v1",
+  "kind": "synthetic",
+  "revision": 1,
+  "evidence_label": "P",
+  "production_export_enabled": false,
+  "families": ["testdb"],
+  "bare_registration": "first_reject_duplicates",
+  "mode_order": ["INJECT_OR_CREATE", "REPLACE_OR_CREATE", "TRY_INJECT", "TRY_REPLACE", "INJECT", "REPLACE"],
+  "readers": {"x": "scalar_last", "y": "scalar_last", "ref": "scalar_last", "effect": "ordered_commands", "items": "append_occurrences", "nested": "unknown"},
+  "reference_fields": {"ref": "same_family"},
+  "independent_fields": ["x", "y"],
+  "conformed_rules": [],
+  "rules": [{"id": "synthetic-contract-v1", "label": "P", "scope": "contract fixtures only", "source": "specs/TESTING.md#2-synthetic-contract-v1"}]
+}

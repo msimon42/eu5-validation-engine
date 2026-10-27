@@ -1,0 +1,13 @@
+{
+  "id": "eu5-docs-cutoff-2026-10-26",
+  "kind": "documentation_only",
+  "revision": 1,
+  "evidence_label": "D",
+  "production_export_enabled": false,
+  "target": null,
+  "families": [],
+  "bare_registration": null,
+  "readers": {},
+  "conformed_rules": [],
+  "rules": [{"id": "documented-six-mode-order", "label": "D", "selectors": [], "source": "https://eu5.paradoxwikis.com/Mod_compatibility", "unknowns": ["family coverage", "bare registration", "within-mode order", "field readers"]}]
+}

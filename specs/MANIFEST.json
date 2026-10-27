@@ -1,0 +1,154 @@
+{
+  "package": "EU5 Mod Compatibility Engine specification",
+  "revision": "2.0-reconstructed",
+  "date": "2026-10-26",
+  "scope": "documentation and illustrative assets; no game conformance claimed",
+  "manifest_excludes_self": true,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 7598,
+      "sha256": "80f94921e328177e4d81ca5d458506d17457a637f6142b5a8d1977b372c89b5d"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "bytes": 21247,
+      "sha256": "7d92448ac5969fd4d2a9915350676499e0fac5d4e5828ed1bac2ab09727a14cc"
+    },
+    {
+      "path": "CHANGE_SUMMARY.md",
+      "bytes": 7732,
+      "sha256": "73414270c4c79984079cce095c5e3157a18611996188decd184f4dbc63c58fd5"
+    },
+    {
+      "path": "EU5_LOADING_SEMANTICS.md",
+      "bytes": 20184,
+      "sha256": "90a0b4a62a147e58f96771fc62ebeb11da9b064b9366ebc40e0dd90742dd7c0b"
+    },
+    {
+      "path": "EU5_SCRIPTING.md",
+      "bytes": 23753,
+      "sha256": "bd9e130b65b6654a845f92036a2d9cf2a295dfc8e761805336ea069e05909251"
+    },
+    {
+      "path": "INDEX.md",
+      "bytes": 507,
+      "sha256": "dc12a8bb197517a0bda30a6678494e6488d72585b5c3167c753c4f5a2d939808"
+    },
+    {
+      "path": "PACKAGE_CHECKS.md",
+      "bytes": 2405,
+      "sha256": "c506b16ecb52958528d398e244bfdc096775421df9ffa56fcec7baa4f890e548"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4006,
+      "sha256": "f458e3d4889fd68c3541d6c82fdb48cbf369284ed8dd0bff91544fd4c336e610"
+    },
+    {
+      "path": "RESEARCH_GAPS.md",
+      "bytes": 21240,
+      "sha256": "3b11f3fd1080d4023353f7728651abde8e790471ab0a2c073be55baa952dda60"
+    },
+    {
+      "path": "RESEARCH_REPORT.md",
+      "bytes": 141872,
+      "sha256": "54d526fedc3e56c62b48901e379a03149598c2ee122a829da6059fe30998a235"
+    },
+    {
+      "path": "SOURCES.md",
+      "bytes": 7612,
+      "sha256": "30f01345d1c2301f98c8686958d6e0fbf23650a260a7368ceeb902338d46ad83"
+    },
+    {
+      "path": "SPEC.md",
+      "bytes": 19074,
+      "sha256": "25f651edb8b0177fd3027f4d52ad9dfac395cb1bc7680db910e061eaf1e3ad96"
+    },
+    {
+      "path": "TESTING.md",
+      "bytes": 28873,
+      "sha256": "c45fac90d57e6b32202aab32bafa229a7ad07c2e4e7c11a6e6b357c5e801f307"
+    },
+    {
+      "path": "WIREFRAMES.md",
+      "bytes": 4820,
+      "sha256": "658658a15c990f5442741a0a5efd3afc08a527234249846f4604f83fdcc716c4"
+    },
+    {
+      "path": "fixtures/README.md",
+      "bytes": 1042,
+      "sha256": "eae95e3ca9d9795740a2437e9f06c268b8a3cc9a1451ba3d6469142f790cccfa"
+    },
+    {
+      "path": "fixtures/fixture-003-disjoint-properties.json",
+      "bytes": 1491,
+      "sha256": "483df0756d21de711a8ec27c9ceaf81be8003df3cc3026568b41c03d6603a4ab"
+    },
+    {
+      "path": "fixtures/fixture-schema.json",
+      "bytes": 2217,
+      "sha256": "8c6aa85f5243a8d276c8353609ca58eb59cf0993c5c426532dbe58f5d77d85eb"
+    },
+    {
+      "path": "sources/Pasted text(3).txt",
+      "bytes": 142024,
+      "sha256": "7a158316cae9de50589daf2991f279ab8851443595f32efd2ff83b1590cbb80b"
+    },
+    {
+      "path": "wireframes/01-overview.png",
+      "bytes": 155569,
+      "sha256": "70690eb5a4871fd3f3e615d1a7f5ebfb5acb27a6950f5df861771c52aeb27f6d"
+    },
+    {
+      "path": "wireframes/01-overview.svg",
+      "bytes": 10363,
+      "sha256": "2de04ec78003a5023732f70d5ec80a6572804db8c045a717fb148234afdab45c"
+    },
+    {
+      "path": "wireframes/02-investigation.png",
+      "bytes": 142047,
+      "sha256": "480a93dc34dda499d8e3f3b9f4be96fbd504d3e6ef4c2d6747ea5970839f35c9"
+    },
+    {
+      "path": "wireframes/02-investigation.svg",
+      "bytes": 8871,
+      "sha256": "65fa6da3c6c1d6a0316f1e67639845da60b7e8aef13794a340f2b5a86d5938e9"
+    },
+    {
+      "path": "wireframes/03-design-decision.png",
+      "bytes": 135350,
+      "sha256": "fd27db49a5f4b5a49d35bba9f26a43b8de54ad3b73e5250597d40bd97d7159b5"
+    },
+    {
+      "path": "wireframes/03-design-decision.svg",
+      "bytes": 6340,
+      "sha256": "2c583a0de3b03b2715d872a6a3865bf17f2c28312de81e9707bbb57a2abb826c"
+    },
+    {
+      "path": "wireframes/04-validation.png",
+      "bytes": 150819,
+      "sha256": "ae48d76e2ef3caf4456a77bc2391a69797aa62d71ef8265e1c3cd252b4d817d0"
+    },
+    {
+      "path": "wireframes/04-validation.svg",
+      "bytes": 8634,
+      "sha256": "1af70788a93ef278a4bfbec7521323c69bc3baa9def2a4580a264dc3f4979f67"
+    },
+    {
+      "path": "wireframes/05-rule-evidence.png",
+      "bytes": 152696,
+      "sha256": "bcbc0588950adea4f7b75a3f4ee23e4f00ed9e84035a803e8b374abb4be1f6f4"
+    },
+    {
+      "path": "wireframes/05-rule-evidence.svg",
+      "bytes": 6793,
+      "sha256": "c37ed21da17f55ad850fb892998a0635e4bb415d78d3b1f74614bb8446a313c4"
+    },
+    {
+      "path": "wireframes/wireframes-overview.png",
+      "bytes": 442037,
+      "sha256": "e87ffc6525cf8e263771d50ba676c5e316bfa66fc39bb86a5d2a5d4061fb0994"
+    }
+  ]
+}

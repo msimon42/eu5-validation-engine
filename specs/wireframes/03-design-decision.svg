@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img">
+<title>Choose a design for the conflict</title><desc>Illustrative EU5 compatibility application frontend wireframe. All displayed data is synthetic.</desc>
+<rect x="0" y="0" width="1440" height="980" rx="0" fill="#f4f6f9" stroke="#f4f6f9"/>
+<rect x="0" y="0" width="230" height="980" rx="0" fill="#172334" stroke="#172334"/>
+<text x="25" y="45" fill="#ffffff" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">EU5 Compatibility</text>
+<text x="25" y="72" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Local workspace</text>
+<text x="27" y="120" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Overview</text>
+<text x="27" y="173" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Findings</text>
+<rect x="14" y="201" width="202" height="42" rx="7" fill="#304762" stroke="#304762"/>
+<text x="27" y="226" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Design decisions</text>
+<text x="27" y="279" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Validation</text>
+<text x="27" y="332" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Rules &amp; evidence</text>
+<text x="25" y="820" fill="#b2bfce" font-size="12" font-weight="700" font-family="Arial, Helvetica, sans-serif">DEMO WORKSPACE</text>
+<text x="25" y="850" fill="#ffffff" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Synthetic contract v1</text>
+<text x="25" y="875" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Game: not connected</text>
+<text x="266" y="48" fill="#1c2c42" font-size="29" font-weight="700" font-family="Arial, Helvetica, sans-serif">Choose a design for the conflict</text>
+<text x="266" y="78" fill="#526174" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">A proposed repair cannot satisfy both exact-value requirements.</text>
+<rect x="1145" y="29" width="257" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="1157" y="50" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Synthetic demo · no game run</text>
+<path d="M264 104H1402" stroke="#dce1e8"/>
+<text x="267" y="951" fill="#65758a" font-size="13" font-weight="400" font-family="Arial, Helvetica, sans-serif">Illustrative wireframe · values and outcomes are synthetic · no EU5 experiment executed</text>
+<rect x="265" y="124" width="1138" height="119" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="161" fill="#263244" font-size="22" font-weight="700" font-family="Arial, Helvetica, sans-serif">Illustrative harbor cost: Mod A requires 2; Mod B requires 5</text>
+<text x="286" y="196" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">No change has been applied. Select a concrete design or keep the conflict unresolved.</text>
+<rect x="1136" y="202" width="240" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="1148" y="223" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">User decision required</text>
+<rect x="265" y="266" width="1138" height="125" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<circle cx="296" cy="301" r="10" fill="#fff" stroke="#8f9eb0" stroke-width="2"/>
+<text x="322" y="307" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Keep cost 2</text>
+<text x="322" y="341" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Retain Mod A’s exact-value requirement.</text>
+<text x="322" y="367" fill="#805500" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Waives Mod B’s cost requirement.</text>
+<rect x="265" y="410" width="1138" height="125" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<circle cx="296" cy="445" r="10" fill="#fff" stroke="#8f9eb0" stroke-width="2"/>
+<text x="322" y="451" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Keep cost 5</text>
+<text x="322" y="485" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Retain Mod B’s exact-value requirement.</text>
+<text x="322" y="511" fill="#805500" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Waives Mod A’s cost requirement.</text>
+<rect x="265" y="554" width="1138" height="125" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<circle cx="296" cy="589" r="10" fill="#fff" stroke="#8f9eb0" stroke-width="2"/>
+<text x="322" y="595" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Define a custom design</text>
+<text x="322" y="629" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Specify a value or a conditional behavior.</text>
+<text x="322" y="655" fill="#805500" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">The app will show which requirements this waives.</text>
+<rect x="265" y="699" width="1138" height="112" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="734" fill="#263244" font-size="19" font-weight="700" font-family="Arial, Helvetica, sans-serif">Decision scope</text>
+<text x="286" y="767" fill="#526174" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Bound to this input snapshot, proposal and rule profile. Changes require renewed review. Approval does not</text>
+<text x="286" y="791" fill="#526174" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">verify unknown game behavior.</text>
+<rect x="265" y="844" width="244" height="42" rx="7" fill="#ffffff" stroke="#285ab0"/>
+<text x="279" y="871" fill="#285ab0" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Keep unresolved</text>
+<rect x="1159" y="844" width="244" height="42" rx="7" fill="#e1e6ed" stroke="#d0d7e1"/>
+<text x="1173" y="871" fill="#788391" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Save design choice</text>
+</svg>

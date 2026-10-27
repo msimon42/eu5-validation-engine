@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "id": "003-disjoint-properties",
+  "tier": "contract",
+  "profile": "synthetic-contract-v1",
+  "inputs": [
+    {
+      "owner": "V",
+      "path": "in_game/common/testdb/00.txt",
+      "bytes_base64": "aXRlbSA9IHsgeCA9IDEgeSA9IDEgfQo="
+    },
+    {
+      "owner": "A",
+      "path": "in_game/common/testdb/10.txt",
+      "bytes_base64": "UkVQTEFDRTppdGVtID0geyB4ID0gMiB5ID0gMSB9Cg=="
+    },
+    {
+      "owner": "B",
+      "path": "in_game/common/testdb/20.txt",
+      "bytes_base64": "UkVQTEFDRTppdGVtID0geyB4ID0gMSB5ID0gMyB9Cg=="
+    }
+  ],
+  "playset": [
+    "A",
+    "B",
+    "generated_patch"
+  ],
+  "expected": {
+    "parse": [
+      {
+        "all_inputs": "strict_ok",
+        "duplicate_occurrences_preserved": true
+      }
+    ],
+    "findings": [
+      {
+        "kind": "compatible_overlap",
+        "target": "testdb/item",
+        "policy": "disjoint_known_fields"
+      }
+    ],
+    "effective": {
+      "testdb/item": {
+        "x": "2",
+        "y": "3"
+      }
+    },
+    "effective_before_patch": {
+      "testdb/item": {
+        "x": "1",
+        "y": "3"
+      }
+    },
+    "patch": [
+      {
+        "path": "in_game/common/testdb/zz_compat.txt",
+        "text": "REPLACE:item = { x = 2 y = 3 }\n"
+      }
+    ],
+    "assertions": [
+      {
+        "op": "preserves_delta",
+        "owner": "A"
+      },
+      {
+        "op": "preserves_delta",
+        "owner": "B"
+      },
+      {
+        "op": "source_files_unchanged"
+      }
+    ]
+  }
+}

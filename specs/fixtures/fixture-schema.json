@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "tier",
+    "profile",
+    "inputs",
+    "playset",
+    "expected"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "tier": {
+      "enum": [
+        "contract",
+        "conformance"
+      ]
+    },
+    "profile": {
+      "type": "string"
+    },
+    "build_fingerprint": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "owner",
+          "path",
+          "bytes_base64"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "bytes_base64": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "playset": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "agent_replay": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parse",
+        "findings",
+        "effective",
+        "patch",
+        "assertions"
+      ],
+      "properties": {
+        "parse": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "effective": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "effective_before_patch": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "patch": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object"
+          }
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

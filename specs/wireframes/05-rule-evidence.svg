@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img">
+<title>Rules and evidence</title><desc>Illustrative EU5 compatibility application frontend wireframe. All displayed data is synthetic.</desc>
+<rect x="0" y="0" width="1440" height="980" rx="0" fill="#f4f6f9" stroke="#f4f6f9"/>
+<rect x="0" y="0" width="230" height="980" rx="0" fill="#172334" stroke="#172334"/>
+<text x="25" y="45" fill="#ffffff" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">EU5 Compatibility</text>
+<text x="25" y="72" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Local workspace</text>
+<text x="27" y="120" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Overview</text>
+<text x="27" y="173" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Findings</text>
+<text x="27" y="226" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Design decisions</text>
+<text x="27" y="279" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Validation</text>
+<rect x="14" y="307" width="202" height="42" rx="7" fill="#304762" stroke="#304762"/>
+<text x="27" y="332" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Rules &amp; evidence</text>
+<text x="25" y="820" fill="#b2bfce" font-size="12" font-weight="700" font-family="Arial, Helvetica, sans-serif">DEMO WORKSPACE</text>
+<text x="25" y="850" fill="#ffffff" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Synthetic contract v1</text>
+<text x="25" y="875" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Game: not connected</text>
+<text x="266" y="48" fill="#1c2c42" font-size="29" font-weight="700" font-family="Arial, Helvetica, sans-serif">Rules and evidence</text>
+<text x="266" y="78" fill="#526174" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Documentation supports conditional predictions; build observations support scoped production rules.</text>
+<rect x="1145" y="29" width="257" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="1157" y="50" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Synthetic demo · no game run</text>
+<path d="M264 104H1402" stroke="#dce1e8"/>
+<text x="267" y="951" fill="#65758a" font-size="13" font-weight="400" font-family="Arial, Helvetica, sans-serif">Illustrative wireframe · values and outcomes are synthetic · no EU5 experiment executed</text>
+<rect x="265" y="124" width="1138" height="121" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="160" fill="#263244" font-size="22" font-weight="700" font-family="Arial, Helvetica, sans-serif">Example rule: operation-class scheduling</text>
+<rect x="286" y="183" width="253" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="298" y="204" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">D · documented, unconfirmed</text>
+<text x="568" y="204" fill="#263244" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Source: EU5 compatibility wiki · historic verification caveat retained</text>
+<rect x="265" y="265" width="1138" height="144" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="303" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Documented six-mode sequence</text>
+<text x="286" y="346" fill="#263244" font-size="19" font-weight="400" font-family="Arial, Helvetica, sans-serif">INJECT_OR_CREATE → REPLACE_OR_CREATE → TRY_INJECT → TRY_REPLACE → INJECT → REPLACE</text>
+<text x="286" y="381" fill="#805500" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Bare creation placement and duplicate handling are separate unresolved questions.</text>
+<rect x="265" y="429" width="551" height="347" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="470" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Applicability</text>
+<text x="286" y="511" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">No production target is conformed in this</text>
+<text x="286" y="535" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">documentation package. Installed build and family</text>
+<text x="286" y="559" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">selectors must be captured before promotion.</text>
+<text x="286" y="621" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Profile: documented research baseline</text>
+<text x="286" y="658" fill="#263244" font-size="16" font-weight="700" font-family="Arial, Helvetica, sans-serif">Production-enabled game rules: 0</text>
+<rect x="286" y="705" width="240" height="42" rx="7" fill="#ffffff" stroke="#285ab0"/>
+<text x="300" y="732" fill="#285ab0" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Inspect source and caveats</text>
+<rect x="836" y="429" width="567" height="347" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="857" y="470" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Required probes</text>
+<text x="857" y="515" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">E04 · all 36 mode pairs</text>
+<text x="857" y="558" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">E05 · bare creation position</text>
+<text x="857" y="601" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">E06 · duplicate bare definitions</text>
+<text x="857" y="644" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">E07 · missing targets and failure scope</text>
+<rect x="857" y="705" width="265" height="42" rx="7" fill="#285ab0" stroke="#285ab0"/>
+<text x="871" y="732" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">View experiment backlog</text>
+<rect x="265" y="797" width="1138" height="103" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="835" fill="#263244" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">Unknown behavior stays unknown</text>
+<text x="286" y="868" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">User design approval cannot turn a hypothesis into an observed rule.</text>
+</svg>

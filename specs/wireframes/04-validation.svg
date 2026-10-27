@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img">
+<title>Validation and release</title><desc>Illustrative EU5 compatibility application frontend wireframe. All displayed data is synthetic.</desc>
+<rect x="0" y="0" width="1440" height="980" rx="0" fill="#f4f6f9" stroke="#f4f6f9"/>
+<rect x="0" y="0" width="230" height="980" rx="0" fill="#172334" stroke="#172334"/>
+<text x="25" y="45" fill="#ffffff" font-size="20" font-weight="700" font-family="Arial, Helvetica, sans-serif">EU5 Compatibility</text>
+<text x="25" y="72" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Local workspace</text>
+<text x="27" y="120" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Overview</text>
+<text x="27" y="173" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Findings</text>
+<text x="27" y="226" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Design decisions</text>
+<rect x="14" y="254" width="202" height="42" rx="7" fill="#304762" stroke="#304762"/>
+<text x="27" y="279" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Validation</text>
+<text x="27" y="332" fill="#b2bfce" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Rules &amp; evidence</text>
+<text x="25" y="820" fill="#b2bfce" font-size="12" font-weight="700" font-family="Arial, Helvetica, sans-serif">DEMO WORKSPACE</text>
+<text x="25" y="850" fill="#ffffff" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Synthetic contract v1</text>
+<text x="25" y="875" fill="#b2bfce" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Game: not connected</text>
+<text x="266" y="48" fill="#1c2c42" font-size="29" font-weight="700" font-family="Arial, Helvetica, sans-serif">Validation and release</text>
+<text x="266" y="78" fill="#526174" font-size="15" font-weight="400" font-family="Arial, Helvetica, sans-serif">Required checks must pass before a managed release can be promoted.</text>
+<rect x="1145" y="29" width="257" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="1157" y="50" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Synthetic demo · no game run</text>
+<path d="M264 104H1402" stroke="#dce1e8"/>
+<text x="267" y="951" fill="#65758a" font-size="13" font-weight="400" font-family="Arial, Helvetica, sans-serif">Illustrative wireframe · values and outcomes are synthetic · no EU5 experiment executed</text>
+<rect x="265" y="124" width="742" height="646" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="162" fill="#263244" font-size="21" font-weight="700" font-family="Arial, Helvetica, sans-serif">Candidate checks</text>
+<path d="M286 191H985" stroke="#dce1e8"/>
+<text x="286" y="218" fill="#263244" font-size="17" font-weight="400" font-family="Arial, Helvetica, sans-serif">Source snapshot still matches</text>
+<rect x="821" y="196" width="157" height="30" rx="15" fill="#e5f4ee" stroke="#e5f4ee"/>
+<text x="833" y="217" fill="#246d53" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Pass</text>
+<path d="M286 268H985" stroke="#dce1e8"/>
+<text x="286" y="295" fill="#263244" font-size="17" font-weight="400" font-family="Arial, Helvetica, sans-serif">Strict parsing and encoding</text>
+<rect x="821" y="273" width="157" height="30" rx="15" fill="#e5f4ee" stroke="#e5f4ee"/>
+<text x="833" y="294" fill="#246d53" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Pass</text>
+<path d="M286 345H985" stroke="#dce1e8"/>
+<text x="286" y="372" fill="#263244" font-size="17" font-weight="400" font-family="Arial, Helvetica, sans-serif">Full-stack synthetic prediction</text>
+<rect x="821" y="350" width="157" height="30" rx="15" fill="#e5f4ee" stroke="#e5f4ee"/>
+<text x="833" y="371" fill="#246d53" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Pass</text>
+<path d="M286 422H985" stroke="#dce1e8"/>
+<text x="286" y="449" fill="#263244" font-size="17" font-weight="400" font-family="Arial, Helvetica, sans-serif">Preservation predicates</text>
+<rect x="821" y="427" width="157" height="30" rx="15" fill="#e5f4ee" stroke="#e5f4ee"/>
+<text x="833" y="448" fill="#246d53" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Pass</text>
+<path d="M286 499H985" stroke="#dce1e8"/>
+<text x="286" y="526" fill="#263244" font-size="17" font-weight="400" font-family="Arial, Helvetica, sans-serif">Selected EU5 build conformance</text>
+<rect x="821" y="504" width="157" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="833" y="525" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Not run</text>
+<path d="M286 576H985" stroke="#dce1e8"/>
+<text x="286" y="603" fill="#263244" font-size="17" font-weight="400" font-family="Arial, Helvetica, sans-serif">Game behavior observations</text>
+<rect x="821" y="581" width="157" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="833" y="602" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Not run</text>
+<text x="286" y="701" fill="#805500" font-size="17" font-weight="600" font-family="Arial, Helvetica, sans-serif">Required game checks remain outstanding.</text>
+<text x="286" y="731" fill="#65758a" font-size="14" font-weight="400" font-family="Arial, Helvetica, sans-serif">Demo statuses illustrate the workflow; no checks were executed.</text>
+<rect x="1027" y="124" width="376" height="364" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="1048" y="162" fill="#263244" font-size="21" font-weight="700" font-family="Arial, Helvetica, sans-serif">Release readiness</text>
+<rect x="1048" y="184" width="239" height="30" rx="15" fill="#fff1d6" stroke="#fff1d6"/>
+<text x="1060" y="205" fill="#805500" font-size="13" font-weight="600" font-family="Arial, Helvetica, sans-serif">Blocked · game checks pending</text>
+<text x="1048" y="251" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">A staged experimental bundle can be</text>
+<text x="1048" y="275" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">downloaded for review. It is not a</text>
+<text x="1048" y="299" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">validated game repair.</text>
+<rect x="1048" y="344" width="333" height="42" rx="7" fill="#e1e6ed" stroke="#d0d7e1"/>
+<text x="1062" y="371" fill="#788391" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Promote validated release</text>
+<rect x="1048" y="409" width="333" height="42" rx="7" fill="#ffffff" stroke="#285ab0"/>
+<text x="1062" y="436" fill="#285ab0" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Export experimental bundle</text>
+<rect x="1027" y="508" width="376" height="262" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="1048" y="547" fill="#263244" font-size="21" font-weight="700" font-family="Arial, Helvetica, sans-serif">Rollback</text>
+<text x="1048" y="585" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Previous managed releases retain</text>
+<text x="1048" y="609" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">their exact files, playset plan and</text>
+<text x="1048" y="633" fill="#526174" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">evidence.</text>
+<rect x="1048" y="690" width="333" height="42" rx="7" fill="#ffffff" stroke="#285ab0"/>
+<text x="1062" y="717" fill="#285ab0" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Preview previous release</text>
+<rect x="265" y="791" width="1138" height="109" rx="10" fill="#ffffff" stroke="#cfd6df"/>
+<text x="286" y="830" fill="#263244" font-size="19" font-weight="700" font-family="Arial, Helvetica, sans-serif">Windows worker</text>
+<text x="286" y="863" fill="#263244" font-size="16" font-weight="400" font-family="Arial, Helvetica, sans-serif">Game not connected · choose a build and verify its actual enabled playset before testing.</text>
+<rect x="1127" y="824" width="248" height="42" rx="7" fill="#285ab0" stroke="#285ab0"/>
+<text x="1141" y="851" fill="#ffffff" font-size="15" font-weight="600" font-family="Arial, Helvetica, sans-serif">Configure game checks</text>
+</svg>

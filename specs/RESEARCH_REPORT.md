@@ -1,0 +1,1237 @@
+# Europa Universalis V mod compatibility and repair engine
+
+**Engineering research report — evidence cutoff: 26 October 2026**
+
+**Recommendation:** build a lossless script editor and an evidence-driven loader simulator, with separate policies for each content family. Ship automatic repair only for transformations whose prerequisites and preservation checks are explicit. A syntactically valid union of mod files is not evidence that both mods still work.
+
+This report distinguishes three things that are often conflated: parsing a document, computing which content the game loads, and understanding the gameplay behavior of that content. The first can be made highly reliable on macOS using synthetic inputs. The second needs versioned rules and Windows game conformance tests. The third has unavoidable limits: arbitrary scripts, GUI behavior, timing, randomness, and competing gameplay objectives prevent a universal proof of compatibility.
+
+### Evidence labels and scope
+
+| Label | Meaning in this report |
+|---|---|
+| **V — verified source fact** | Directly observed in an official statement, documentation page, or inspected repository code. For a wiki claim this verifies what the page says, **not** that the current executable implements it. |
+| **D — documented game behavior** | Explicit EU5 documentation, with its age and caveats retained. Needs build-specific conformance before becoming a trusted automatic-repair rule. |
+| **I — strong inference** | Engineering conclusion supported by evidence, without a direct game observation. |
+| **H — hypothesis / unknown** | Not established; never silently substituted with an EU4/CK3/Victoria 3 rule. |
+| **P — proposed design** | Original architecture, API, test, or policy recommendation; not a claim about the game. |
+
+No EU5 installation or runtime was available during this investigation. Public repositories and documentation were examined; no described game experiment was executed. The report therefore contains **no new empirically verified EU5 loading rule**. Public mods demonstrate syntax used by authors, not complete evidence of engine semantics.
+
+The latest public beta located in the official forum was **1.4.4**, dated **23 October 2026**, checksum **2963**. The stable release identified was **1.3.11**, dated **16 July 2026**, checksum **b08d**. Treat them as separate targets. The announced 28 October 1.4 release is beyond this cutoff. [Official 1.4.4 hotfix](https://forum.paradoxplaza.com/forum/threads/open-beta-hotfix-1-4-4.1946801/), [official stable patch announcement](https://steamcommunity.com/games/3450310/announcements/detail/679630151248511069), [official 1.4 beta announcement](https://steamcommunity.com/app/3450310/announcements/?l=english).
+
+The main EU5 compatibility wiki explicitly requests empirical verification and includes material marked 1.1; the localization page includes 1.0 material, and the event page includes pre-release material. These warnings materially constrain confidence. Direct web retrieval returned authorization/challenge errors, so these pages and the official developer diary were read through the browser. [Compatibility documentation](https://eu5.paradoxwikis.com/Mod_compatibility), [localization documentation](https://eu5.paradoxwikis.com/Localization), [event documentation](https://eu5.paradoxwikis.com/Event_modding).
+
+### How to use the report
+
+The supplied directory trees are representative rather than an invented exhaustive inventory of a proprietary installation. A complete directory catalogue, schema, and list of engine-supported operators must ultimately be generated from the selected installation and its `script_docs` output. Unsupported families remain opaque and report reduced coverage. The engine should always disclose its analysis coverage, input fingerprints, rule-profile version, and outstanding runtime checks.
+
+The sections below cover structure and runtime, scripting and prior art, loading/conflicts, implementation design, synthetic testing, empirical experiments, and the implementation checklist. All examples marked **illustrative** are proposed fixtures or designs and have not been tested in EU5.
+
+
+Companion files: [fixture JSON Schema](fixtures/fixture-schema.json) and [concrete disjoint-property fixture](fixtures/fixture-003-disjoint-properties.json).
+
+## Contents
+
+1. [Mod structure, discovery and metadata](#1-mod-structure-discovery-and-metadata)
+2. [EU5 language and semantics](#2-eu5-language-and-semantics)
+3. [Parser design and lossless rewriting](#3-parser-design-and-lossless-rewriting)
+4. [Loading and conflict semantics](#4-loading-and-conflict-semantics)
+5. [Effective load-order simulator](#5-effective-load-order-simulator)
+6. [Automated merging and AI repair](#6-automated-merging-and-ai-repair)
+7. [Synthetic fixture suite and cross-platform testing](#7-synthetic-fixture-suite-and-cross-platform-testing)
+8. [EU5 runtime validation](#8-eu5-runtime-validation)
+9. [Prior art and repository audits](#9-prior-art-and-repository-audits)
+10. [Experiments, findings and implementation checklist](#10-experiments-findings-and-implementation-checklist)
+
+## 1. Mod structure, discovery and metadata
+
+### Discovery and physical layout
+
+
+**D.** Local Windows mods live below `%USERPROFILE%\Documents\Paradox Interactive\Europa Universalis V\mod\`, one folder per mod. Workshop items use `<SteamLibrary>\steamapps\workshop\content\3450310\<PublishedFileId>\`. The in-game “DLCs and Mods View” enables mods through playsets; Apply reloads the game. Manual replacement should start from a clean mod folder because obsolete files left from older releases remain loadable. These paths are defaults; the scanner must resolve the actual Windows Documents known folder and every Steam library instead of concatenating a guessed `C:\Users` path. The last sentence is an implementation recommendation. [EU5 Wiki: Mod](https://eu5.paradoxwikis.com/Mod)
+
+**D.** A mod root corresponds to vanilla `game/`: do not put an extra `game/` directory inside a mod. The three resource stages are `loading_screen` (earliest), `main_menu`, and `in_game` (loaded from the menu before entering the country-selection lobby). Their subdirectories share a common resource layout. `.metadata/metadata.json` registers the mod. The wiki recommends `.metadata/thumbnail.png`, under 1 MB and usually 512×512. Misspelled content paths can be ignored without errors. [EU5 Wiki: Mod structure](https://eu5.paradoxwikis.com/Mod_structure)
+
+The following is a **representative planning tree**, not a claim that every mod or installed build contains every directory. Only material actually used by a mod needs to exist. The exact layer for a particular database must come from the target installation’s inventory, rather than this tree.
+
+```text
+<SteamLibrary>/steamapps/common/Europa Universalis V/
+├── binaries/eu5.exe
+└── game/                         # vanilla resource root
+    ├── loading_screen/
+    ├── main_menu/
+    ├── in_game/
+    └── dlc/                      # inventory enabled installed content separately
+
+<Documents>/Paradox Interactive/Europa Universalis V/
+├── mod/
+│   └── compatibility_patch/      # counterpart of game/, no nested game/
+│       ├── .metadata/
+│       │   ├── metadata.json
+│       │   └── thumbnail.png
+│       ├── loading_screen/common/defines/
+│       ├── main_menu/
+│       │   ├── common/static_modifiers/
+│       │   ├── localization/english/replace/
+│       │   ├── setup/start/
+│       │   ├── setup/templates/
+│       │   ├── gui/
+│       │   └── gfx/
+│       └── in_game/
+│           ├── common/
+│           │   ├── advances/
+│           │   ├── building_types/
+│           │   ├── goods/
+│           │   ├── laws/
+│           │   ├── scripted_effects/
+│           │   ├── scripted_triggers/
+│           │   └── script_values/
+│           ├── events/
+│           ├── setup/countries/
+│           ├── gui/
+│           └── gfx/
+├── docs/                         # script_docs generated vocabulary
+├── logs/
+│   ├── error.log
+│   └── data_types/               # dump_data_types output
+└── pdx_settings.json
+```
+
+**V.** The public Standard of Living mod demonstrates content spread across all three stages: defines under `loading_screen`, goods and scripted code under `in_game`, static modifiers and localization under `main_menu`, plus GUI and graphical content. Its tree is useful evidence against an `in_game`-only scanner. Its project documentation is maintained by a mod author, so it does not establish every engine rule. [SOL project tree and directory documentation](https://github.com/HLJSXK/eu5-modding-project/blob/main/docs/knowledge/BRIEF.md#directory-structure)
+
+**V, 1.3-era inventory.** The EU5-specific BerFoe reference provides a publicly inspectable folder inventory, described as generated from an installation. Selected paths are below. It also reports that `script_values`, `scripted_triggers` and `scripted_lists` occur in both `main_menu/common` and `in_game/common` and behave as separate databases. Treat that namespace claim as a community observation requiring a two-layer collision probe. [Pinned folder inventory](https://github.com/BerFoe/eu5-modding-skill/blob/3b7e8f930303abc949c77f3d5c9b741ee896e620/eu5-modding/references/mod-structure.md)
+
+| Stage/path | Representative inventory entries |
+|---|---|
+| `loading_screen/` | `common/defines`, `dependency_graphs`, `fonts`, `gfx`, `gui`, `input_profile`, `localization`, `sound` |
+| `main_menu/` | `common`, `fonts`, `gfx`, `gui`, `gui_animations`, `localization`, `music`, `notifications`, `setup`, `tools` |
+| `main_menu/common/` | `achievements`, `coat_of_arms`, `flag_definitions`, `game_concepts`, `game_rules`, `modifier_icons`, `modifier_type_definitions`, `named_colors`, `scenarios`, `static_modifiers` |
+| `in_game/` | `common`, `content_source`, `events`, `fonts`, `gfx`, `gui`, `localization`, `map_data`, `setup` |
+| `in_game/common/` | `building_types`, `goods`, `institution`, `on_action`, `production_methods`, `scripted_effects`, `unit_types` |
+
+The linked inventory supplies the longer gameplay-database list. An installer manifest scan is still required for an exhaustive October 2026 tree. In particular, do not normalize singular directory names such as `on_action` or `institution` into English plurals.
+
+**P.** Treat the directory inventory as a discovered schema, including unknown extensions and unknown folders. Store `(source_id, original_relative_path, resource_stage, loader_family, byte_hash, size)`. A report should separate “not in our known schema” from “proved ignored by EU5.” Do not discard the former. Do not flatten the stage prefix while computing physical file collisions; preserve both physical paths and any logical resource identity identified by the actual loader. Exact cross-stage identity behavior needs a dedicated conformance test.
+
+### Metadata and dependencies
+
+The following JSON is **illustrative**, using documented EU5 field names. It is valid JSON; comments shown in wiki examples must not be copied into the file. This is a suggested patch metadata document, not an exact generated stub.
+
+```json
+{
+  "name": "Local Compatibility Patch",
+  "id": "local.compatibility.patch",
+  "version": "0.1.0",
+  "supported_game_version": "1.3.*",
+  "short_description": "Compatibility changes for a pinned local playset.",
+  "tags": ["Fixes"],
+  "relationships": [
+    {
+      "rel_type": "dependency",
+      "id": "example.mod.a",
+      "display_name": "Example Mod A",
+      "resource_type": "mod",
+      "version": "1.*"
+    }
+  ],
+  "game_custom_data": {
+    "replace_paths": [],
+    "multiplayer_synchronized": true
+  }
+}
+```
+
+**D.** The wiki describes relationships with `rel_type = dependency`, target `id`, `display_name`, `resource_type` (`mod` or `dlc`), and a version string. Its game compatibility pattern supports wildcards. [EU5 Wiki metadata specification](https://eu5.paradoxwikis.com/Mod_structure#Metadata)
+
+**V.** Flavorium Universalis’ actual metadata uses `name`, `id`, `version`, `supported_game_version`, `picture`, `tags`, `relationships`, and nested `game_custom_data.replace_paths` plus `multiplayer_synchronized`. This confirms a real mod’s JSON shape, not the enforcement or necessity of every property. No `.mod` descriptor is required by the cited EU5 structure specification. A scanner may preserve an existing `descriptor.mod` as an opaque legacy/tooling artifact; generating one by analogy with EU4 is not justified. [Flavorium metadata](https://github.com/wtmenten/flavorium-universalis/blob/master/.metadata/metadata.json)
+
+**P/H.** Preserve unknown JSON properties and original identity fields. Do not equate a Workshop numeric item ID with the metadata `id`. Check dependency identity and version separately from load order; a declaration is not evidence that the game automatically sorts mods. Detect absent, disabled, duplicated, cyclic, and unsatisfied-version dependencies. The exact interpretation of wildcard versions, nonnumeric prerelease mod versions, missing required DLC, and enforcement versus warning should be calibrated against the target build. Never silently add missing dependencies or change a user’s design choices.
+
+### Playset persistence: EU5-specific evidence and a version boundary
+
+**V, EU5 1.3.11 author observation.** The EU5-specific `Start-EU5.ps1` reads `<UserDir>/playsets.json`. It selects `data.playsets[]` by `name` or `isActive`, then edits `orderedListMods[]` entries containing `path` and `isEnabled`. Paths use forward slashes and a trailing slash. The author reports testing startup import on 1.3.11; the game rewrites the file on exit. The author also reports that leaving an entry with `isEnabled:false` did not exclude it; the in-game manager removes entries instead. Installed-mod mount logs are described as availability, a superset of the active set. These are useful EU5-specific observations, but must be reproduced on the target build. [Pinned EU5 launch-helper code](https://github.com/BerFoe/eu5-modding-skill/blob/3b7e8f930303abc949c77f3d5c9b741ee896e620/eu5-modding/scripts/Start-EU5.ps1)
+
+The following is a **minimal illustrative projection of fields consumed by that code**, not a complete game-written document. Preserve every unknown game-written field and do not use this projection to replace an existing file:
+
+```json
+{
+  "playsets": [
+    {
+      "name": "probe_AB",
+      "isActive": true,
+      "orderedListMods": [
+        {"path": "C:/EU5Test/mod/probe_a/", "isEnabled": true},
+        {"path": "C:/EU5Test/mod/probe_b/", "isEnabled": true}
+      ]
+    }
+  ]
+}
+```
+
+**V, contradictory weaker evidence.** Another inspected launcher maps EU5 to `content_load.json` and queries generic `launcher-v2.sqlite` playsets, but its introductory comment says official-launcher behavior was checked on CK3 1.20. Its EU5 mapping is insufficient to overrule the EU5-specific observation. This illustrates why a generic Paradox manager is not a loading oracle. [Generic launcher source, commit 1181389419caa9c3720eaf10f6d3bd5574c9916b](https://github.com/Adromedary/Adromedary-s-Paradoxical-Launcher/blob/1181389419caa9c3720eaf10f6d3bd5574c9916b/launcher.py)
+
+**P.** Resolve persistence with this reproducible Windows experiment before implementing import/export:
+
+1. In a disposable game user profile, snapshot file names, hashes, sizes, modification times, and SQLite table schemas under the EU5 user-data directory and relevant application-data directory. Snapshot while the game is closed.
+2. Launch the pinned EU5 build; create playset `probe_AB` with two tiny local mods A then B; Apply; exit cleanly; capture the second snapshot.
+3. Reverse A/B; Apply; exit; diff again. Then disable B, change active playset, and repeat as independent operations.
+4. Inspect only changed JSON/SQLite/text files. Identify whether a file stores the complete playset database or just the next-launch projection; test stale/missing projection recovery.
+5. Correlate every ordering position with an observable exact-path collision. Capture path redirection, metadata ID, and Workshop ID separately.
+6. Implement a read-only versioned adapter first. Export through the game UI until transactional writes and crash recovery are verified. Back up and preserve all unrelated DLC and UI state fields.
+
+### File families, names, and encoding
+
+**P.** Dispatch by both content family and location. A `.txt` extension alone cannot establish database semantics. Suggested handlers are script/CST, GUI/CST, localization, JSON metadata, CSV/map tables, and opaque binary assets. Detect files using signatures plus extension; never decode every installed mod file as script.
+
+| Family | Treatment for the engine |
+|---|---|
+| Script `.txt` | Lossless parsing; semantic adapter chosen by the real directory and game build. |
+| GUI `.gui`, graphical descriptor formats | Dedicated grammar extensions; index named GUI types, templates, widgets, constants and data bindings. |
+| Localization `.yml` | Dedicated Paradox localization parser; preserve language headers, optional entry versions, quoting, interpolation and BOM. Do not apply ordinary YAML semantics automatically. |
+| `.metadata/metadata.json` | JSON parser with unknown-field retention; do not parse as Paradox script. |
+| Tables/map definitions | Handler per inspected file; delimiters, headers and ordering are data contracts. |
+| Texture/mesh/audio/font binaries | Hash and resource-reference analysis first; copying or choosing one version is distinct from merging content. |
+| Unknown file types | Preserve and report unsupported analysis; no automatic rewrite. |
+
+**D.** Setup has a documented encoding exception: `setup/countries` and `setup/templates` use UTF-8 with BOM, whereas `setup/start` requires UTF-8 without BOM. Setup templates are identified by filename and referenced with `include`, so renaming files can change semantics. Most start managers append entries, with whole-file replacement sometimes needed for removal; creation dependencies can require dynasties before characters and referenced parents before children. `-leavepops` bypasses initialization adjustments to populations for diagnostic work. These are documented, not retested on 1.4.4 here. [EU5 Wiki: Setup modding](https://eu5.paradoxwikis.com/Setup_modding)
+
+**P.** Therefore reject a blanket “write BOM to all files” policy. Keep exact source bytes, detected codec, BOM, newline style and decoding diagnostics. Default new output according to a versioned family policy. Invalid bytes may be indexed as opaque data while blocking repair. Preserve filename extensions and any semantic basename; a generated `zz_` filename can affect discovery/ordering and is not a universal compatibility technique.
+
+
+### Directory purposes for indexing
+
+The physical inventory and example tree above identify locations; the table below describes the **proposed analyzer adapters** for those families. It does not assert one universal loader across all of them.
+
+| Directory family | Contents and analyzer purpose |
+|---|---|
+| `.metadata/` | Package identity, declared compatibility, dependencies and presentation metadata; JSON adapter. |
+| `loading_screen/common/defines/` | Global engine constants; category/key adapter. |
+| `in_game/common/` | Database definitions and scripted behavior; dispatch by actual subdirectory, such as `building_types`, `goods`, `laws`, `on_action`. |
+| Scripted effects/triggers/values/lists | Reusable code and calculations; index definitions, calls, parameters, scope requirements and variable use. |
+| `main_menu/common/` | Shared/pre-game definitions including static modifiers, concepts and UI-related content; retain its stage identity. |
+| `in_game/events/` | Namespaced event declarations, repeated options and file-local helpers. |
+| `setup/start`, `setup/countries`, `setup/templates` | Initial-world managers, country data and included templates; separate encoding and ordering adapters. |
+| `localization/<language>/` | Language-key strings, embedded references and replacement-tier metadata. |
+| `gui/` | Types, templates, widgets, constants, inheritance and data bindings; dedicated grammar. |
+| `gfx/` | Asset declarations and payloads; index path consumers and metadata, preserve opaque bytes. |
+| `map_data/` and unfamiliar data folders | Topology/geography or other family-specific data; inspect real format before assigning semantics. |
+| `dlc/` in vanilla | Additional installed resources; keep DLC source manifests and enabled state separate from base game. |
+
+## 2. EU5 language and semantics
+
+### A real EU5 example and its implications
+
+This short, incomplete excerpt is from the official diary's `flavor_pol.51` event example; the omission marker is added here. [Official example](https://forum.paradoxplaza.com/forum/developer-diary/tinto-talks-85-22nd-of-october-modding.1864004/).
+
+```text
+flavor_pol.51 = {
+    type = country_event
+    title = flavor_pol.51.title
+    # ... other fields omitted ...
+}
+```
+
+The identifier belongs to an event namespace, `type` establishes its execution context, and `title` names a localization key. The complete official example demonstrates repeated `option` entries, dated `dynamic_historical_event`, conditionals, typed references, and runtime variables. Its commentary says events use on-actions/script/dynamic historical clauses rather than a `mean_time_to_happen` event timer. This does not ban MTTH-style mathematics in other contexts.
+
+**D — comparisons:** EU5 documents `<`, `<=`, `=`, `!=`, `>`, and `>=`. The meaning of `=` depends on context: definition, comparison, or command syntax. Legal operands and scopes depend on the trigger. Do not translate every `=` into assignment or every `!=` into a field modifier. [Trigger documentation](https://eu5.paradoxwikis.com/Trigger).
+
+**Illustrative, unexecuted event fixture:** this combines documented constructs but is not an official event or a game-validated file. The parser should keep the two options as separate ordered nodes, and the analyzer should resolve localization and effect references separately.
+
+```text
+namespace = compat_probe
+
+compat_probe.1 = {
+    type = country_event
+    title = compat_probe.1.title
+    desc = compat_probe.1.desc
+    orphan = yes
+    immediate = {
+        ruler ?= { save_scope_as = probe_ruler }
+    }
+    option = {
+        name = compat_probe.1.accept
+        if = {
+            limit = { gold >= 10 }
+            add_gold = -10
+        }
+    }
+    option = { name = compat_probe.1.decline }
+}
+```
+
+The event guide documents namespace-qualified integer IDs, inline file-local scripted declarations, and console-only `orphan` events. A copied event may depend on a file-local helper that a new file cannot see; moving its body is therefore not a purely syntactic operation. [Event structure](https://eu5.paradoxwikis.com/Event_modding).
+
+The counterpart localization fixture is also **illustrative**, with the BOM represented by the file's encoding rather than visible characters:
+
+```text
+l_english:
+ compat_probe.1.title:0 "Compatibility probe"
+ compat_probe.1.desc:0 "Inspect [probe_ruler.GetName]."
+ compat_probe.1.accept:0 "Proceed"
+ compat_probe.1.decline:0 "Decline"
+```
+
+These examples are fixtures for parsing and typed-reference analysis until exercised in the game. In particular, the UI behavior when no ruler exists needs its own test; a guard around saving a scope does not establish that a later localization expression can dereference it safely.
+
+### Porting assumptions to discard
+
+The official developer diary identifies EU5 as Jomini-based, and the differences below are anchored in EU5 evidence elsewhere in this report. Familiar syntax from another Paradox game is useful background, not a substitute for an EU5 contract.
+
+| Familiar assumption | EU5-specific engineering requirement |
+|---|---|
+| A legacy `.mod` descriptor and generic external-launcher database are sufficient | Discover `.metadata` and the game's playset state; retain legacy artifacts without assuming they register content. |
+| All familiar folders are at the mod root | Retain the three stage prefixes and identify each actual database's stage. |
+| A later duplicate ID always overrides | Use family-specific registration, operation scheduling, and duplicate behavior. |
+| `INJECT` means recursive object merge | Preserve its appended script and run the correct field reader. |
+| A country flag, runtime variable, file constant, and macro parameter are interchangeable | Track their different namespaces, owners, lifetimes and expansion rules. |
+| Event timing and helper visibility transfer unchanged | Analyze EU5 event structure, firing sources and file-local declarations. |
+| GUI is ordinary property data | Parse named heads, inherited types, blocks, templates and embedded binding expressions. |
+| All Paradox localization and filename precedence are interchangeable | Keep a separate EU5 localization parser and measured loader profile. |
+| Generic Jomini arithmetic can be normalized algebraically | Preserve sequential script-value formulas, fixed-point questions, scope state and macro expansion. |
+| A tool supports a related game, so it supports EU5 | Require actual EU5 modules, grammar tests, generated schema or corpus evidence. |
+
+The parser should preserve unknown tokens first, then diagnose their eligibility in the selected language/family. The core format is a family of data and executable DSLs, not one context-free grammar plus a universal dictionary merge.
+
+
+### Runtime language semantics
+
+
+The following facts were read directly from the EU5 wiki in a browser on the research date, overcoming the web fetcher's access errors. They are **documented EU5 semantics**, not independently executed conformance tests. The Scope page carries a pre-release verification banner; Variable carries a 1.0 banner. Treat current-build confirmation as a separate evidence level.
+
+**Scope and `?=`.** Effects and triggers operate on typed game objects; the containing script establishes a base accessible as `root`. Saved scopes use `scope:` links. Dot chains perform scope transitions, but do not necessarily preserve the same `PREV` as equivalent-looking nested blocks. `?=` is an existence-aware scope operator: in triggers it requires the left-hand scope to exist and satisfy the test; in effects it executes the body only when that scope exists. It does not automatically validate a missing right-hand scope in comparisons. Iterator prefixes distinguish `any_` trigger traversal from `every_`, `ordered_` and `random_` effect traversal. **Analyzer implication:** carry `(root, current, previous, saved-scope environment)` through every statement; do not desugar chains casually. [EU5 Scope documentation](https://eu5.paradoxwikis.com/Scope)
+
+**Runtime variables.** Regular variables are attached to an owning object and persist; global variables persist without an owning scope; local variables are temporary within the execution/event chain. Their reference forms are `var:`, `global_var:` and `local_var:`. Values can refer to objects as well as numerical/boolean data or localization keys. Lists and maps have related but distinct lifetime/storage rules. **Analyzer implication:** identify reads/writes together with lifetime and owner; equal variable names in different scopes are not automatically a conflict. [EU5 Variable documentation](https://eu5.paradoxwikis.com/Variable)
+
+**Macros and scripted declarations.** Reusable scripted effects/triggers live in their corresponding `common` directories; inline declarations in an event file are file-local and can clash with global names. Parameter names are case-sensitive. `$parameter$` substitution is textual and can appear inside names or inject quoted script fragments; it is not ordinary runtime argument evaluation. `@` values are intra-file macros. **Analyzer implication:** preserve original parameterized code, index call edges, and expand into an auxiliary bounded tree with call-site provenance. Never infer that `$...$` is always a localization reference. [EU5 Macro documentation](https://eu5.paradoxwikis.com/Macro)
+
+**Script values and constants are different languages.** Named or inline script values calculate numerical/boolean results, generally in the caller's scope. Formula statements execute in source order, without ordinary arithmetic precedence; nested values and conditionals can change the calculation. The wiki documents fixed-point precision of five decimals and warns of overflow. File-local `@` expressions instead represent constant arithmetic, support strings as constant values, and use normal arithmetic precedence inside `@[ ... ]`. **Analyzer implication:** retain evaluation order and a symbolic expression graph; model fixed-point arithmetic only after confirming rounding, division and overflow on the target build. Do not fold a game-state-dependent named value into a number. [EU5 Script value documentation](https://eu5.paradoxwikis.com/Script_value)
+
+**Variable maps are officially documented EU5 additions.** The developer's February 5, 2026 diary introduced ordinary/local/global variable maps for 1.1. They associate scopes with scopes, allow numerical or boolean values, replace the value at an existing key, and iterate in a fixed internal order rather than insertion order. Integer keys can emulate array indexing. The same diary introduced scripted geographies and new rule/alert definition families. Thus a source claiming that EU5 has no array-like structures, or assuming all collections retain insertion order, is obsolete or incomplete. [Official Tinto Talks Extra: Modding in 1.1 Rossbach](https://forum.paradoxplaza.com/forum/threads/tinto-talks-extra-modding-in-1-1-rossbach.1899358/)
+
+An **illustrative, unexecuted** script-value fixture for order preservation:
+
+```text
+research_probe_value = {
+    value = 2
+    add = 3
+    multiply = 4
+}
+```
+
+The documented sequential interpretation yields 20. Sorting the properties or treating the block as an unordered arithmetic object changes the program. The fixture becomes EU5 conformance evidence only after a real call site in a verified game-valid context observes that result.
+
+Recommended semantic layers for the engine:
+
+1. **Syntax:** recognize a possible invocation, reference, comparison or scope head without deciding the command's meaning.
+2. **Name binding:** distinguish built-ins from scripted declarations; resolve file-local names before or alongside global names according to observed rules. Record ambiguity rather than choosing by name alone.
+3. **Type/scope checking:** import supported inputs, outputs and traits from the installed build's generated script docs; retain open-world extension points.
+4. **Control-flow/effect analysis:** model ordered execution, condition branches, loops, scope changes, saved scopes and variable lifetimes conservatively. A call may have side effects even if its spelling resembles data.
+5. **Repair proof obligations:** a changed scripted value must preserve unaffected dependencies, a moved effect must preserve execution order and `PREV`, and a renamed macro must update all statically resolved references plus flag dynamic call sites.
+
+A parser can establish brace structure and exact text identity. It cannot, on its own, prove that a scripted effect is valid in the current scope, a trigger's condition is reachable, a random branch preserves balance, or a mod's intended gameplay survives a rewrite. Those require progressively stronger schema, data-flow, runtime and human-design evidence.
+
+## 3. Parser design and lossless rewriting
+
+### Syntax that the front end must represent
+
+
+The stable core is an ordered sequence of statements with nested brace blocks, scalar values, optional operators, and comments. EU5-specific tools represent repeated keys as sequences and support more than dictionary-shaped data. The inspected [Go node model](https://github.com/kaiser-chris/pdx-parser-go/blob/dda99719d41c07da2b7fec4739fb209a7469df33/script/node.go) explicitly includes bare list items, fields, tagged blocks, dates and keyword-prefixed definitions. The [Paradoxical grammar](https://github.com/zgavin/paradoxical/blob/798edba0ea92a1306f01393b2e8bf7f5ad9342b2/ext/paradoxical/src/script.pest) additionally models GUI heads, mixed blocks and `code [[...]]` bodies. **These are implementation observations; validate construct acceptance by file family.**
+
+Use a broad structural grammar first, followed by loader-specific semantic interpretation. Do not reject an entire mod because an unfamiliar atom or statement appears. Conversely, preserving unknown syntax is not permission to rewrite its meaning.
+
+An illustrative front-end grammar, deliberately broader than a verified EU5 language specification:
+
+```ebnf
+document  = trivia*, item* ;
+item      = statement | bare_value | opaque_extension | error_node ;
+statement = head, [ operator, value ] ;
+head      = atom | quoted_atom | keyword_head | compound_head ;
+value     = scalar | block | tagged_block | opaque_extension ;
+block     = "{", (trivia | item)*, "}" ;
+operator  = "=" | "==" | "!=" | "<" | "<=" | ">" | ">=" | "?=" ;
+```
+
+`keyword_head` covers constructs such as an inline scripted declaration and a GUI type declaration; it must retain its constituent tokens rather than flattening them into one definition ID. `opaque_extension` is a recovery/preservation escape hatch, not a claimed game keyword.
+
+| Construct | Front-end treatment | Semantic caution |
+|---|---|---|
+| `a = b`, `a >= 2` | Preserve exact operator token and operands | `=` can define data, express equality, or invoke script according to context; it is not universally imperative assignment. |
+| `?=` and `==` | Longest-match lexing; test both spaced and adjacent forms | Parser support alone does not establish availability or exact behavior in every EU5 script context. |
+| `{ key = value key = other }` | Two ordered property nodes | Never reduce to one mapping entry. Consumer may accumulate, ignore, replace, or reject duplicates. |
+| `{ a b c }` | Three ordered bare values | A block is not necessarily a map or a set. |
+| `{ a = 1 b }` | Mixed ordered items | Flag if a particular schema forbids mixing; do not make global grammar assumptions. |
+| `rgb { ... }`, `hsv360 { ... }` | Tagged block retaining tag and values | Validate component count/range by construct; do not round or normalize source numbers. |
+| `scripted_trigger name = { ... }` | Declaration-head node | Namespace and visibility can be file-local; global name indexing alone is inadequate. |
+| `type name = base_type { ... }` | GUI head with type/name/base | GUI has a separate grammar and dependency model; do not parse it as ordinary key/value only. |
+| `INJECT:name = { ... }` | Raw key plus optional recognized operation prefix | Only recognized database modes at the appropriate top level become operations. A colon elsewhere is often a reference prefix. |
+| `@constant`, `@[ ... ]`, `$PARAM$` | Preserve reference/expression spans | Compile-time variables/macros and runtime game variables are different systems. Expansion can change syntax. |
+| `[SomeFunction(...)]` in a quoted string | String plus optional embedded-language index | Do not evaluate UI/localization expressions as Python, JavaScript, or shell code. |
+| `1337.4.1`, `-2.50`, `yes`, `country:...` | Raw scalar and a non-destructive classification | Do not convert dates to decimal floats or assume every dotted atom is a date. |
+
+All examples in the table are **illustrative parser inputs**, not a promise that arbitrary combinations are valid game content.
+
+### Lexing, encoding and losslessness
+
+**Proposed implementation:** write a deterministic byte-oriented scanner plus recursive-descent parser in Python. Syntax delimiters are ASCII; retain the original bytes, explicit encoding decision, BOM state, newline convention, and a decoded character/UTF-16 position map for the UI. Decode UTF-8 strictly first, accept a UTF-8 BOM without discarding its provenance, detect UTF-16/32 signatures and report unsupported families instead of guessing. A mod containing invalid bytes remains inspectable as raw bytes but is ineligible for automatic semantic rewriting. Encoding requirements must be attached to the file-family/build profile; “all EU5 text requires BOM” is too broad to establish from a tool's writer policy.
+
+Lex with maximal munch for operators. At a bare-atom boundary, test operators at the current position, including `!` and `?`; otherwise `x!=1` can become identifier `x!` followed by `=`. Preserve leading signs in numeric-looking atoms; retain suffixes and precision. Use `Decimal` in derived numerical views; prohibit float-based rewrite formatting. A constant expression is an expression node, not an eagerly rounded number.
+
+The scanner needs modes for ordinary script, quoted strings, comments, bracket expressions and specialized template bodies. In a string, a `#` does not start a comment and braces do not change nesting depth. Preserve escape spelling without adopting JSON's escape table: a raw `\n`, an actual newline and a backslash-path must not silently become interchangeable. Keep unknown escape sequences verbatim. Test quote termination using the parity of immediately preceding backslashes. Recognize `#` comments in the core; treat `//` support as a file-family/corpus question, because [Paradoxical explicitly models it for some EU5 defines](https://github.com/zgavin/paradoxical/blob/798edba0ea92a1306f01393b2e8bf7f5ad9342b2/ext/paradoxical/src/script.pest), which does not prove universal acceptance.
+
+Unicode normalization belongs in search indexes only. Do not NFC-normalize original identifiers, localization values or paths during serialization. Keep case-sensitive source identifiers distinct from Windows path-comparison keys. For UTF-8, byte offsets, Python character offsets, UTF-16 editor columns and displayed columns differ; make the conversion explicit and test non-ASCII prefixes before an edit location.
+
+### Why a lossless CST is the appropriate authority
+
+Use a **lossless concrete syntax tree backed by immutable source bytes**, with a derived semantic IR. A conventional AST is useful for comparison and reference analysis but loses enough information to make automated rewriting hazardous. Its normalized scalar values cannot reproduce quote style, comments, BOM, `1.0` versus `1`, repeated fields, or a malformed unknown region. Round-trip requirements are:
+
+1. Parsing and serializing an untouched document returns exactly the original bytes, including malformed documents.
+2. A targeted edit changes only its declared byte ranges; untouched ranges remain byte-identical.
+3. A generated new file is deterministic under one declared style policy.
+4. A semantic view never mutates the CST implicitly.
+5. Comparison fingerprints are labeled: raw hash, syntax hash, structural hash and effective semantic hash are different values.
+
+Do not attach all comments permanently to the following property. A trailing comment, section heading and commented-out property require different editing behavior. Store comments as independent trivia tokens in the token stream, then calculate edit attachment ranges using explicit policy. Deletion of a node should preserve uncertain adjacent comments and present the ambiguity for review.
+
+The following model is **proposed Python architecture**, not code copied from an existing parser:
+
+```python
+from dataclasses import dataclass
+from typing import Literal
+
+@dataclass(frozen=True)
+class Span:
+    start_byte: int
+    end_byte: int                     # half-open
+
+@dataclass(frozen=True)
+class Token:
+    kind: str
+    span: Span                       # raw bytes remain in SourceDocument
+
+@dataclass(frozen=True)
+class Node:
+    node_id: str                     # stable only within a snapshot
+    kind: str                        # property, value, block, GUI head, error...
+    span: Span
+    token_start: int
+    token_end: int
+    children: tuple['Node', ...]      # ordered; repeated keys remain repeated
+
+@dataclass(frozen=True)
+class SourceDocument:
+    source_id: str
+    sha256: str
+    raw: bytes
+    encoding: str
+    bom: bytes
+    newline_policy: str
+    tokens: tuple[Token, ...]
+    root: Node
+    diagnostics: tuple['Diagnostic', ...]
+
+@dataclass(frozen=True)
+class SymbolKey:
+    phase: str
+    family: str
+    namespace: str | None
+    identifier: str
+
+@dataclass(frozen=True)
+class Reference:
+    source: SymbolKey
+    use_span: Span
+    target_type: str
+    expression: str
+    certainty: Literal['literal', 'expanded', 'dynamic', 'unknown']
+
+@dataclass(frozen=True)
+class Edit:
+    span: Span
+    expected_old_sha256: str
+    replacement: bytes
+    reason_id: str
+```
+
+Use a document hash plus node span/structural signature as an optimistic concurrency precondition. A node ID should not authorize an edit after the source changes. For occurrence selection, use a key plus ordinal or stable parent identity; a path like `definition.effect.add_gold` is ambiguous when `add_gold` appears twice.
+
+Proposed API:
+
+```python
+doc = parser.parse_bytes(raw, source_id, dialect='eu5-script', recover=True)
+assert parser.serialize_original(doc) == raw
+view = semantics.lower(doc, loader_profile, script_docs_snapshot)
+refs = index.references(view, include_dynamic=True)
+plan = editor.plan(doc, operations, expected_document_hash=doc.sha256)
+preview = editor.apply_in_memory(doc, plan)
+result = validators.validate(preview, baseline=doc, policy=repair_policy)
+# filesystem transaction occurs only after all applicable checks pass
+```
+
+Recommended structured edit operations include `ReplaceScalar`, `InsertStatementBefore`, `ReplaceDefinitionBody`, `AppendOccurrence`, and `RemoveOccurrence`; each carries provenance, a precondition and an allowed effect set. Avoid an unrestricted “set key” API.
+
+### Error recovery and incremental work
+
+Recovery must retain evidence, not fabricate a clean file. Emit explicit `ErrorNode`/`MissingToken` objects for unterminated strings, missing braces, malformed heads, unexpected closing braces and partial operators. Resynchronize cautiously at brace depth and a recognized statement boundary. Newline is a useful heuristic, not a universal statement delimiter. A missing quote can otherwise consume a whole file and falsely erase every subsequent definition.
+
+Enforce byte-size, token-count, nesting-depth and expansion limits. Mark recovered regions ineligible for automated rewriting unless an explicitly reviewed syntax repair is the requested operation. Keep an editable user-facing diagnostic at the earliest certain location and related locations for the likely matching opener. Do not present a lenient parser's recovered output as proof that the game accepts the original.
+
+Start with whole-file parsing cached by `(raw_hash, parser_version, dialect_profile_hash)`. EU5 mod files are a much more natural invalidation boundary than arbitrary subtrees; benchmark before building a full incremental parser. Reindex only changed documents and reverse dependency closures. If necessary later, use a piece table/rope and incremental token windows bounded by lexer-state checkpoints. An edit inside a string, template or comment can invalidate everything until the next reliable state boundary.
+
+SQLite should index source snapshots, physical files, canonical virtual paths, definition occurrences, operations, references, diagnostics and evidence. Store the lossless bytes in a content-addressed blob store and keep database transactions small. A schema-derived semantic index should record its game build, DLC set, docs dump and rule revision; inferred references must not masquerade as literal resolved references.
+
+## 4. Loading and conflict semantics
+
+### Keep the two loading stages separate
+
+**D — compact documented rules.** At identical relative paths, a mod shadows base/DLC content; lower playlist mods win over higher ones. Remaining files are enumerated in ASCII filename order, with parent-directory files before descendants. Database modes are then grouped by operation before filename order:
+
+```text
+INJECT_OR_CREATE → REPLACE_OR_CREATE → TRY_INJECT → TRY_REPLACE → INJECT → REPLACE
+```
+
+Injection appends top-level script, without recursive merging. Existing trigger/effect subblocks may reject an appended counterpart; injection into a scripted effect/trigger behaves as replacement. GUI type/template duplicates use playlist precedence, independent of filenames. The compatibility page leaves its supported-folder list unfinished. These are documented rules, not a certified 1.4.4 profile. [EU5 compatibility rules](https://eu5.paradoxwikis.com/Mod_compatibility).
+
+**P — implementation consequence:** construct a virtual filesystem first, preserving every shadowed candidate. Only effective files participate in active-load simulation. Parse and index shadowed source files separately for baseline diffs, author-intent recovery and whole-file-loss explanations. Then dispatch each effective document to its family loader. Do not iterate mod A, apply all its objects, then mod B: that ordering cannot express operation batching, cross-mod filename enumeration, and family exceptions independently.
+
+The path resolver and database loader answer different questions:
+
+1. Which physical file supplies `in_game/common/goods/example.txt`?
+2. In what sequence are surviving goods documents read?
+3. Which definitions and operation records are extracted?
+4. How do those records build a definition's ordered body?
+5. How does that definition type interpret repeated fields?
+
+Represent answers 4 and 5 separately. An appended `modifier = {...}` block can survive structurally while being ignored by a type-specific reader. A simulator that reports only the concatenated script as the effective object would miss that loss.
+
+### Database modes: contract and failure behavior
+
+**V/D — official mode meanings:** the official modding diary introduces six modes for many database objects. The strict variants report a missing target; `TRY_` variants tolerate it; `_OR_CREATE` variants create it. At release, setup and on-actions were excluded from these modes. [Tinto Talks #85, 22 October 2025](https://forum.paradoxplaza.com/forum/developer-diary/tinto-talks-85-22nd-of-october-modding.1864004/).
+
+| Mode | Target exists | Target absent |
+|---|---|---|
+| `INJECT:id` | Append script | Error |
+| `REPLACE:id` | Replace body | Error |
+| `TRY_INJECT:id` | Append script | Tolerated; verify no-op details |
+| `TRY_REPLACE:id` | Replace body | Tolerated; verify no-op details |
+| `INJECT_OR_CREATE:id` | Append script | Create |
+| `REPLACE_OR_CREATE:id` | Replace body | Create |
+
+**P — proposed operation representation:** extract a mode only from a recognized top-level definition key in a mode-enabled family. Store both `raw_key` and `definition_id`. A colon elsewhere can identify a scope or typed reference. Do not strip arbitrary prefixes, recognize directives inside strings, or accept nested `INJECT:` as an instruction to the engine.
+
+```text
+OperationRecord(
+  family, layer, definition_id, mode, body_cst,
+  source_mod, relative_path, ordinal_in_file,
+  vfs_rank, family_enumeration_rank, source_span,
+  profile_id, evidence_ids
+)
+```
+
+**Illustrative ordering probe — fields below belong to a synthetic contract database, not an asserted EU5 database:**
+
+```text
+# Vanilla: 00_base.txt
+sample = { price = 10 tags = { base } }
+
+# A: 99_injection.txt
+INJECT:sample = { tags = { a } }
+
+# B: 01_replacement.txt
+REPLACE:sample = { price = 20 tags = { b } }
+```
+
+Under the documented batching profile, B's replacement removes A's contribution even though A's filename is later. Under a naive sequential filename profile, the outcome differs. A compatibility patch named `zz_patch.txt` cannot solve all order problems by its name alone. The application must simulate the emitted patch together with the entire stack, including operations that occur after its operation class.
+
+### Repeated fields are interpreted by their reader
+
+**V — first-hand community observations, not a general engine guarantee:** the Standard of Living mod project's knowledge brief reports additive static-modifier numbers but replacement of repeated scalar resource fields in prices. It describes an attempted negative price injection becoming authoritative and clamping costs to zero. This is useful evidence that numeric type alone cannot determine merge algebra; reproduce these observations on the target build. [SOL implementation notes](https://github.com/HLJSXK/eu5-modding-project/blob/main/docs/knowledge/BRIEF.md).
+
+**P — field policy examples:** `scalar_last`, `scalar_first`, `numeric_sum`, `append_occurrences`, `unique_set`, `ordered_commands`, `single_block_only`, `named_members`, and `unknown`. Every policy needs a family/path selector, exact version scope, source evidence, and conformance fixture. These names describe your simulator, not engine keywords.
+
+For numeric fields, use exact decimal or a confirmed fixed-point model. Never automatically interpret A's change from 10 to 12 as an additive `+2`: the author may intend an absolute cap, ratio, threshold, or rebalancing target. An identical injection may intentionally be applied twice; deduplicating it can change the result. Identical file bytes, identical definitions, and identical **operations** have different implications.
+
+### Exceptions that need distinct adapters
+
+| Family | Evidence-backed behavior and limitations | Adapter recommendation (P) |
+|---|---|---|
+| Events | Documentation describes selecting the earliest duplicate ID and using an earlier file to override an individual event; database modes are not the mechanism. Inline scripted helpers belong to their event file. The documented workaround emits duplicate-ID diagnostics. [Event modding](https://eu5.paradoxwikis.com/Event_modding) | Track namespace declarations and file-local helpers. Never move an event without its helper closure. Test parent/subfolder ordering and duplicate registration on each build. |
+| Defines | Individual values within `N...` categories can be overridden in a later file; the last loaded filename decides a duplicate define. They are static and global. Page marked verified 1.3. [Defines](https://eu5.paradoxwikis.com/Defines) | Index by `(category, define_name)`, preserve unmodified defines, and validate names/types against the installation. |
+| On-actions | Dedicated documentation recommends extending a built-in hook with a uniquely named `on_actions` callback and warns that adding other blocks errors. The broader compatibility page describes more additive fields. This discrepancy remains unresolved. [On-action modding](https://eu5.paradoxwikis.com/On_action) | Auto-compose only callback registration after conformance. Treat changes to trigger/effect/events/random blocks as requiring a verified profile. Detect callback cycles and accidental double registration. |
+| Localization | `.yml`, UTF-8 BOM, `_l_<language>.yml`, language header; optional revision number. Documentation describes reverse filename processing and special `language/replace/` key overrides. It includes 1.0-era material. [Localization](https://eu5.paradoxwikis.com/Localization) | Separate parser and precedence model. Preserve language, key, revision, raw string, occurrence, replacement tier. Test duplicate ordinary and replacement keys separately. |
+| GUI | Types/templates and whole-file collisions are separate namespaces; `types` containers do not themselves define override identity (see compact loading rules above). | Parse named headers, inheritance, `using`, blocks, top-level widget `name`, constants, and embedded binding strings; do not merge widgets solely by block label. |
+| Setup | Official release diary excludes database modes; additive content exists, but manager-specific behavior matters. | Partition by setup manager and initialization phase; preserve unknown managers. Do not transform setup as a database of arbitrary top-level keys. |
+| Binary assets | Whole-path selection is useful; a script merge cannot combine two texture payloads. | Hash, classify metadata, record consumers. Equal hashes are harmless shadowing; unequal content requires an asset-specific decision or tool. |
+
+For GUI maintenance, the community toolkit's actual GUI updater tracks types, templates, named top-level widgets, and referenced file constants for three-way updates. It explicitly handles the loss of unrelated top-level content caused by whole-file overrides. This is relevant prior art for object identity and preservation checks. [Community toolkit GUI update documentation](https://github.com/Europa-Universalis-5-Modding-Co-op/community-mod-toolkit/wiki/GUI-Update-Tool).
+
+**H:** no comprehensive current public table was established for every definition family, localization replacement-tier tie-break, DLC precedence, non-ASCII file order, case-only paths, duplicate bare definitions, or setup manager. A community EU5 mod reports later bare definitions being rejected with a duplicate-key diagnostic; do not replace that with the EU4 assumption that a duplicate automatically overrides. [Towards Victory author notes](https://github.com/HLJSXK/eu5-towards-victory/blob/main/docs/technical/EU5_Modding_Knowledge_Base.md).
+
+### Conflict classification: distinguish evidence, impact, and resolution
+
+**P — classification should be multi-dimensional.** A single severity score loses information. Record `category`, `certainty`, `runtime_effect`, `lost_intents`, `order_sensitive`, `repairability`, and `coverage`. A resolved loader result can still represent an unresolved design conflict.
+
+| Category requested | Detectable condition | What the software can conclude | Repair policy |
+|---|---|---|---|
+| 1. Confirmed incompatibility | Parse failure; required mod absent; verified target deleted; incompatible versions of one dependency; two desired scalar assignments cannot both hold; known reader drops a required contribution | State the exact contradiction or lost contribution. Distinguish confirmed static failure from confirmed engine behavior | Fix mechanically only if a preservation contract determines the answer; otherwise ask a concrete design choice |
+| 2. Potential incompatibility | Unknown reader, reflective reference, same GUI region, nested edits with unclear identity, overlapping initialization writes | Needs analysis or conformance, not proof of breakage | Investigate closure, inspect actual baseline, run minimal experiment; keep original files |
+| 3. Compatible overlap | Same replacement result; disjoint field edits with known semantics; independent callback registrations after conformance | Structural compatibility under the stated profile; gameplay still unproven | No patch when original stack already preserves all intents; otherwise emit a verified composition |
+| 4. Load-order-dependent | Allowed order permutations produce different definitions or file winners | Show both outcomes and which contribution disappears; dependency constraints may eliminate some permutations | Recommend an order only if it satisfies every declared intent. A winning mod is not automatically a repaired conflict |
+| 5. Semantic/gameplay conflict | Compatible scripts collectively double economic growth, contradict progression rules, alter timing or UI accessibility | Static checks can flag shared reads/writes and changed metrics, but cannot decide intended balance reliably | Present evidence and alternatives; user selects the design objective, then agent implements and validates |
+
+Additional useful subtypes: exact-path shadowing; definition replacement; duplicate creation; scalar disagreement; nested replacement; ordered-sequence collision; callback double execution; deletion/use; scope mismatch; missing localization; stale GUI binding; asset mismatch; metadata/dependency cycle; stale repair; platform-path collision; runtime-only failure; incomplete-analysis coverage.
+
+Construct candidates using a hypergraph: files, definitions, operations, references, callbacks, GUI identities and intent predicates are vertices; shared dependencies and overlapping writes create edges. Find connected conflict components after building the full graph. Pairwise checks alone miss A+B+C interactions, chains of deleted references, and a patch that removes another patch's operation.
+
+### Preservation is a contract, not a slogan
+
+The requirement to preserve complete mod functionality cannot be guaranteed for arbitrary mods. It can be operationalized:
+
+1. Capture each mod's changes against its exact upstream base, including deletions, ordering and repeated occurrences.
+2. Express those changes as intent predicates where possible: “callback still reachable once,” “option X remains selectable,” “A's icon still referenced,” “B's independent field retained.”
+3. Keep the rest as explicitly unproven behavioral obligations.
+4. Reject any automatic patch that drops or contradicts a predicate.
+5. For contradictory predicates, retain the conflict and ask the user to choose; never quietly disable a feature to make validation pass.
+
+Preserving the **loaded winner** is weaker than preserving author intent. Preserve complete original input snapshots and a machine-readable explanation of shadowed and ignored content so that the difference is inspectable.
+
+
+### Loader stages and their provenance
+
+```mermaid
+flowchart TD
+  Roots[Base DLC user overlays and ordered mods] --> Candidates[All virtual path candidates]
+  Candidates --> VFS[Profile controlled file shadows and path masks]
+  VFS --> Families[Stage and loader family streams]
+  Families --> Files[Family specific file enumeration]
+  Files --> Ops[Definition operations and source occurrences]
+  Ops --> Schedule[Family specific registration and mode schedule]
+  Schedule --> Bodies[Ordered effective bodies]
+  Bodies --> Readers[Typed field readers]
+  Readers --> Config[Predicted effective values with confidence]
+  Candidates --> Hidden[Hidden sources retained for intent analysis]
+  Hidden --> Loss[Preservation and lost contribution assessment]
+  Config --> Loss
+```
+
+This is the proposed simulator decomposition. Every arrow carries provenance and a profile/evidence identifier; undocumented transitions retain unknown results instead of inventing a winner.
+
+## 5. Effective load-order simulator
+
+
+The simulator should be an event-sourced interpreter of loading operations. Its output is an effective configuration **plus an explanation graph**. Every surviving property and every suppressed contribution needs a trace back to its mod, file, original byte span, operation, and rule. Losing operations matter: an apparently clean final configuration may have discarded most of another mod.
+
+Use a layered identity such as `(flow_layer, database_kind, definition_id)`, with namespaces and type-specific identity rules. A name shared by a good, modifier, and localization key is not a duplicate definition. Index file identity separately from definition identity. The same definition can appear in several surviving files, whereas two colliding files may cause the lower-precedence file never to be parsed by the game.
+
+Represent four graphs rather than one overloaded dependency graph:
+
+1. **Package graph:** declared required/optional mods, versions, DLC, ordering constraints, and actual enabled state.
+2. **Definition graph:** typed references among objects, scripted effects, triggers, events, values, GUI symbols, and assets.
+3. **Operation graph:** creates, injections, replacements, path masks, file shadows, and contributions that depend on an earlier target.
+4. **Behavior graph:** effect calls, on-action subscriptions, scope flow, variable reads/writes, and user-supplied behavioral assertions.
+
+Store unresolved references with reasons: missing symbol, wrong kind, dynamic expression, unavailable content, unknown scope, or unsupported grammar. A dynamic string that might form a definition ID is not a confirmed missing reference. Reachability should be conservative: an unreferenced definition can be invoked by hardcoded game code or an unmodeled GUI entry point.
+
+### Rule profiles
+
+Profiles need more precision than `EU5=true`. Include executable/content fingerprints, DLC manifests, supported file globs, flow layers, path normalization, exact-file precedence, file traversal, definition identity, entry-mode scheduling, field readers, multiplicity, and the evidence for each rule. A field reader might consume the first scalar, last scalar, accumulated modifiers, a list of blocks, or an executable sequence. Its result cannot be obtained by generic recursive dictionary merging.
+
+```json
+{
+  "profile_id": "eu5-observed-build-EXAMPLE",
+  "game_build": {"version": "captured-at-runtime", "exe_sha256": "..."},
+  "rules": [{
+    "id": "database-entry-schedule",
+    "status": "documented_unconfirmed_on_build",
+    "applies_to": ["explicitly-enumerated-database-kinds"],
+    "schedule": ["create", "inject_or_create", "replace_or_create",
+                 "try_inject", "try_replace", "inject", "replace"],
+    "within_mode": "profile-specific-file-and-entry-order",
+    "evidence": ["source-or-experiment-id"],
+    "unknowns": ["cross-layer sharing", "equal-path ties"]
+  }]
+}
+```
+
+The `create` phase in this illustrative profile is an implementation placeholder that must be established empirically; documentation of the six prefixed modes does not by itself prove precisely where every bare definition is scheduled. Profile unknowns must remain explicit. Do not let a sample JSON file accidentally become the authoritative default game specification.
+
+### Simulator pseudocode
+
+```text
+simulate(snapshot, profile):
+    assert hashes_still_match(snapshot)
+    packages = resolve_identity_and_enabled_packages(snapshot)
+    findings += validate_dependencies_and_order_constraints(packages)
+    candidates = inventory_bytes(packages, vanilla, dlc, user_overlay)
+    findings += validate_windows_paths(candidates)
+
+    # Complete these phases before database interpretation.
+    vfs, shadows, masks = resolve_virtual_files(
+        candidates, profile.file_and_mask_rules)
+    streams = partition_by_flow_layer_and_loader_kind(vfs, profile)
+
+    for stream in streams:
+        if stream.rule_is_unknown:
+            emit_symbolic_operations_and_needs_runtime_finding(stream)
+            continue
+        files = order_files(stream, profile.traversal_rule)
+        operations = parse_and_extract(files, profile.grammar_for(stream))
+        ordered = schedule(operations, profile.loader_for(stream))
+        for operation in ordered:
+            before = state.lookup(operation.identity)
+            transition = profile.apply_operation(before, operation)
+            state.record(transition, including_ignored_or_failed_operations=True)
+        materialize_field_views_without_discarding_raw_occurrences(state, profile)
+
+    refs = resolve_typed_references(state, vanilla_and_hardcoded_symbols)
+    findings += classify_conflicts(state, shadows, masks, refs, packages)
+    return EffectiveConfiguration(state, findings, provenance_graph)
+```
+
+The relative placement of replacement paths and file overlays is intentionally delegated to the profile: a guessed universal order can erase another mod's file incorrectly. The pseudocode names stages but is not proof of their engine order. Likewise, compare within-mode filename sorting separately from mod priority, and preserve order inside a file. Use stable, explicit sort keys rather than the host filesystem's enumeration order.
+
+When a rule is unknown, retain symbolic alternatives such as `UnknownValue(reason, contributing_operations, candidate_values)` and report the affected definitions. Do not compute a confident scalar using an unverified fallback. Avoid enumerating every possible permutation: maintain uncertainty dependencies, so an unrelated known database remains analyzable even when a GUI rule is unknown.
+
+Maintain both the game's predicted result and a **preservation assessment**. “Game selects B” explains loading; it does not mean that B is a compatibility repair for A. A deterministic conflict detector should distinguish invalid input, silent shadowing, order sensitivity, compatible overlap, unresolved semantic risk, and intentional user-approved policy choices.
+
+### SQLite and service boundary
+
+Suggested tables are `scan_snapshot`, `package`, `file_blob`, `virtual_file_candidate`, `parse_document`, `definition_operation`, `effective_definition`, `reference`, `rule_evidence`, `finding`, `repair_plan`, `behavior_assertion`, and `validation_run`. Store original bytes in a content-addressed blob directory; keep hashes and spans in SQLite. Pin all derived rows to a scan/profile/parser version. Publish a completed scan transactionally so React never mixes old effective definitions with new findings.
+
+Use FastAPI to expose scan jobs, graph queries, definition provenance, repair plans, and validation evidence. Send progress events to React, but keep long scans and game launches in workers. TypeScript types should be generated from the same structured schemas used to validate Python responses. A Windows worker owns Windows path discovery and game execution; a Mac development worker can run contract scans on fixtures without mimicking Windows by relying on native path behavior.
+
+## 6. Automated merging and AI repair
+
+
+### Recover actual intent before merging
+
+For copied overrides, compare each mod against the exact baseline version it was authored against when that baseline is available. Compute `delta_A = diff(V_author_A, A)` and `delta_B = diff(V_author_B, B)`. A current vanilla file is not automatically a valid common ancestor: using it can misclassify old vanilla content copied by a mod as intentional reversions. If the historical base is missing, mark intent uncertain and ask the agent to investigate source history or author notes; preserve the uncertainty if it cannot be resolved.
+
+Three-way merging should operate on definitions and schema-typed fields, with textual fallback for opaque regions. Disjoint scalar changes may commute, while two modifications in the same definition can still interact through scope, a condition, a threshold, or a called effect. Treat a repeated-key sequence as a sequence until a type rule proves set or map semantics. Do not alphabetize effects, options, GUI children, or duplicate blocks. Do not sum numeric disagreements by default: `5` and `7` might be competing targets, additive deltas, or multipliers.
+
+An automatic merge is justified only if it has an explicit rule and preservation assertions. Useful automatic cases include identical bytes, identical semantic changes under a verified reader, disjoint fields with known independence, or independent subscriptions in a verified appendable hook. User choices should be presented as concrete tradeoffs: “A requires cost 2; B requires cost 5; choose a final cost or a conditional design.” A model's confidence score cannot authorize choosing which mod's design to discard.
+
+Build conflict clusters from shared target definitions, ancestor/descendant writes, typed reference edges, on-action/effect call edges, and relevant variable reads/writes. A cluster is the unit of agent investigation and validation. Do not send all enabled mods to an LLM, and do not split an event and its referenced scripted effect into independent repairs when their behavior is coupled.
+
+### Compatibility patches and managed copies
+
+Prefer a generated compatibility patch when the verified loader can express the desired effective result. Keep the original mod directories immutable. Generate a manifest that records all input package versions/hashes, the baseline, profile, patch files, expected load placement, intended deltas, preserved contributions, and validation results. A patch is not necessarily sufficient: a later `REPLACE` mode can erase an earlier injection despite playlist placement; first-wins events and exact-path shadows may require a different mechanism.
+
+If a patch cannot express the repair safely, generate managed local copies and a concrete replacement playset plan. Disable the originals only in the chosen managed playset; retain their subscriptions and snapshots. Do not modify Workshop content in place because subsequent updates can replace it and because provenance becomes ambiguous. Rewriting an exact-path file may be legitimate, but requires preserving every effective definition in that file, not just the conflict's target.
+
+On a Workshop update, compare content hashes rather than trusting timestamps or displayed version strings. Invalidate every repair whose read-set includes a changed file, whose referenced definition changed, or whose baseline/profile changed. Rebase the intended repair against the new sources, rerun deterministic checks, and retain old evidence as historical data. A repair can remain reusable only after its preconditions are re-established.
+
+### Agent loop and OpenRouter
+
+Keep discovery, parsing, indexing, path checks, known loader simulation, reference checking, identical-change detection, and mechanical merge rules deterministic. Call the model for unresolved clusters requiring investigation, interpretation of undocumented syntax, or design explanation. Give it byte-exact source excerpts, provenance, schema, evidence confidence, the expected preservation obligations, available investigative tools, and a bounded edit scope. Allow autonomous search through the dependency closure; fixed snippets alone can hide a critical helper definition.
+
+OpenRouter's user-defined function tools return requested calls for the application to execute; they do not grant filesystem access themselves. Its documented loop uses JSON tool arguments and tool-call IDs, including multiple calls in one response. Verify that the selected model endpoint supports tools. These API facts support a local executor with narrow capabilities. [OpenRouter tool-calling guide](https://openrouter.ai/docs/guides/features/tool-calling).
+
+Recommended local tools are `search_sources`, `read_spans`, `show_definition_history`, `get_effective_definition`, `find_references`, `inspect_rule_evidence`, `propose_structural_edit`, `validate_candidate`, and `run_game_probe`. Tool implementations enforce source-hash preconditions and workspace boundaries. Mutations target a staging directory only. Search results, mod comments, and documentation are untrusted task data; a comment instructing the agent to delete unrelated files is not an instruction to execute.
+
+Return structured repair proposals containing operations, read/write sets, rationale, preserved assertions, known limitations, and requested user decisions. Structured-output support varies by provider endpoint; request supported parameters and validate all returned JSON locally. Do not equate JSON-schema compliance with script validity or behavior preservation. [OpenRouter parameter and endpoint guidance](https://openrouter.ai/docs/guides/features/structured-outputs).
+
+```text
+while unresolved_cluster and budget_remaining:
+    evidence = deterministic_context(cluster, current_snapshot)
+    reply = model(evidence, local_tool_schemas)
+    for call in reply.tool_calls:
+        validate_tool_name_arguments_budget_and_scope(call)
+        execute_read_or_staging_tool(call)
+    if reply.proposal:
+        reject_unrequested_design_choices(reply.proposal)
+        validate_against_schema_and_source_hashes(reply.proposal)
+        candidate = apply_to_staging(reply.proposal)
+        result = full_validation(candidate)
+        if result.passes_required_gates:
+            record_reviewable_patch(candidate, evidence, result)
+            break
+        return_precise_failures_to_agent(result)
+```
+
+Cache by the hash of the relevant cluster, baseline, rules, prompt/tool schema version, and model identifier; never use a stale repair solely because the textual error message matches. Cache discovery and semantic analysis separately from model replies. Bound tokens, calls, file sizes, CPU time, and game launches; preserve useful intermediate evidence when a budget is reached. Pin provider/model details for reproducibility, while recognizing that a remote model's response is not guaranteed to repeat byte-for-byte.
+
+Validation gates should include strict parse, encoding/filename requirements, metadata schema, path policy, typed references, known scope/argument checks, expected effective result, no unintended write-set changes, preservation assertions, and any required game probes. A generated patch can parse successfully and still suppress a mod through loading precedence. Always simulate the full final playset rather than validating the generated files in isolation.
+
+```mermaid
+flowchart LR
+  Sources[Immutable vanilla DLC and mod snapshots] --> Scan[Inventory and hash]
+  Scan --> CST[Lossless parsers]
+  Rules[Versioned rules and evidence] --> Sim[Effective loader simulator]
+  CST --> Sim
+  CST --> Index[Typed symbols references and scope graph]
+  Index --> Clusters[Conflict clusters and intent deltas]
+  Sim --> Clusters
+  Clusters --> Mechanical[Deterministic merge rules]
+  Clusters --> Agent[OpenRouter investigation agent]
+  Agent --> Staging[Structural edits in staging]
+  Mechanical --> Staging
+  Staging --> Gates[Parse semantic and preservation gates]
+  Gates --> Runtime[Windows game probes when required]
+  Runtime --> Evidence[Patch manifest and validation evidence]
+  Gates --> Evidence
+  Evidence --> Review[Resolution record and patch preview]
+  Review --> Export[Managed compatibility patch or copies]
+```
+
+
+**P — endpoint contract:** use a model and provider endpoint supporting the required tools/response format; set `provider.require_parameters` when depending on those capabilities. Record the selected endpoint and permitted fallback policy. Require local JSON validation even when requesting strict output. Provider routing can select alternative endpoints, so a model name alone is not a reproducibility record. [OpenRouter provider routing](https://openrouter.ai/docs/guides/routing/provider-selection).
+
+The application's filesystem, index and execution tools can remain local while OpenRouter inference is remote. Make the transmitted source excerpts and provider policy explicit in configuration. Keep API keys in backend credential storage, outside mod files, browser state, prompts and replay logs. These are architecture boundaries for this application, not game-format rules.
+
+For a multi-file repair, stage the complete output in a new versioned directory, verify it, then promote through an atomic pointer/manifest switch where available. A series of file renames is not an atomic multi-file transaction. Record a write-ahead promotion journal and recover interrupted exports without leaving a half-installed patch. Recheck source and playset hashes immediately before promotion; refuse stale plans.
+
+## 7. Synthetic fixture suite and cross-platform testing
+
+
+### Two tiers and one manifest format
+
+**Contract fixtures** use EU5-shaped syntax and directory names with an explicitly synthetic database profile. They prove the parser, simulator, merge planner, and safety boundaries. Fields such as `x`, `y`, `items`, and `nested` below are test fields; they are not asserted to be EU5 database properties. **Conformance fixtures** use a locally captured, legally available vanilla seed definition in a verified real database, substitute controlled valid changes, and compare actual game observations. Both tiers use the same runner and expected-results format, but conformance results are pinned to executable/content hashes.
+
+The game-independent suite can run without EU5 installed. Public examples can seed grammar regressions, but public code is not proof of every runtime rule it attempts to use. Do not redistribute a vanilla content corpus as part of the fixture repository; store extraction recipes and hashes, and materialize private conformance fixtures from the user's installation.
+
+```text
+tests/
+  fixture-schema.json
+  profiles/
+    synthetic-contract-v1.json
+    eu5-observed/<build-id>.json
+  fixtures/
+    contract/
+      001-independent/
+        case.json
+        input-manifest.json
+        expected/parse.json
+        expected/findings.json
+        expected/effective.json
+        expected/patch-files.json
+      ...
+    conformance/
+      operation-order/
+        case.json
+        seed-recipe.json
+        probe-recipe.json
+        observations/<build-id>/result.json
+  agent-replays/
+    nested-collision/{requests,responses,tool-results}.jsonl
+  golden/
+  property/
+  integration/
+  runtime/
+```
+
+Use manifests containing `(owner, virtual_path, bytes_base64)` instead of storing every input as a physical file. This permits case-colliding paths, invalid byte encodings, and traversal strings to be tested even on a host that cannot represent them safely. The materializer must validate entries before writing. An unsafe path test must never create the unsafe file just to see whether the scanner rejects it.
+
+### Minimal machine-readable expectation schema
+
+The following JSON Schema is a compact starting point. Production definitions should further constrain diagnostic structures, assertion operands, and hashes. Expected bytes are authoritative for serializer tests; effective values are authoritative for simulation tests under the declared profile. `null` patch output explicitly means no generated repair, not an omitted expectation. `effective` means the result after applying the expected patch when one exists; `effective_before_patch` optionally records the unrepaired stack. The runner must simulate both states separately, and must add generated patch files only after testing the original inputs.
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "tier", "profile", "inputs", "playset", "expected"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string"},
+    "tier": {"enum": ["contract", "conformance"]},
+    "profile": {"type": "string"},
+    "build_fingerprint": {"type": ["object", "null"]},
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["owner", "path", "bytes_base64"],
+        "properties": {
+          "owner": {"type": "string"},
+          "path": {"type": "string"},
+          "bytes_base64": {"type": "string"}
+        }
+      }
+    },
+    "playset": {"type": "array", "items": {"type": "string"}},
+    "agent_replay": {"type": ["string", "null"]},
+    "expected": {
+      "type": "object", "additionalProperties": false,
+      "required": ["parse", "findings", "effective", "patch", "assertions"],
+      "properties": {
+        "parse": {"type": "array", "items": {"type": "object"}},
+        "findings": {"type": "array", "items": {"type": "object"}},
+        "effective": {"type": ["object", "null"]},
+        "effective_before_patch": {"type": ["object", "null"]},
+        "patch": {"type": ["array", "null"], "items": {"type": "object"}},
+        "assertions": {"type": "array", "items": {"type": "object"}}
+      }
+    }
+  }
+}
+```
+
+Example expectation for a disjoint-property contract merge:
+
+```json
+{
+  "schema_version": 1,
+  "id": "003-disjoint-properties",
+  "tier": "contract",
+  "profile": "synthetic-contract-v1",
+  "inputs": [
+    {"owner": "V", "path": "in_game/common/testdb/00.txt", "bytes_base64": "aXRlbSA9IHsgeCA9IDEgeSA9IDEgfQo="},
+    {"owner": "A", "path": "in_game/common/testdb/10.txt", "bytes_base64": "UkVQTEFDRTppdGVtID0geyB4ID0gMiB5ID0gMSB9Cg=="},
+    {"owner": "B", "path": "in_game/common/testdb/20.txt", "bytes_base64": "UkVQTEFDRTppdGVtID0geyB4ID0gMSB5ID0gMyB9Cg=="}
+  ],
+  "playset": ["A", "B", "generated_patch"],
+  "expected": {
+    "parse": [{"all_inputs": "strict_ok", "duplicate_occurrences_preserved": true}],
+    "findings": [{"kind": "compatible_overlap", "target": "testdb/item", "policy": "disjoint_known_fields"}],
+    "effective": {"testdb/item": {"x": "2", "y": "3"}},
+    "effective_before_patch": {"testdb/item": {"x": "1", "y": "3"}},
+    "patch": [{"path": "in_game/common/testdb/zz_compat.txt", "text": "REPLACE:item = { x = 2 y = 3 }\n"}],
+    "assertions": [{"op": "preserves_delta", "owner": "A"}, {"op": "preserves_delta", "owner": "B"}, {"op": "source_files_unchanged"}]
+  }
+}
+```
+
+The base64 entries encode the exact base/A/B texts in fixture 3 below. The runner must provide `synthetic-contract-v1` with its declared field semantics. A real EU5 profile must never register the illustrative `common/testdb` directory as an actual game database merely because this contract test uses that path.
+
+### Contract notation and semantics
+
+The synthetic contract schedules bare creation first, rejecting a second bare creation, then the six modes in the order listed in the loading chapter. It uses parent-before-child ASCII traversal, source order within a file, and lower-playset precedence for exact paths. These deliberately explicit test rules are not a certified production profile.
+
+In the matrix, `D` is `in_game/common/testdb/`; `V`, `A`, and `B` are vanilla and two mods. Different filenames mean distinct virtual files. The synthetic `testdb` reader has last-occurrence scalar `x/y`, map-like `nested` only when explicitly stated, ordered `effect` statements, and appendable `items` blocks. A prefixed replacement supplies the complete object. Injection appends top-level CST entries; the field reader subsequently interprets them. All text examples end in LF unless bytes are specified. This is a **declared test contract**, not a complete EU5 loader profile.
+
+Categories used below are `confirmed_incompatibility`, `potential_incompatibility`, `compatible_overlap`, `load_order_dependent`, and `semantic_runtime`. Additional diagnostic tags such as `invalid_input`, `stale_repair`, and `unsafe_path` explain the cause. An expected no-write outcome is a successful safety result.
+
+### The first 20 fixture families
+
+Every family should be parametrized where indicated. The matrix supplies exact meaningful content, expected parse behavior, conflict classification, proposed output, and assertions. Unmentioned source files remain byte-identical.
+
+| # | Inputs and operation | Parser expectation | Classification and effective result | Repair output and validation assertions |
+|---|---|---|---|---|
+| 1. Independent compatible mods | A:`D/10_a.txt` contains `alpha = { x = 1 }`; B:`D/20_b.txt` contains `beta = { y = 2 }`. | Two unique definitions; exact no-op byte round trip. | Compatible, no conflict; alpha.x=1 and beta.y=2. | No patch needed. Assert both definitions survive in both playset permutations; no LLM call. |
+| 2. Identical overrides | V:`D/00.txt` `item = { x = 1 y = 1 }`; A:`D/10.txt` and B:`D/20.txt` each `REPLACE:item = { x = 2 y = 1 }`. | Three operations on one identity; retain both replacement bodies and source owners. | `compatible_overlap`; predicted final x=2,y=1. | No patch needed; optionally record redundant contributions without deleting either source. Assert input order does not alter final semantic value; comments and owners remain separately available. |
+| 3. Disjoint properties of one definition | Same V; A:`D/10.txt` `REPLACE:item = { x = 2 y = 1 }`; B:`D/20.txt` `REPLACE:item = { x = 1 y = 3 }`. | Full objects preserved, not dictionaries flattened across files. | Game-like contract result without repair loses A.x; intent analysis finds `compatible_overlap` under declared independent x/y semantics. | `D/zz_compat.txt`: `REPLACE:item = { x = 2 y = 3 }`. Assert both baseline-relative deltas survive; unrelated fields retained. Without known common ancestor or field independence, expected classification changes to potential incompatibility and no auto-write. |
+| 4. Conflicting values of one property | V x=1,y=1; A replaces x=2,y=1; B replaces x=5,y=1 in their respective distinct files. | Both x occurrences and replacements indexed. | `confirmed_incompatibility` of simultaneous exact-value obligations; load-order winner is explainable but not a repair. | No write until user selects a concrete final design. Test approved choice x=5 emits full replacement x=5,y=1 and records that A's exact-value obligation was explicitly waived. Never average to3.5 or sum to7. |
+| 5. Nested collision | V:`item = { nested = { a = 1 b = 1 } }`; A:`REPLACE_OR_CREATE:item = { nested = { a = 2 b = 1 } }`; B:`INJECT:item = { nested = { b = 3 } }`. | Preserve two separate `nested` blocks in appended representation if injection survives scheduling. | `potential_incompatibility` unless field reader establishes repeated nested-block handling; do not assume recursive merge. | Unknown-reader variant: no write, symbolic final nested value. Known synthetic map reader plus explicitly approved combined-intent variant: merged full replacement `item={nested={a=2 b=3}}` with REPLACE prefix. Assert one cannot treat injection as a nested property edit before reader interpretation; a separate A=`REPLACE` variant must resolve to `{nested={a=2 b=1}}`, with B erased before field reading. |
+| 6. Repeated keys and ordered effects | V:`item = { effect = { add = 1 multiply = 2 add = 3 } }`; A changes the first add to4; B changes last add to5. | Three ordered commands; selectors distinguish add occurrence0 and1. | Compatible overlap only after sequence alignment establishes disjoint edits; resulting sequence add4,multiply2,add5. | `REPLACE:item = { effect = { add = 4 multiply = 2 add = 5 } }`. For synthetic initial state0, expected result13; reordering gives different value. Assert no dict collapse; comments attached to each command preserved; ambiguous equal occurrences cause no write. |
+| 7. Six database modes, missing target, duplicate create | Parametrize target present/absent and each of `INJECT`, `REPLACE`, `TRY_INJECT`, `TRY_REPLACE`, `INJECT_OR_CREATE`, `REPLACE_OR_CREATE` with body `{ y = 2 }`; also two bare `item` creates. | Mode prefix and target identity separated; never split namespace colons indiscriminately. | Synthetic absent-target contract: strict modes produce missing-target error; TRY modes no-op; OR_CREATE modes create. Existing-target injection appends; replacement removes old x. Bare duplicate variant uses explicit reject-second rule. | Normally no patch; these are simulator conformance contracts. Assert errors/no-ops/creation and ownership trace; each mode also tested in a real verified DB before enabling its production rule. Invalid duplicate creation is diagnosed even if one definition still appears in-game. |
+| 8. Load order, file shadows, operation schedule | V supplies `item = { x = 1 }` in a distinct base file. (a) A and B both write `D/00.txt` with `REPLACE:item` and distinct complete bodies. (b) A:`D/zz.txt` INJECT:item y2; B:`D/00b.txt` REPLACE:item x3. (c) both use REPLACE in different filenames. | Retain file candidates before VFS selection; parse only surviving effective candidates for loader simulation, but index hidden sources separately for intent. | (a) `load_order_dependent` exact-file winner reverses with playset. (b) operation schedule can erase injection despite filename; (c) verified within-mode filename order decides. | No automatic reorder described as preservation. Assert same-path hiding happens before database modes; swapping names only changes same-mode case; inject+replace result follows declared schedule. Runtime probes must separately validate playlist, ASCII/subfolder, mode, and tie behavior. |
+| 9. Broken and dynamic references | V defines `helper={x=1}` and `item={ref=helper}`; A replaces that exact virtual file with only `item={ref=helper}`; B adds `second={ref=helper}`. Add dynamic variant `ref = "$computed$"`. | `ref` scalar token preserved; semantic schema declares static reference kind. | Static variants `confirmed_incompatibility` missing reference with both use sites; dynamic variant unresolved/potential, not a proven missing helper. | No invented replacement helper. Restore the verified original only if deletion was accidental/authorized and its other references are valid. Assert traversal includes B and transitive callers; dynamic key is marked unresolved; final graph has no required missing static edges. |
+| 10. Missing dependencies, duplicate identities, cycles | A metadata requires package C; enabled playset contains A,B but C absent. Variants C installed-disabled; two packages claim same id; A requires B and B requires A; version condition mismatches. | Parse metadata strictly and retain original dependency shape; package identity is separate from folder/display name. | `confirmed_incompatibility` for an unsatisfied required-presence/version contract; advisory versions produce a warning. Presence-only cycles are potential/cyclic_dependency; only a verified strict-order cycle is an impossible order. | No script rewrite. Produce concrete enable/install/identity/order remedy as applicable. Assert no agent invents dependency content; never silently topologically reorder explicit user order; cycle report names every participant. A presence-only dependency cycle is a potential/cyclic_dependency finding, not automatically unsatisfiable; only verified strict-order edges make an ordering cycle a confirmed contradiction. |
+| 11. Localization collisions | A:`main_menu/localization/english/a_l_english.yml` `l_english:\n item_name:0 "Alpha"`; B same key in `b_l_english.yml` with "Beta"; variants key in `english/replace/`, same virtual file, language header mismatch. | Dedicated localization parser yields language,key,optional version,text with byte spans; `#` inside text is not a script comment. | Different text `confirmed_incompatibility` of simultaneous label obligations; predicted winner determined only by tested localization profile; replace folder is separate priority axis. | No write until text chosen. Approved patch defines selected text in verified replace path and encoding. Assert unrelated keys and all other languages preserved; no generic YAML serializer changes inline game formatting; verify replacement-vs-replacement tie experimentally. |
+| 12. GUI composition and whole-file shadow | A and B share `in_game/gui/test.gui`; V has types `foo`,`bar`; A changes foo; B changes bar but copied an old file. Also different files each define `type foo = default_block_window { name = "a/b" }`. | GUI grammar recognizes `types group { type foo = ... { } }`, template declarations, quoted names, binding strings; preserves all top-level widgets. | Same-path shadow risks losing entire unrelated widget; same-symbol cross-file precedence is GUI-specific. `potential_incompatibility` unless composition proven; differing exact foo obligations confirmed. | Known disjoint baseline changes may yield full file containing both types and every original widget; otherwise no write. Assert widget order, type dependencies, constants, bindings, and bar retained; changing filename alone must not be assumed to change type winner. |
+| 13. Malformed syntax and recovery | `item = { x = 1` (unclosed); `item = { text = "a # }" x = 2 }` (valid delimiters inside string); unterminated string; stray closing brace. | First/third/fourth produce diagnostics and recovery nodes; second is valid. | `confirmed_incompatibility`/invalid_input for malformed files; valid string case no conflict. | No speculative semantic merge over recovered region. If a narrowly approved missing brace is fixed, exact corrected output `item = { x = 1 }\n`; strict reparse required. Assert bounded runtime, correct spans, no crash, no confusion from brace in comment/string. |
+| 14. Unexpected encodings and newline fidelity | Same Unicode content as UTF-8 BOM/no-BOM, CRLF/LF/mixed; UTF-16LE BOM; invalid byte0xFF; legacy single-byte accented text. | Raw bytes retained; recognized encoding recorded; strict-decode status explicit; byte and Unicode offsets differ after non-ASCII text. | Validity depends on verified directory encoding profile; unknown/invalid variants are invalid_input or potential, never silently dropped. | No-op byte exact. Unsupported conversion no-write unless selected. Approved conversion emits explicit expected UTF-8 BOM policy and newline bytes, then strict parse. Assert no replacement U+FFFD introduced, escapes retained, key Unicode normalization never silently changed. |
+| 15. Windows filename collisions | Manifest includes A:`D/Foo.txt`, B:`D/foo.txt`; variants trailing dot/space, reserved device name, Unicode composed/decomposed path spellings. | Inventory parses manifest without materializing illegal names; collision grouping uses target Windows policy. | `confirmed_incompatibility`/portability collision where target normalization aliases names, even when Mac can distinguish them. | No automatic rename if references/engine naming dependencies unknown. Assert same findings on Mac and Windows policy adapters; exact Windows filesystem behavior measured on NTFS. Different Unicode forms are diagnosed for review unless aliasing is actually established. |
+| 16. Unsafe paths and link escapes | Inputs contain `../outside.txt`, `/absolute.txt`, `C:\\outside.txt`, `D/../../x`, UNC/device paths, alternate-stream colon, archive entry with backslashes, symlink/junction to outside root. | Inventory rejects path before reading/writing content; textual script parser is not invoked on an unsafe target. | `confirmed_incompatibility`/unsafe_path, with reason and input owner. | No write anywhere. Assert outside sentinel unchanged, staging empty, traversal in both separators handled, race-resistant opened-handle containment and no-follow traversal, or a controlled link-free staging tree; repeated path checks alone do not defeat TOCTOU races. Permit only explicitly selected package roots for read; deny external write even if a mod comment requests it. |
+| 17. AI-generated invalid changes | Replay asks to change x; mock response includes malformed script, unknown property, wrong scope/reference, unsupported tool, extra file deletion, or valid script that suppresses B. | Proposals validated as JSON; staged script strict-parsed; unknown construct not silently accepted as valid. | `confirmed_incompatibility` for invalid change; potential for unknown property if schema incomplete; preservation violation for suppressed B. | No promoted patch; precise validation failures returned to agent. Assert originals unchanged, rejected operations logged, write budget enforced, tool calls matched to known ids, and model cannot bypass gates by claiming success. |
+| 18. Preservation of unrelated changes | V file contains item,other; A edits item.x and adds comments, unknown but parseable field, other.y; B edits item.y. Agent receives cluster item. | Lossless CST retains comments and unknown field; read/write set explicit. | Compatible x/y only if profile independent, while other change is an obligatory preserved contribution. | Generated patch merges item and leaves other untouched; if exact-file replacement is necessary include effective other. Assert byte equality outside allowed spans; all A/B deltas accounted as preserved, intentionally superseded with approval, or unresolved. No “unknown field cleanup.” |
+| 19. Workshop update invalidation | Repair manifest pins hashes V0,A0,B0; update A1 changes target x and unrelated helper; B unchanged. Variant only thumbnail changes; variant game/profile changes. | Only changed blobs reparsed; prior CST remains historical. | `stale_repair` for changed read-set/helper/profile; no stale approval. Pure irrelevant thumbnail may remain valid under explicitly bounded dependency tracking. | No automatic reuse until rebase and validation. Assert old patch not silently applied, new plan references A1 hashes, concurrent update between validate/export fails precondition, revert restores exact earlier bytes/playset. |
+| 20. Asset and semantic conflicts beyond syntax | A and B supply same texture path with different binary hashes, plus text references; separate variant two valid effects independently double same economic reward through two hooks. | Binary opaque hashes; text refs indexed; no attempt to parse DDS/mesh as script. | Asset difference confirmed competing resource, equality compatible; two reward effects `semantic_runtime` unless behavior assertions prove unwanted duplication. | Equal assets no patch. Different assets require explicit choice/composition using format-aware tooling. Valid reward scripts no silent deduplication. Assert dimensions/format checks when available; runtime scenario evaluates hook counts and values; neither clean logs nor parse success claim full behavior preservation. |
+
+For family5, the matrix deliberately includes uncertainty: without a known nested reader the only correct merged output is **none**. For family8, record predicted values separately for each profile/permutation instead of choosing one undocumented rule as the fixture's truth. “No patch” is distinct from “empty patch accepted”: the former can mean no repair needed or repair blocked, so record an explicit disposition.
+
+### Test methods and platform split
+
+### Unit and golden tests
+
+Unit-test lexer boundaries, spans, duplicate indexing, typed references, path normalization, operation scheduling, and edit preconditions. Keep tests centered on externally meaningful contracts. For file-based tests, use per-test temporary roots rather than the developer's real mod directories; pytest provides a `tmp_path` fixture as a unique `pathlib.Path` for each test. [pytest temporary-directory documentation](https://docs.pytest.org/en/stable/how-to/tmp_path.html).
+
+Golden files should pin token/CST summaries, diagnostics, effective configurations, provenance, planned edits, serialized bytes, and user-facing conflict explanations. Normalize only volatile run IDs and host-specific temporary roots; do not normalize away ordering, source owners, duplicate occurrences, BOMs, or error spans. Updating a golden must require reviewing why the expected behavior changed, especially after modifying a loader rule.
+
+### Property-based and round-trip tests
+
+Generate bounded recursive blocks, repeated keys, mixed scalar/property bodies, random trivia, quotes with comment characters, Unicode, operator adjacency, and malformed truncations. Assertions include no-op byte identity; deterministic parse/serialize; parser termination; edit locality; parse-after-edit stability; no lost occurrences; and source-span containment. Shrink failing inputs into permanent regressions.
+
+Use metamorphic tests carefully: inserting whitespace outside strings should preserve semantic views; inserting a comment should preserve them where comments are allowed; moving entries is **not** a valid invariant for ordered scripts. Reordering independent files is invariant only under a profile proving independence. Do not claim all numeric spellings or Unicode normalizations equivalent without game evidence.
+
+For stateful testing, model scans, updates, plan generation, concurrent file changes, validation, export, and rollback as actions. Compare the implementation with a small reference model and assert invariants after each action. Hypothesis supports rule-based state machines that generate action sequences as well as values; that makes it appropriate for stale-repair and transaction tests. [Hypothesis stateful testing](https://hypothesis.readthedocs.io/en/latest/stateful.html).
+
+### Differential tests
+
+Run independent parsers over the same allowed corpus and compare an agreed neutral projection of keys/operators/occurrence order/raw scalar spelling. A disagreement is a triage item, not a vote: two libraries can share the same incorrect assumption. Keep parser differential tests separate from loader differential tests. The actual game is the conformance oracle for runtime loading, while a second library is useful only for detecting parser discrepancies within its documented coverage.
+
+Maintain minimal pairs that change exactly one axis: file name, playlist position, prefix mode, subdirectory location, repeated field, or layer. Avoid changing filename and operation type together because the result would not identify which rule caused the outcome. Store the probe's predicted alternatives before running it, then capture the observed result and confidence.
+
+### Agent replays and mocked OpenRouter
+
+Replay model responses and local tool outputs from a deterministic transcript. Cover multiple tool calls, malformed argument JSON, wrong IDs, repeated calls, context growth, timeouts, rate limits, partial streams, unsupported capabilities, exhausted budget, and a response that proposes a repair without evidence. Redact secrets from transcripts. Use HTTP transport mocks for OpenRouter; routine CI should not require live model calls, spend money, or depend on a provider remaining available.
+
+Evaluate successful behavior, not exact model prose. Assert that the proposed patch satisfies preserved deltas, scopes, references, write-set limits, and expected effective output. Keep optional live-model evaluation on a separate scheduled/manual lane, with fixed fixture manifests and recorded provider/model metadata. Regression tests should preserve every discovered bad edit or incorrect autonomous decision as a replayable case.
+
+### Integration and cross-platform filesystem tests
+
+Run the full local API/worker/SQLite/React boundary on a temporary fixture workspace: scan, inspect provenance, submit a design choice, stage, validate, export, rescan, update a package, detect staleness, and rollback. Test interruption during snapshot/export and verify that the published state is either the old complete state or the new complete state. Transactionally committing SQLite rows alone is insufficient if patch files have already been partially published.
+
+Run the same contract manifests on macOS and Windows using identical pinned Python/frontend dependencies and deterministic hashes. An injectable `TargetFilesystemPolicy` handles Windows logical names on macOS; real Windows tests then verify that policy against NTFS, long paths, junctions, reserved names, locks, and rename behavior. Default macOS volumes can also be case-insensitive, so a “Mac test” is not automatically a case-sensitive test. Never rely on the VM shared folder as the only Windows filesystem environment; test in a native Windows filesystem directory as well.
+
+| Test lane | Entirely on macOS without EU5 | Windows VM without EU5 | Windows with actual EU5 |
+|---|---:|---:|---:|
+| Lexing/CST, serialization, fixtures, structural merge | Yes | Same suite | Same suite |
+| Synthetic rule profiles, graph/reference analysis | Yes | Same suite | Same suite |
+| OpenRouter mocked/replay tests, FastAPI/React integration | Yes | Same suite | Same suite |
+| Windows path policy from manifests | Yes, emulated policy | Real API/NTFS checks | Real API/NTFS checks |
+| Workshop/game discovery from synthetic library trees | Yes | Native path/registry adapters | Real installation smoke test |
+| Real game content parse corpus | Only if lawfully copied locally; game not needed to parse | Yes if corpus present | Yes |
+| Entry-mode schedule, duplicate readers, localization/GUI precedence | Hypotheses only | Hypotheses only | Required to confirm |
+| Runtime scope/effect/event behavior, initialization, hot reload | No | No | Required |
+| Actual logging, command-line flags, restart/export workflow | No | No | Required |
+
+## 8. EU5 runtime validation
+
+
+**D.** The console page is marked verified for 1.3. It documents `-debug_mode`, the debug console, GUI/editor and script exploration tools, and a file watcher. Relevant commands include `script_docs`/`script_documentation`, `dump_data_types`/`DumpDataTypes`, `version`, `event [eventid] [target]`, `test_event_trigger [eventid] [target]`, `effect {…}`, `trigger {…}`, and `run` for effect files in `/run`. `log_viewer`, `log_status`, and log-clearing commands also exist. These prove useful interactive facilities; they do not prove a headless validator or stable automation API. [EU5 Wiki: Console commands](https://eu5.paradoxwikis.com/Console_commands)
+
+**D.** EU5’s modding page locates `error.log` in `<Documents>\Paradox Interactive\Europa Universalis V\logs`; `script_docs` writes under `docs`, and `dump_data_types` under `logs/data_types`. It says debug hot reload has exceptions including on-action content. It documents `--ignore-disable-mods-on-crash`, because a resource-loading crash otherwise causes mods to be disabled at the next launch. It also records misleading encoding errors following file-open failures, including paths with non-ASCII characters. [EU5 Wiki: debugging and common problems](https://eu5.paradoxwikis.com/Modding#Debugging)
+
+**H.** No verified EU5 command-line `--validate`, headless mode, parse-only exit code, fully unattended campaign harness, or CLI command-file execution protocol was established. Do not copy `-validate`, `-batch`, `-debugscripts`, `-mod`, `-userdir`, `-nographics`, or other switches from EU4/CK3 into a production contract without testing them. The absence of documentation is not proof those switches do not exist.
+
+**P.** A practical first harness launches the installed executable or Steam with the documented `-debug_mode` and observes known UI states. It uses a dedicated Windows test profile, a manifest naming the executable/build/checksum, explicit playset confirmation, bounded process timeouts, and saved screenshots/logs. Console automation can be added as a replaceable UI driver after validating command availability using `help` and a pinned build. It must not assume a process exit code expresses script validity.
+
+### Validation stages and meaning of success
+
+| Stage | What it establishes | What it misses |
+|---|---|---|
+| Static bytes/paths/CST | Safe paths, codecs, lexical/structural validity | Whether the game recognizes a directory or field |
+| Static typed resolution | Known IDs, scopes, arity and declared dependencies | Dynamic IDs, timing, script execution outcomes |
+| Cold start to main menu | Earliest resource stages can initialize | In-game stage and starting setup |
+| Enter country-selection lobby | More world/database resources initialize | Campaign-only effects and save migrations |
+| New campaign and bounded ticks | Setup plus selected startup/monthly/yearly hooks | All historical situations and long-run balance |
+| Targeted console/event probes | Exercised trigger/effect behavior | Paths and game states not exercised |
+| Existing-save reload | One migration/save compatibility scenario | All saves and removed-ID edge cases |
+| GUI/locale scenarios | Selected screen and language bindings | Unopened screens and other translations |
+
+Every runtime result should say which stages were reached and which assertions were observed. “Launched successfully” must not be presented as preservation of all mod behavior.
+
+### Logs: preserve evidence, then classify
+
+**P.** Capture a baseline with vanilla plus the same installed DLC and settings; capture each mod alone when possible; capture the enabled stack; capture the proposed repaired stack. Each run must be a cold start for final comparison. Keep raw logs and a parsed index. A useful diagnostic record is:
+
+```json
+{
+  "run_id": "probe-20261026-001",
+  "stage": "new_campaign",
+  "raw_log": "error.log",
+  "raw_offset": 1287,
+  "source_file": "in_game/common/example/00_probe.txt",
+  "source_line": 17,
+  "engine_component": null,
+  "severity": "unknown",
+  "message": "original message retained verbatim locally",
+  "fingerprint": "versioned-normalization-result",
+  "baseline_count": 0,
+  "current_count": 1,
+  "rule_id": null
+}
+```
+
+Treat timestamp, source location, component and multiline continuation as optional; do not publish a universal error-line regex without inspecting actual output. Source line numbers printed by the game may refer to a rewritten file, so save the emitted-file map.
+
+Use stable fingerprints with narrowly defined normalization of timestamps and transient IDs. Retain severity, resource IDs, script content and meaningful numeric values. Compare multisets, not just sets: an existing warning repeated 100,000 times is a regression. Report new diagnostics, disappearing expected diagnostics, severity changes and count changes independently. Never erase logs before archiving them. Baseline warnings may signal a real defect; “already present” means pre-existing, not harmless.
+
+**H/P.** No blanket harmless-warning allowlist is justified. Require an exact build range, evidence link, reproduction, expected count/stage, and observable success criterion for every suppression. Duplicate event IDs used by a known override technique and file-open errors reported as encodings are examples requiring contextual handling; they are not reasons to discard all duplicate/encoding messages. For an intentionally expected diagnostic, assert both its presence and the intended winning definition’s behavior.
+
+### Runtime experiments needed before broad repair claims
+
+1. **Crash recovery:** purposely malformed disposable mod; confirm whether the next launch silently disables the playset and how the documented crash flag changes this. Assert active content before interpreting an empty error log.
+2. **Hot reload versus cold start:** change a scalar, a scripted effect, a GUI type, an on-action and setup content independently; record which are actually reloaded. Cold restart is the final oracle.
+3. **Encoding:** run UTF-8 BOM/no-BOM, CRLF/LF, non-ASCII content, non-ASCII directory names and invalid UTF-8 as separate probes; distinguish decoding errors from open failures.
+4. **Documentation freshness:** regenerate script and data-type dumps on 1.3.11 and 1.4.4; diff them and bind semantic schemas to dump hashes.
+5. **Log grammar:** trigger one malformed brace, unknown field, missing ID, wrong scope and duplicate ID at a time. Save exact output to build parser golden files.
+6. **Validation coverage:** put a deliberate failure in each resource stage and in an untriggered event. Show precisely which startup milestone detects each defect.
+
+
+### Runtime experiment record
+
+
+A runtime conformance test needs a machine-readable record containing game version, executable hash, content/Steam build identifiers when available, enabled DLC, user-content overlay inventory, playset snapshot, mod hashes, launch arguments, new-game/save setup, probe script, observation method, raw log files, screenshot/save/result evidence, and pass/fail/unknown. Do not label a rule “verified” merely because the game reached the main menu; the affected subsystem may not have initialized yet.
+
+Use fresh process launches for loading-order experiments. Hot reload is a separate behavior and can preserve stale objects or use different reset paths. Run clean baseline, A alone, B alone, A+B, B+A, and repaired A+B where order is relevant. Keep the same seed/scenario where available, but do not assume perfect runtime determinism. Observe the exact field or behavior through a supported UI, debug output, save inspection, or a carefully verified probe effect. Logs alone cannot distinguish every ignored override.
+
+Define preservation as explicit obligations extracted from each mod's deltas and validated in relevant scenarios. Examples: definition exists; scalar equals selected target; added event remains reachable; hook still runs once; GUI button retains action; localization survives in each modified language; asset reference resolves; and unrelated file bytes remain unchanged. Label obligations as proven statically, observed at runtime, unverified, or intentionally waived by the user. Universal preservation of arbitrary gameplay behavior is not decidable from static syntax; the engine should make its coverage visible rather than promise proof it cannot provide.
+
+## 9. Prior art and repository audits
+
+### Audit methodology and pinned revisions
+
+
+This section distinguishes **verified source-code facts** (what an inspected public implementation actually does), **documented EU5 behavior** (what EU5 documentation says), and **proposed engine design**. A third-party parser accepting a construct is evidence to investigate that construct; it does not prove that every EU5 loader accepts it. No parser surveyed here supplies a complete, independently verified specification of every EU5 directory's semantics.
+
+The code audit used these exact public revisions, so conclusions do not silently follow a moving `main` branch:
+
+| Project | Audited commit; commit date | License evidence | EU5 evidence and recommendation |
+|---|---|---|---|
+| [Vality/EU5Miner](https://github.com/Vality/EU5Miner) | [`753a0f6`](https://github.com/Vality/EU5Miner/tree/753a0f6c99b362b1b376d489711625e1e0f3581e); 2026-08-11 | [MIT](https://github.com/Vality/EU5Miner/blob/753a0f6c99b362b1b376d489711625e1e0f3581e/LICENSE) | EU5-specific Python library, CLI, MCP and GUI; strongest Python design reference for source-preserving edits, but its lexer and metadata/loader assumptions need conformance work. |
+| [JanB1989/eu5-game-parser](https://github.com/JanB1989/eu5-game-parser) | [`144bdca`](https://github.com/JanB1989/eu5-game-parser/tree/144bdca8efd75b87551f3dfa9f5ec56b8aa0d6b3); 2026-05-15 | No root license file or package license declaration found in audited tree; reuse permission unresolved | Python analytics and domain extraction for actual EU5 buildings/goods/advances; useful differential reader, unsuitable unchanged for faithful rewriting. |
+| [kaiser-chris/pdx-parser-go](https://github.com/kaiser-chris/pdx-parser-go) | [`dda9971`](https://github.com/kaiser-chris/pdx-parser-go/tree/dda99719d41c07da2b7fec4739fb209a7469df33); 2026-10-24 | [MIT](https://github.com/kaiser-chris/pdx-parser-go/blob/dda99719d41c07da2b7fec4739fb209a7469df33/LICENSE) | Explicit EU5 parsing and installation tests; useful broad syntax/provenance reference or subprocess reader. Its database store is not an EU5 loading oracle. |
+| [zgavin/paradoxical](https://github.com/zgavin/paradoxical) | [`798edba`](https://github.com/zgavin/paradoxical/tree/798edba0ea92a1306f01393b2e8bf7f5ad9342b2); 2026-10-24 | [MIT](https://github.com/zgavin/paradoxical/blob/798edba0ea92a1306f01393b2e8bf7f5ad9342b2/LICENSE.txt) | Ruby API with Rust/pest grammar, explicit EU5 module, round-trip and corpus tests; valuable independent grammar oracle. Requires a Ruby/Rust integration boundary. |
+| [cwtools/cwtools](https://github.com/cwtools/cwtools) | [`b377453`](https://github.com/cwtools/cwtools/tree/b377453dee803f9258be92cfc49896d09039702d); 2025-12-08 | [MIT](https://github.com/cwtools/cwtools/blob/b377453dee803f9258be92cfc49896d09039702d/LICENSE) | Actual EU5 game/scopes/localization modules exist, rather than a generic marketing claim. Good semantic-validation architecture reference; .NET/F# and versioned rules are needed. |
+
+Dates above describe the retrieved revisions, not a guarantee of project health, released-package parity, or support responsiveness. Before adoption, pin a package/commit, run a private installed-file corpus, audit transitive licenses, and keep an adapter allowing replacement.
+
+
+### Existing implementation audit
+
+
+**EU5Miner — good design material, incomplete correctness basis.** Its [CST implementation](https://github.com/Vality/EU5Miner/blob/753a0f6c99b362b1b376d489711625e1e0f3581e/packages/core/src/eu5miner/formats/cst.py) stores trivia, raw token text and source offsets, but removes an initial BOM from the stored source. Its offsets are Python string indices. The recognized operator list includes `!=` and `?=`, while atom boundaries omit `!` and `?`, exposing adjacency cases. Its grammar is deliberately minimal. Adopt the source/plan separation, then test lexer boundaries and preserve raw bytes outside it. The project is Python 3.12+, with a standard-library core and optional surfaces; see its [README](https://github.com/Vality/EU5Miner/blob/753a0f6c99b362b1b376d489711625e1e0f3581e/README.md). Do not adopt its metadata/VFS helpers as game authority without checking their field names and current EU5 fixtures.
+
+**JanB eu5-game-parser — analytics reader.** The [tokenizer](https://github.com/JanB1989/eu5-game-parser/blob/144bdca8efd75b87551f3dfa9f5ec56b8aa0d6b3/src/eu5gameparser/clausewitz/tokenizer.py) discards whitespace/comments, removes each backslash when reading an escaped character, and lists neither `?=` nor `==` as distinct operators. The [syntax model](https://github.com/JanB1989/eu5-game-parser/blob/144bdca8efd75b87551f3dfa9f5ec56b8aa0d6b3/src/eu5gameparser/clausewitz/syntax.py) preserves repeated entries. This is useful for game-data extraction but cannot round-trip arbitrary mod text unchanged. Domain models are narrower than a whole-game compatibility model. Its [package metadata](https://github.com/JanB1989/eu5-game-parser/blob/144bdca8efd75b87551f3dfa9f5ec56b8aa0d6b3/pyproject.toml) declares Python 3.12+, analytics dependencies and installed-game integration tests; no reuse license was established in this audit.
+
+**pdx-parser-go — broad parser, suspect simulator assumptions.** The [syntax model](https://github.com/kaiser-chris/pdx-parser-go/blob/dda99719d41c07da2b7fec4739fb209a7469df33/script/node.go) provides source positions, repeated fields, tagged values, raw number spelling, keyword heads and error warnings. It resolves variables into its tree, which loses symbolic source dependencies unless retained separately. Its [database store](https://github.com/kaiser-chris/pdx-parser-go/blob/dda99719d41c07da2b7fec4739fb209a7469df33/database/database.go) applies modes while adding documents and describes bare repeated definitions as overrides. That behavior conflicts with the EU5 operation-batching and duplicate-rejection evidence discussed elsewhere in this report. Use its lexer and provenance ideas as comparison material; independently implement the EU5 scheduling rules. A broad corpus parsing claim cannot validate a loader algorithm.
+
+**Paradoxical — particularly useful independent grammar.** Its [Rust grammar](https://github.com/zgavin/paradoxical/blob/798edba0ea92a1306f01393b2e8bf7f5ad9342b2/ext/paradoxical/src/script.pest) covers mixed/keyless lists, GUI heads, inline scripted declarations, typed blocks, compound keys, parameter constructs and EU5 template bodies. Its [README](https://github.com/zgavin/paradoxical/blob/798edba0ea92a1306f01393b2e8bf7f5ad9342b2/README.md) reports an EU5 corpus through 1.4.4; [integration tests](https://github.com/zgavin/paradoxical/tree/798edba0ea92a1306f01393b2e8bf7f5ad9342b2/spec/integration) include parsing and round-trip checks. Those are concrete support signals, but the private installed corpus and the game's full loader semantics were not independently reproduced here. Run it as a differential parser on licensed local files; do not equate “100%” corpus parsing with gameplay preservation.
+
+**CWTools — real EU5 support exists.** The audited [EU5Game.fs](https://github.com/cwtools/cwtools/blob/b377453dee803f9258be92cfc49896d09039702d/CWTools/Game/EU5/EU5Game.fs) loads Jomini trigger/effect/data-type documentation and supplies validation facilities; its [project file](https://github.com/cwtools/cwtools/blob/b377453dee803f9258be92cfc49896d09039702d/CWTools/CWTools.fsproj) compiles EU5-specific modules. This is stronger evidence than assuming every Clausewitz tool supports EU5. It remains a .NET integration and rules-coverage decision, not a drop-in Python lossless rewriter. Obtain current generated EU5 documentation rather than blindly using older-game fallbacks visible in code.
+
+### Additional tools and semantic-schema sources
+
+| Project | Capabilities, actual EU5 signal and limits | License/source |
+|---|---|---|
+| [rakaly/jomini](https://github.com/rakaly/jomini) | Rust low-level text/binary parser. Its maintained changelog records EU5 save headers and changing lookup token widths; useful for runtime-save observations and high-throughput differential reads. Binary save support is separate from mod script loading and source-preserving editing. | [MIT workspace declaration](https://github.com/rakaly/jomini/blob/master/Cargo.toml); [EU5 changes](https://github.com/rakaly/jomini/blob/master/CHANGELOG.md) |
+| [JDeffner/paradox-modding-toolkit](https://github.com/JDeffner/paradox-modding-toolkit) | TypeScript tooling/VS Code extension with EU5 stage roots, prefixed-definition indexing, schema overlays and script-doc integration. Changelog explicitly calls the EU5 schema community-sourced and compatibility patch behavior experimental, with runtime acceptance deferred. Relevant design prior art, not a certified repair engine. | [GPL v3 license](https://github.com/JDeffner/paradox-modding-toolkit/blob/main/LICENSE); [support/acceptance qualifications](https://github.com/JDeffner/paradox-modding-toolkit/blob/main/packages/vscode/CHANGELOG.md) |
+| [Paradox Language Support](https://github.com/DragonKnightOfBreeze/Paradox-Language-Support) | JetBrains PSI/config-based semantic tooling. Author documentation models definition injection explicitly for VIC3/EU5 and lists the six modes. Useful reference for schema-driven scopes/refs and IDE affordances. Its CWT extensions are not automatically CWTools-compatible. | [MIT](https://github.com/DragonKnightOfBreeze/Paradox-Language-Support/blob/master/LICENSE); [author's config reference](https://windea.icu/Paradox-Language-Support/en/ref-config-format.html) |
+| [grotaclas/PyHelpersForPDXWikis](https://github.com/grotaclas/PyHelpersForPDXWikis) | Actual EU5/Vic3 entity extraction and localization helpers, using Rakaly and Python tree wrappers. Useful schema/data-extraction reference. A dict-like analysis abstraction is not sufficient proof of lossless rewrites. | [Repository](https://github.com/grotaclas/PyHelpersForPDXWikis); inspect license and pinned revision before reuse |
+| [EU5 Community Mod Toolkit](https://github.com/Europa-Universalis-5-Modding-Co-op/community-mod-toolkit) | EU5 template, formatting policy, Workshop/translation tools and GUI update workflow. Useful build/update prior art rather than a universal parser. Formatting defaults are toolkit policy, not proof of all engine requirements. | [GPL v3](https://github.com/Europa-Universalis-5-Modding-Co-op/community-mod-toolkit/blob/main/LICENSE); [maintainer README](https://github.com/Europa-Universalis-5-Modding-Co-op/community-mod-toolkit/) |
+| [sinjako/EU5-Modhelper](https://github.com/sinjako/EU5-Modhelper) | Browser editor that writes EU5 structures and `REPLACE:` overrides. Useful examples and UI prior art, but README claims such as universal BOM or legacy descriptor requirements require independent verification. Its existence does not establish structural-merge soundness. | [Repository](https://github.com/sinjako/EU5-Modhelper); license not established in this audit |
+
+None of the reviewed projects establishes a general proof that all enabled mods retain all functionality after an autonomous repair. Existing tools should become replaceable adapters, differential comparators, schema inputs, or reference implementations. The authoritative contract remains versioned EU5 observations plus explicit preservation requirements for the particular mod set.
+
+
+**Irony Mod Manager — established merging prior art, EU5 depth needs audit.** The maintainer documents conflict analysis, generated patches and merge viewers, while describing full conflict solving for Stellaris and analysis for HOI4. The repository includes an EU5 topic tag, which is a discovery signal rather than proof of complete EU5 semantics. Evaluate its collection UX, provenance and merge review concepts; do not assume its mature support for another game transfers to EU5. This investigation reviewed this project's documentation rather than running or auditing its full implementation. [Maintainer wiki](https://github.com/bcssov/IronyModManager/wiki/), [repository and MIT license](https://github.com/bcssov/IronyModManager).
+
+## 10. Experiments, findings and implementation checklist
+### Empirical program for uncertain behavior
+
+All experiments below are **P — proposed**, not completed findings. They provide a path from a documented or community rule to a measured production profile. Use a copied, verified seed definition from the selected installation; each probe changes the smallest possible valid field. Preserve required fields and referenced dependencies. Do not substitute the synthetic `testdb` fixture directory into a game test.
+
+### Common minimal-pair protocol
+
+1. Pin the executable, content manifests, branch, DLC, generated documentation, settings, user overlay and original playset. Verify which mods actually load; a mounted-mod list alone is insufficient.
+2. Make A and B independent tiny local mods, each with valid metadata and one probe file. Give each scalar or observable effect a distinct sentinel, e.g. 31 and 47, inside an allowed range.
+3. Run baseline, A, B, A+B and B+A as separate cold starts. Change only the axis named in the experiment. Repeat where timing or randomness might matter.
+4. Observe the value or executed behavior through a verified UI/debug/save probe. Use logs to supplement that observation. Clean logs cannot prove that an override was applied.
+5. Archive input bytes, playsets before/after, logs, milestones, screenshots or saves, observation commands and assertion results. Add a negative control whose wrong outcome is distinguishable.
+6. Promote the rule only for the exact tested family/build scope. A contradiction invalidates downstream automatic repairs and caches using that rule.
+
+### Minimal pairs and discriminating observations
+
+| ID | Controlled A/B inputs | What the observation establishes |
+|---|---|---|
+| E01 Exact path | Same real relative path, different valid sentinel values; swap playset only | Whole-file winner and actual playlist direction; inspect an unrelated definition to prove full shadowing |
+| E02 Distinct filenames | Same target definition, same supported mode, `01_a` versus `99_b`; swap playset, then swap names separately | Filename versus playlist precedence within one mode |
+| E03 Directory traversal | Parent `zz_probe` versus child `probe/00_probe`, same target/mode | Parent-before-descendant behavior, traversal depth and sibling ordering |
+| E04 Six-mode pair grid | For all 36 pairs, A and B use one of six modes on the same seed; run both filename orders | Whether operation-class order dominates names, and whether claimed global batches are per database or per source |
+| E05 Bare creation | A creates a unique valid ID; B strictly injects/replaces it; vary create's filename and playset | Bare registration phase relative to modes; do not infer this from the six-mode list |
+| E06 Duplicate creation | Distinct files create the same bare ID with different sentinels; then repeat the key in one file | Reject/first/last behavior, error severity, within-file ordinal and retained winner |
+| E07 Missing targets | One absent ID for each strict/TRY/OR_CREATE mode; include a valid known control | Error versus ignored operation versus creation, and whether failure aborts the file, object or whole load |
+| E08 Scalar repetition | A/B append different values to a known scalar; repeat with identical values | First, last, additive or rejected reader behavior; identical injection idempotence |
+| E09 Nested repetition | First run seed+A, where A injects another nested block with a disjoint child. Then add B, which replaces the complete seed, as a separate erasure variant | Injection-only run isolates the repeated-block reader; the B variant tests erasure. Use separate tests for trigger/effect blocks |
+| E10 Scripted code | Two uniquely visible effects in a scripted effect/trigger; inject second | Whether source and injected commands both run or injection replaces the definition; count executions |
+| E11 Modifier versus price | Identical-shaped numeric injections in a verified static modifier and price definition | Tests the reported differing accumulation rules without generalizing across families |
+| E12 Event duplicate | Earlier standalone A overrides one copied vanilla event; B changes same ID; repeat in child folder | Earliest-ID selection and whether vanilla is treated specially; observe event option/effect, not only duplicate logs |
+| E13 Event helper closure | A moves a copied event alone; B variant also copies/renames its file-local helper | Visibility, collisions with global helpers, and the required closure for safe movement |
+| E14 On-action composition | A registers unique callback; B registers another; then separate variants edit `events`, `random_events`, trigger or effect | Which fields truly append and whether callbacks fire once; resolves conflicting documentation |
+| E15 Localization | Same language/key in ordinary files, then ordinary/replace, then replace/replace; also identical path | Each priority axis and tie-break separately; include language header, suffix and BOM negative controls |
+| E16 GUI identities | Same named type/template in two distinct files; swap names/playset; compare a same-path whole-file pair | Symbol precedence versus path shadowing; retain a control top-level widget and referenced constant |
+| E17 Path masks | A declares a `replace_paths` entry; B adds a distinct file under it; swap mod order; test descendant/unrelated path | Whether masks remove base only, earlier mods, later mods, and descendants; determine overlay/mask ordering |
+| E18 Cross-stage identity | A defines an ID in `main_menu`, B in `in_game`, with typed references from each stage | Separate versus shared database identity and visibility timing; test constants and script macros separately |
+| E19 Case/Unicode | A/B case-only paths, ASCII versus non-ASCII names and non-ASCII user directory, in separate probes | Actual Windows path aliases and game enumeration; distinguish path-open from decoding errors |
+| E20 Setup managers | One additive manager entry per mod, then repeated ID and deletion via exact-file replacement | Per-manager accumulation, overwrite/removal and creation dependencies |
+| E21 Encodings | Same valid script/GUI/loc/setup document in BOM/no-BOM and invalid-byte variants | Family-specific acceptance; run `setup/start` separately from templates/countries |
+| E22 User overlay/DLC | Add a sentinel file through a disposable editor-generated user overlay and an enabled DLC collision | Extra resource sources and precedence; remove test overlay afterward and verify baseline restoration |
+| E23 Runtime arithmetic | Known script-value sequence; boundary decimals, division, negative values, overflow and constant expressions | Sequential versus constant arithmetic, precision and conversion rules scoped to context |
+| E24 Scope and map semantics | Nested versus dotted transitions; absent left/right targets; two map keys in different insertion orders | `PREV`, existence behavior, map overwrite/iteration and dynamic-reference analysis assumptions |
+| E25 Restart and crash state | Modify one family during a running game; separately cause a resource-load failure in disposable inputs | Hot reload versus cold initialization, crash-driven mod disabling, and the active-playset verification needed by the harness |
+
+**Source disagreement to preserve:** the event wiki describes an earlier-file individual-event override; BerFoe's pinned notes dispute overriding vanilla events by ID while discussing first-wins duplicates. E12 must resolve this before an event patch generator is enabled for a build. Likewise, the dedicated on-action guide is more restrictive than the compatibility overview. A simulator must store conflicting evidence rather than selecting whichever page matches its implementation. [Event guide](https://eu5.paradoxwikis.com/Event_modding), [BerFoe notes](https://github.com/BerFoe/eu5-modding-skill/blob/3b7e8f930303abc949c77f3d5c9b741ee896e620/eu5-modding/references/mod-structure.md), [on-action guide](https://eu5.paradoxwikis.com/On_action).
+
+### What can be simulated accurately now
+
+**P:** bytes, source spans, known syntax, hash identity, declared synthetic contracts, path-risk checks, explicit dependency constraints, and a transparent candidate/provenance graph can be deterministic now. Documentation-supported loader rules can produce **conditional predictions**. They must carry their evidence label through to every affected effective value and repair result.
+
+**H:** a universally exact effective configuration for every EU5 folder cannot be established from the accessible documentation alone. Where rules are missing, report a symbolic value or an unresolved reader, while continuing analysis of independent known regions. Do not silently label an arbitrary fallback as the game's behavior.
+
+### Findings, development priorities and implementation checklist
+
+### Technical specification that is justified by the evidence
+
+Use the already-cited findings as the initial requirements catalogue: stage-aware roots, JSON metadata, source-ordered script structures, distinct symbols and references, database operations, and exceptions by family. Treat public implementations as syntax/architecture evidence, not substitutes for engine observations. Preserve every input and every source occurrence. Compile documented rules into opt-in profiles that disclose exactly which build/family combinations have passed conformance.
+
+The recommended implementation is a Python byte scanner and lossless CST, derived semantic IR and SQLite index, profile-driven VFS/loader interpreter, deterministic delta/merge planner, staged autonomous investigation agent, and a Windows validation worker. React should show provenance and preservation obligations alongside each proposed change. The first production scope should be a few measured database families plus defines, metadata and localization; expand only when coverage and field semantics are established.
+
+### Prioritized plan with exit criteria
+
+| Priority | Deliverable | Exit criterion |
+|---|---|---|
+| P0 | Snapshot store, inventory and Windows path abstraction | Exact hashes; no writes to source/Workshop; case/path fixtures work on both hosts |
+| P0 | Windows VM runtime feasibility and clean baseline | The chosen VM can initialize the actual selected EU5 build and archive a complete baseline run; if not, retain a replaceable worker on a supported Windows host |
+| P1 | Script CST plus JSON/localization/GUI front ends | Byte-exact no-op round trips; diagnostics/recovery; no dict collapse; all known public syntax regressions covered |
+| P1 | Rule/evidence registry and game documentation importer | Every semantic rule has scope, confidence, source/experiment and invalidation keys |
+| P2 | VFS, dependency graph and effective configuration | Reproducible provenance and shadow traces; unknown rules remain unknown; measured minimal pairs pass |
+| P2 | First 20 fixture families | Each matrix row has exact manifests, golden findings/effective output, and no-write or patch assertions |
+| P3 | Deterministic safe merges | No lost obligations; full-stack post-patch simulation; rollback and concurrent-update rejection |
+| P3 | Runtime harness | Baseline/individual/stack/repaired runs; correct playset verified; log diffs plus direct observations |
+| P4 | OpenRouter agent | Narrow staged tools, mock/replay suite, bounded investigation, schema and preservation gates |
+| P4 | Genuine design-conflict UI | Alternatives show what is retained/waived; decision bound to exact input fingerprints |
+| P5 | Updates and broader families | Workshop/game/profile changes rebase or invalidate repairs; old evidence remains inspectable |
+
+The test matrix's 20 numbered families are the first implementation backlog; fixture 8 should expand into multiple ordering probes, and fixture 7 into all mode/presence combinations. Maintain negative examples as first-class tests, especially proposals that parse and launch but drop a contribution.
+
+### Dangerous assumptions to prohibit
+
+- A normal dictionary can represent a mod's script without loss.
+- Every numeric field is a scalar replacement, or every injection is an additive delta.
+- `zz_` names or final playlist position give every patch final authority.
+- Bare creation and the six prefixed modes necessarily share one universal pass.
+- Duplicate IDs, localization, GUI, setup and on-actions all use the same loader.
+- A stage label can be removed from a path or symbol key without checking cross-stage identity.
+- Current vanilla is the author's original common ancestor.
+- A dependency declaration automatically enables, installs or orders its target.
+- Every mounted mod is active, or every `isEnabled = false` entry is inactive.
+- All text files require BOM, all `.yml` files accept an ordinary YAML serializer, or a decode error proves a bad codec.
+- A clean error log proves content loaded, or the absence of a syntax error proves semantic validity.
+- A parser claiming EU5 support certifies database semantics, GUI behavior or round-trip fidelity.
+- Runtime maps are ordered lists, dot chaining is a harmless formatting rewrite, or textual macros are ordinary function calls.
+- A Workshop update preserves repair assumptions just because its displayed version is unchanged.
+- Satisfying the currently loaded winner preserves every mod's intended functionality.
+
+### Final implementation checklist
+
+- [ ] Resolve actual Documents and all Steam libraries; inventory vanilla, DLC, local/Workshop and user-overlay candidates.
+- [ ] Snapshot enabled order and identity with evidence appropriate to the game build.
+- [ ] Preserve bytes, BOM, newline style, unknown metadata and all repeated ordered nodes.
+- [ ] Record byte/line/UTF-16 conversions and exact edit preconditions.
+- [ ] Keep active VFS content separate from hidden-source intent analysis.
+- [ ] Register only explicitly supported directory/family profiles; retain opaque unsupported content.
+- [ ] Separate operation scheduling from field-reader interpretation and from gameplay execution.
+- [ ] Track package, symbol, operation and behavior graphs with literal/dynamic/unknown references.
+- [ ] Bind rules to sources, experiments, executable/content/doc hashes and DLC scope.
+- [ ] Distinguish compatible overlap, lost intent, design contradiction, order sensitivity and unknown semantics.
+- [ ] Implement the 20 contract families before enabling repair export.
+- [ ] Materialize game conformance probes from private valid seeds and archive direct observations.
+- [ ] Derive deltas from pinned author baselines; mark unavailable ancestry explicitly.
+- [ ] Require preservation assertions, expected effective results and no unintended write-set changes.
+- [ ] Prefer generated patches; use isolated managed copies when the loader cannot express the repair.
+- [ ] Give the agent read/search/history/probe tools and staging-only structural writes.
+- [ ] Validate every model proposal locally; reject invalid or unsupported tool requests and design waivers.
+- [ ] Show concrete user choices only for genuine unresolved design conflicts.
+- [ ] Archive logs before normalization; compare counts and stages, not just distinct messages.
+- [ ] Verify the active playset after crashes and before each runtime result is trusted.
+- [ ] Invalidate on changed read sets, game content, docs, profiles or approved design assumptions.
+- [ ] Export transactional manifests and exact rollback material; recheck hashes immediately before promotion.
+- [ ] Report coverage and unproven obligations alongside every compatibility result.
+
+### Source and methodology notes
+
+This report combines direct official announcements, Paradox-hosted community documentation, pinned public implementation audits and original engineering proposals. Repository test suites and the game itself were **not executed**; inspected test code is reported as evidence of intended coverage, not a passing result. The JSON examples and output packaging were checked locally. Source links next to claims are the primary bibliography; commit hashes in the prior-art table pin the audited code.
+
+| Source group | Best use | Limitation retained |
+|---|---|---|
+| Official 2025 modding diary; February 2026 1.1 modding diary; stable/beta announcements | Origin of features, event examples, version boundaries | Historical descriptions may be superseded; not a complete loader specification |
+| EU5 wiki structure, compatibility, events, scope, macros, variables, values, localization, setup, console and debugging | Documented contracts and commands | Community edits; mixed verification ages; incomplete folder coverage and conflicting statements |
+| Public mod source and firsthand tooling notes | Real file shapes, identities, measured author observations | Version and mod specific; copied knowledge can be wrong or stale |
+| Pinned parser/tool repositories | Actual grammar, tree representation, edit and validation architecture, license evidence | Parsing success does not prove load semantics; some corpus data is private |
+| OpenRouter official API documentation | Tool-call protocol, response schemas and endpoint capabilities | Remote inference remains nondeterministic; provider support changes |
+
+The remaining uncertainty is concentrated in executable behavior and mod intent, not hidden behind a generic “Clausewitz” assumption. The implementation can proceed on macOS while the Windows probes establish the exact production profiles.

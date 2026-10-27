@@ -1,0 +1,532 @@
+{
+  "schema_version": 1,
+  "envelope": {
+    "additionalProperties": false,
+    "properties": {
+      "command": {
+        "enum": [
+          "create_workspace",
+          "scan",
+          "stage",
+          "decision",
+          "validate",
+          "export",
+          "rollback",
+          "investigate",
+          "cancel",
+          "backup",
+          "runtime_probe",
+          "configure_inference"
+        ],
+        "title": "Command",
+        "type": "string"
+      },
+      "workspace_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Workspace Id"
+      },
+      "payload": {
+        "additionalProperties": true,
+        "title": "Payload",
+        "type": "object"
+      },
+      "idempotency_key": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Idempotency Key",
+        "type": "string"
+      },
+      "expected_revision": {
+        "anyOf": [
+          {
+            "minimum": 1,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Expected Revision"
+      }
+    },
+    "required": [
+      "command",
+      "idempotency_key"
+    ],
+    "title": "Command",
+    "type": "object"
+  },
+  "payloads": {
+    "create_workspace": {
+      "$defs": {
+        "Source": {
+          "additionalProperties": false,
+          "properties": {
+            "owner": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Owner",
+              "type": "string"
+            },
+            "path": {
+              "maxLength": 32760,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            }
+          },
+          "required": [
+            "owner",
+            "path"
+          ],
+          "title": "Source",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "default": "New workspace",
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "mode": {
+          "default": "synthetic",
+          "enum": [
+            "synthetic",
+            "game"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/Source"
+          },
+          "maxItems": 1000,
+          "title": "Sources",
+          "type": "array"
+        },
+        "fixture_path": {
+          "anyOf": [
+            {
+              "maxLength": 32760,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fixture Path"
+        }
+      },
+      "title": "CreateWorkspace",
+      "type": "object"
+    },
+    "scan": {
+      "$defs": {
+        "Input": {
+          "additionalProperties": false,
+          "properties": {
+            "owner": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Owner",
+              "type": "string"
+            },
+            "path": {
+              "maxLength": 32760,
+              "minLength": 1,
+              "title": "Path",
+              "type": "string"
+            },
+            "bytes_base64": {
+              "maxLength": 90000000,
+              "title": "Bytes Base64",
+              "type": "string"
+            }
+          },
+          "required": [
+            "owner",
+            "path",
+            "bytes_base64"
+          ],
+          "title": "Input",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "fixture_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fixture Id"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/Input"
+          },
+          "maxItems": 50000,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "playset": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 1000,
+          "title": "Playset",
+          "type": "array"
+        },
+        "baselines": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baselines"
+        },
+        "profile_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile Id"
+        }
+      },
+      "title": "Scan",
+      "type": "object"
+    },
+    "stage": {
+      "additionalProperties": false,
+      "properties": {
+        "scan_id": {
+          "title": "Scan Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scan_id"
+      ],
+      "title": "Stage",
+      "type": "object"
+    },
+    "decision": {
+      "additionalProperties": false,
+      "properties": {
+        "scan_id": {
+          "title": "Scan Id",
+          "type": "string"
+        },
+        "choice": {
+          "minLength": 1,
+          "title": "Choice",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "obligation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Obligation Id"
+        },
+        "definition_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Definition Id"
+        }
+      },
+      "required": [
+        "scan_id",
+        "choice",
+        "reason"
+      ],
+      "title": "Decision",
+      "type": "object"
+    },
+    "validate": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id"
+      ],
+      "title": "Validate",
+      "type": "object"
+    },
+    "export": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "kind": {
+          "default": "experimental_bundle",
+          "enum": [
+            "experimental_bundle",
+            "validated_managed_release"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id"
+      ],
+      "title": "Export",
+      "type": "object"
+    },
+    "rollback": {
+      "additionalProperties": false,
+      "properties": {
+        "release_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Release Id"
+        },
+        "preview": {
+          "default": true,
+          "title": "Preview",
+          "type": "boolean"
+        }
+      },
+      "title": "Rollback",
+      "type": "object"
+    },
+    "investigate": {
+      "additionalProperties": false,
+      "properties": {
+        "scan_id": {
+          "title": "Scan Id",
+          "type": "string"
+        },
+        "mode": {
+          "default": "replay",
+          "enum": [
+            "replay",
+            "live"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "replay": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "maxItems": 100,
+          "title": "Replay",
+          "type": "array"
+        }
+      },
+      "required": [
+        "scan_id"
+      ],
+      "title": "Investigate",
+      "type": "object"
+    },
+    "cancel": {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "title": "Job Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "job_id"
+      ],
+      "title": "Cancel",
+      "type": "object"
+    },
+    "backup": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "Backup",
+      "type": "object"
+    },
+    "runtime_probe": {
+      "additionalProperties": false,
+      "properties": {
+        "recipe": {
+          "additionalProperties": true,
+          "title": "Recipe",
+          "type": "object"
+        }
+      },
+      "title": "RuntimeProbe",
+      "type": "object"
+    },
+    "configure_inference": {
+      "$defs": {
+        "InvestigationBudgets": {
+          "additionalProperties": false,
+          "properties": {
+            "max_calls": {
+              "default": 8,
+              "maximum": 32,
+              "minimum": 1,
+              "title": "Max Calls",
+              "type": "integer"
+            },
+            "max_tool_calls": {
+              "default": 24,
+              "maximum": 256,
+              "minimum": 0,
+              "title": "Max Tool Calls",
+              "type": "integer"
+            },
+            "max_source_bytes": {
+              "default": 131072,
+              "maximum": 1048576,
+              "minimum": 1024,
+              "title": "Max Source Bytes",
+              "type": "integer"
+            },
+            "max_tokens": {
+              "default": 64000,
+              "maximum": 262144,
+              "minimum": 1024,
+              "title": "Max Tokens",
+              "type": "integer"
+            },
+            "max_seconds": {
+              "default": 120,
+              "maximum": 600,
+              "minimum": 1,
+              "title": "Max Seconds",
+              "type": "integer"
+            }
+          },
+          "title": "InvestigationBudgets",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "model": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Model",
+          "type": "string"
+        },
+        "allowed_providers": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Allowed Providers",
+          "type": "array"
+        },
+        "excluded_patterns": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Excluded Patterns",
+          "type": "array"
+        },
+        "budgets": {
+          "$ref": "#/$defs/InvestigationBudgets"
+        },
+        "tools_supported": {
+          "default": false,
+          "title": "Tools Supported",
+          "type": "boolean"
+        },
+        "source_policy_confirmed": {
+          "default": false,
+          "title": "Source Policy Confirmed",
+          "type": "boolean"
+        },
+        "provider_policy_confirmed": {
+          "default": false,
+          "title": "Provider Policy Confirmed",
+          "type": "boolean"
+        }
+      },
+      "title": "InferencePolicy",
+      "type": "object"
+    }
+  }
+}
