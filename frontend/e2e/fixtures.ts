@@ -24,8 +24,8 @@ export interface App {
   inspectZip(filename: string): { names: string[]; manifest: Record<string, any>; files: Record<string, { bytes_base64: string; sha256: string }> };
 }
 
-export function hashTree(root: string): Record<string, string> {
-  const result: Record<string, string> = {};
+function filePaths(root: string): string[] {
+  const result: string[] = [];
   if (!fs.existsSync(root)) return result;
   function walk(directory: string) {
     for (const entry of fs.readdirSync(directory).sort()) {
@@ -33,15 +33,22 @@ export function hashTree(root: string): Record<string, string> {
       const info = fs.lstatSync(filename);
       if (info.isSymbolicLink()) throw new Error('Test source unexpectedly contains a link');
       if (info.isDirectory()) walk(filename);
-      else result[path.relative(root, filename).split(path.sep).join('/')] = createHash('sha256').update(fs.readFileSync(filename)).digest('hex');
+      else if (info.isFile()) result.push(path.relative(root, filename).split(path.sep).join('/'));
+      else throw new Error('Test tree unexpectedly contains a nonregular file');
     }
   }
   walk(root);
   return result;
 }
 
+export function hashTree(root: string): Record<string, string> {
+  return Object.fromEntries(filePaths(root).map(relative => [relative,
+    createHash('sha256').update(fs.readFileSync(path.join(root, relative))).digest('hex')]));
+}
+
 export function expectInactive(app: App) {
-  const names = Object.keys(hashTree(app.state));
+  // Only names matter here. The live coordinator lock cannot be read on Windows.
+  const names = filePaths(app.state);
   expect(names.filter(name => /(^|\/)(active-release\.json|playsets\.json|content_load\.json)$/.test(name))).toEqual([]);
 }
 
