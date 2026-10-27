@@ -22,7 +22,7 @@
 
 | Check | Result |
 |---|---|
-| Python tests | **262 passed** on macOS/Python 3.12.16 |
+| Python tests | **263 passed** on macOS/Python 3.12.16 |
 | Executable fixture runner | **F01–F20 all pass** their declared synthetic expectations, including blocked/no-write outcomes |
 | React integration tests | **7 passed**, including workflow, explicit choices, stale/outage handling, roots, inference privacy/configuration |
 | TypeScript and production frontend build | Pass on Node 22.22.0 |
@@ -38,7 +38,7 @@
 
 The Python test run emits one FastAPI/Starlette test-client deprecation warning about its HTTP transport adapter. It does not affect passing results. No game log warning allowlist is inferred from this tooling warning.
 
-The seven React tests use mocked API responses; the five Playwright tests run the actual application without API mocks. Browser tests preserve source hashes, leave active-playset/release files absent, and reject external network access. These are synthetic application contracts, not executed EU5 evidence. CI is configured to run this browser lane on macOS and Windows; Windows execution has not been performed in this session.
+The seven React tests use mocked API responses; the five Playwright tests run the actual application without API mocks. Browser tests preserve source hashes, leave active-playset/release files absent, and reject external network access. These are synthetic application contracts, not executed EU5 evidence. GitHub Actions runs the backend and browser lanes on macOS and Windows; results are recorded in the [CI history](https://github.com/msimon42/eu5-validation-engine/actions). The user's Windows 11 VM, launcher and EU5 execution still require qualification.
 
 ## Qualification and remaining scope
 

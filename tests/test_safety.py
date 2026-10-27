@@ -1,6 +1,7 @@
 import threading
 import subprocess
 import sys
+from contextlib import contextmanager
 
 import pytest
 
@@ -50,6 +51,10 @@ def test_containment_aliases_bounds_and_immutable_write(tmp_path):
     fs.write_bytes("a/Test", b"original")
     with pytest.raises(ValueError, match="aliased"):
         fs.write_bytes("a/test", b"bad")
+    with pytest.raises(ValueError, match="aliased"):
+        fs.read_bytes("a/test")
+    with pytest.raises(ValueError, match="aliased"):
+        fs.unlink("a/test")
     with pytest.raises(FileExistsError):
         fs.write_bytes("a/Test", b"bad", replace=False)
     with pytest.raises(ValueError, match="bounded"):
@@ -57,6 +62,30 @@ def test_containment_aliases_bounds_and_immutable_write(tmp_path):
     assert fs.read_bytes("a/Test") == b"original"
     with pytest.raises(ValueError):
         fs.read_bytes("a/Test", max_bytes=4)
+
+
+def test_large_read_ceiling_does_not_allocate_the_ceiling(tmp_path, monkeypatch):
+    from backend.engine import safety
+    fs = ManagedFS(tmp_path / "managed", max_bytes=2 ** 42)
+    raw = bytes(range(256)) * 8192 + b"\r\n\x1a"
+    fs.write_bytes("journal.bin", raw)
+    fdopen = safety.os.fdopen
+
+    class BoundedReader:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def read(self, size):
+            assert 0 < size <= 1024 * 1024, "read allocated from the byte ceiling"
+            return self.stream.read(size)
+
+    @contextmanager
+    def guarded_fdopen(*args, **kwargs):
+        with fdopen(*args, **kwargs) as stream:
+            yield BoundedReader(stream)
+
+    monkeypatch.setattr(safety.os, "fdopen", guarded_fdopen)
+    assert fs.read_bytes("journal.bin") == raw
 
 
 def test_source_reader_never_follows_parent_or_final_links(tmp_path):

@@ -14,7 +14,7 @@ uv run python scripts/test_e2e.py --headed
 
 uv supplies the pinned Python 3.12 runtime. On first use, the runner installs locked frontend dependencies and Chromium into the project cache, builds the UI, and starts the actual application for each test. No EU5 installation, Windows VM, OpenRouter account, or API key is needed.
 
-The five browser tests read physical synthetic mod files and exercise repair/export, explicit conflict decisions, malformed input, unknown preservation obligations, and stale-source rejection. They use real HTTP requests and SQLite state, check the downloaded ZIP and original byte hashes, and verify that no playset is activated. Each test gets temporary state and a separate local port, so an existing preview can stay open. **All five passed on macOS; Windows browser execution remains to be run.**
+The five browser tests read physical synthetic mod files and exercise repair/export, explicit conflict decisions, malformed input, unknown preservation obligations, and stale-source rejection. They use real HTTP requests and SQLite state, check the downloaded ZIP and original byte hashes, and verify that no playset is activated. Each test gets temporary state and a separate local port, so an existing preview can stay open. **All five passed on macOS.** GitHub Actions runs the same suite on macOS and Windows; the user's VM and game checks are separate.
 
 Open `frontend/playwright-report/index.html` after a run. Failure reports include screenshots, traces, and backend logs. See [testing operations](docs/operations/TESTING.md) for coverage and debugging commands.
 

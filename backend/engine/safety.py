@@ -159,12 +159,15 @@ class ManagedFS:
     def _windows_parent(self, normalized: str, create: bool) -> None:
         self.resolve(normalized)
         current = self.root
-        for part in normalized.split("/")[:-1]:
+        parts = normalized.split("/")
+        for index, part in enumerate(parts):
             if current.exists():
                 for entry in current.iterdir():
                     if entry.name != part and entry.name.casefold() == part.casefold():
                         raise ValueError("case-aliased managed path")
             current = current / part
+            if index == len(parts) - 1:
+                break
             if current.exists():
                 info = current.lstat()
                 if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
@@ -177,16 +180,14 @@ class ManagedFS:
         limit = self.max_bytes if max_bytes is None else min(max_bytes, self.max_bytes)
         with self._parent(path) as (fd, name):
             target = self.root / name if fd == -1 else name
-            handle = os.open(target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0),
+            handle = os.open(target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
                              **({} if fd == -1 else {"dir_fd": fd}))
             try:
                 info = os.fstat(handle)
                 if not stat.S_ISREG(info.st_mode) or info.st_size > limit:
                     raise ValueError("only bounded regular files may be read")
                 with os.fdopen(handle, "rb", closefd=False) as stream:
-                    data = stream.read(limit + 1)
-                if len(data) > limit:
-                    raise ValueError("read budget exceeded")
+                    data = _read_bounded(stream, limit)
                 return data
             finally:
                 os.close(handle)
@@ -279,6 +280,18 @@ class ManagedFS:
                 os.fsync(fd)
 
 
+def _read_bounded(stream, limit: int) -> bytes:
+    # A byte ceiling can be terabytes for streamed backups. Never ask the CRT
+    # to allocate that ceiling just to read a tiny manifest or journal.
+    chunks, size = [], 0
+    while chunk := stream.read(min(1024 * 1024, limit - size + 1)):
+        size += len(chunk)
+        if size > limit:
+            raise ValueError("read budget exceeded")
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
 def read_source_bytes(root: Path, relative: str, max_bytes: int = 32 * 1024 * 1024) -> bytes:
     """Read one source capability without creating or changing source content."""
     root = Path(root).absolute()
@@ -302,10 +315,7 @@ def _read_windows_source(root: Path, relative: str, max_bytes: int) -> bytes:
         info = os.fstat(stream.fileno())
         if not stat.S_ISREG(info.st_mode) or info.st_size > max_bytes:
             raise ValueError("source exceeds bounded regular-file policy")
-        data = stream.read(max_bytes + 1)
-        if len(data) > max_bytes:
-            raise ValueError("source exceeds byte budget")
-        return data
+        return _read_bounded(stream, max_bytes)
 
 
 def _windows_source_descriptor(root: Path, relative: str) -> int:
@@ -321,6 +331,13 @@ def _windows_source_descriptor(root: Path, relative: str) -> int:
     final_path = kernel.GetFinalPathNameByHandleW
     final_path.argtypes = [wintypes.HANDLE, wintypes.LPWSTR, wintypes.DWORD, wintypes.DWORD]
     final_path.restype = wintypes.DWORD
+    attribute_info = kernel.GetFileInformationByHandleEx
+    attribute_info.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+    attribute_info.restype = wintypes.BOOL
+
+    class FileAttributeTagInfo(ctypes.Structure):
+        _fields_ = [("FileAttributes", wintypes.DWORD), ("ReparseTag", wintypes.DWORD)]
+
     close = kernel.CloseHandle
     close.argtypes = [wintypes.HANDLE]
     invalid = ctypes.c_void_p(-1).value
@@ -330,6 +347,15 @@ def _windows_source_descriptor(root: Path, relative: str) -> int:
                         0x00200000 | (0x02000000 if directory else 0), None)
         if handle == invalid:
             raise ValueError("cannot safely open Windows source")
+        attributes = FileAttributeTagInfo()
+        # FileAttributeTagInfo (9) describes the opened object. A final link
+        # opened with OPEN_REPARSE_POINT can retain the expected path spelling.
+        if not attribute_info(handle, 9, ctypes.byref(attributes), ctypes.sizeof(attributes)):
+            close(handle)
+            raise ValueError("cannot verify opened Windows source attributes")
+        if attributes.FileAttributes & 0x400:
+            close(handle)
+            raise ValueError("Windows source links/reparse points are forbidden")
         buffer = ctypes.create_unicode_buffer(32768)
         count = final_path(handle, buffer, len(buffer), 0)
         if not count or count >= len(buffer):
