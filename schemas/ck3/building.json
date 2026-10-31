@@ -1,0 +1,37 @@
+{
+  "entity": "building",
+  "game": "ck3",
+  "filePath": "common/buildings/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "construction_time": { "type": "number" },
+    "cost_gold": { "type": "block" },
+    "cost_prestige": { "type": "block" },
+    "levy": { "type": "number" },
+    "max_garrison": { "type": "number" },
+    "garrison": { "type": "number" },
+    "county_modifier": { "type": "block" },
+    "province_modifier": { "type": "block" },
+    "character_modifier": { "type": "block" },
+    "duchy_capital_county_modifier": { "type": "block" },
+    "province_culture_modifier": { "type": "block" },
+    "province_faith_modifier": { "type": "block" },
+    "province_terrain_modifier": { "type": "block" },
+    "type": { "type": "string" },
+    "can_construct_potential": { "type": "block" },
+    "can_construct_showing_failures_only": { "type": "block" },
+    "can_construct": { "type": "block" },
+    "is_enabled": { "type": "block" },
+    "next_building": { "type": "reference", "refType": "building" },
+    "ai_value": { "type": "block" },
+    "flag": { "type": "string" },
+    "on_complete": { "type": "block" },
+    "type_icon": { "type": "string" },
+    "tax": { "type": "number" },
+    "asset": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

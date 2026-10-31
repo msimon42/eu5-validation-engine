@@ -1,0 +1,21 @@
+{
+  "entity": "struggle",
+  "game": "ck3",
+  "filePath": "common/struggles/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "cultures": { "type": "block" },
+    "faiths": { "type": "block" },
+    "regions": { "type": "block" },
+    "involvement": { "type": "block" },
+    "phases": { "type": "block" },
+    "start_phase": { "type": "reference", "refType": "struggle_phase" },
+    "on_start": { "type": "block" },
+    "on_end": { "type": "block" },
+    "ending_decisions": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

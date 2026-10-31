@@ -1,0 +1,23 @@
+{
+  "entity": "doctrine",
+  "game": "ck3",
+  "filePath": "common/religion/doctrines/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "group": { "type": "reference", "refType": "doctrine_group" },
+    "piety_cost": { "type": "block" },
+    "is_shown": { "type": "block" },
+    "can_pick": { "type": "block" },
+    "character_modifier": { "type": "block" },
+    "clergy_modifier": { "type": "block" },
+    "doctrine_modifier": { "type": "block" },
+    "traits": { "type": "block" },
+    "parameters": { "type": "block" },
+    "icon": { "type": "string" },
+    "number_of_picks": { "type": "number" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

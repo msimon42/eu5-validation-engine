@@ -21,6 +21,7 @@ export interface App {
   root: string;
   state: string;
   fixture(id: string): DiskFixture;
+  ck3Fixture(): { root: string; steam: string; installation: string; user_data: string; platform: 'macos' | 'windows'; active_order: string[]; alternate_order: string[] };
   inspectZip(filename: string): { names: string[]; manifest: Record<string, any>; files: Record<string, { bytes_base64: string; sha256: string }> };
 }
 
@@ -95,6 +96,7 @@ export const test = base.extend<{ app: App }>({
       const app: App = {
         url, root, state,
         fixture: id => helper('materialize', path.join(root, `Synthetic mods ${id} – offline`), id),
+        ck3Fixture: () => helper('materialize_ck3', path.join(root, 'Synthetic CK3 – offline')),
         inspectZip: filename => helper('inspect_zip', filename),
       };
       await use(app);

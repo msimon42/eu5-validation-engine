@@ -1,0 +1,8 @@
+{
+  "entity": "scripted_trigger",
+  "game": "ck3",
+  "filePath": "common/scripted_triggers/*.txt",
+  "requiredFields": {},
+  "optionalFields": {},
+  "localizationKeys": []
+}

@@ -1,0 +1,27 @@
+{
+  "entity": "religion",
+  "game": "ck3",
+  "filePath": "common/religion/religions/*.txt",
+  "requiredFields": {
+    "family": { "type": "reference", "refType": "religion_family" },
+    "doctrine": { "type": "reference", "refType": "doctrine", "min": 1 },
+    "holy_site": { "type": "reference", "refType": "holy_site", "min": 3, "max": 5 }
+  },
+  "optionalFields": {
+    "graphical_faith": { "type": "string" },
+    "piety_icon_group": { "type": "string" },
+    "doctrine_background_icon": { "type": "string" },
+    "reserved_male_names": { "type": "list" },
+    "reserved_female_names": { "type": "list" },
+    "faiths": { "type": "block" },
+    "color": { "type": "block" },
+    "pagan_roots": { "type": "boolean" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc",
+    "{key}_adj",
+    "{key}_adherent",
+    "{key}_adherent_plural"
+  ]
+}

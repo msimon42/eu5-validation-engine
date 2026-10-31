@@ -1,0 +1,30 @@
+{
+  "entity": "artifact",
+  "game": "ck3",
+  "filePath": "common/artifacts/types/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "slot": { "type": "string" },
+    "icon": { "type": "string" },
+    "quality": { "type": "block" },
+    "wealth": { "type": "block" },
+    "rarity": { "type": "string", "validValues": ["common", "masterwork", "famed", "illustrious"] },
+    "modifier": { "type": "block" },
+    "equip_modifier": { "type": "block" },
+    "court_artifact_modifier": { "type": "block" },
+    "valid_for": { "type": "block" },
+    "can_equip": { "type": "block" },
+    "can_reforge": { "type": "block" },
+    "can_benefit": { "type": "block" },
+    "ai_will_do": { "type": "block" },
+    "destroy_on_death": { "type": "boolean" },
+    "decaying": { "type": "boolean" },
+    "unique": { "type": "boolean" },
+    "visuals": { "type": "block" },
+    "template": { "type": "reference", "refType": "artifact_template" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

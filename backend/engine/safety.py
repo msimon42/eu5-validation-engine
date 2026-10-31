@@ -56,12 +56,41 @@ def check_path_collisions(paths: list[str]) -> None:
         seen[key] = raw
 
 
+def validate_source_relative_path(path: str) -> str:
+    """Validate host source traversal without applying a Windows output policy.
+
+    A macOS source can contain Windows-reserved names. Preserve that spelling;
+    managed writes still use validate_relative_path and collision checks.
+    """
+    if os.name == "nt":
+        return validate_relative_path(path)
+    if (not isinstance(path, str) or not path or len(path) > 32760 or path.startswith("/")
+            or any(ord(char) < 32 or ord(char) == 127 for char in path)
+            or any(part in {"", ".", ".."} for part in path.split("/"))):
+        raise ValueError("invalid host-relative source path")
+    return path
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
 def _inside(path: Path, parent: Path) -> bool:
     return path == parent or parent in path.parents
+
+
+def paths_overlap(first: Path, second: Path) -> bool:
+    """Compare containment using host identities, including case aliases."""
+    first, second = Path(first).absolute(), Path(second).absolute()
+    if _inside(first, second) or _inside(second, first):
+        return True
+    for path, root in ((first, second), (second, first)):
+        if not root.exists():
+            continue
+        for parent in (path, *path.parents):
+            if parent.exists() and parent.samefile(root):
+                return True
+    return False
 
 
 def reject_link_components(path: Path) -> Path:
@@ -292,9 +321,15 @@ def _read_bounded(stream, limit: int) -> bytes:
     return b"".join(chunks)
 
 
-def read_source_bytes(root: Path, relative: str, max_bytes: int = 32 * 1024 * 1024) -> bytes:
+def read_source_bytes(root: Path, relative: str, max_bytes: int = 32 * 1024 * 1024,
+                      *, native_paths: bool = False) -> bytes:
     """Read one source capability without creating or changing source content."""
     root = Path(root).absolute()
+    if native_paths:
+        with open_source_stream(root, relative, native_paths=True) as stream:
+            if os.fstat(stream.fileno()).st_size > max_bytes:
+                raise ValueError("source exceeds bounded regular-file policy")
+            return _read_bounded(stream, max_bytes)
     relative = validate_relative_path(relative)
     if root.is_symlink() or not root.is_dir():
         raise ValueError("source root must be an existing non-link directory")
@@ -379,15 +414,32 @@ def _windows_source_descriptor(root: Path, relative: str) -> int:
             close(file_handle)
 
 
+def _posix_source_descriptor(root: Path, relative: str) -> int:
+    """Anchor each source component without case folding or following links."""
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    parent = os.open(root.anchor, flags)
+    try:
+        parts = [*root.parts[1:], *relative.split("/")]
+        for part in parts[:-1]:
+            child = os.open(part, flags, dir_fd=parent)
+            os.close(parent)
+            parent = child
+        return os.open(parts[-1], os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK, dir_fd=parent)
+    finally:
+        os.close(parent)
+
+
 @contextmanager
-def open_source_stream(root: Path, relative: str):
+def open_source_stream(root: Path, relative: str, *, native_paths: bool = False):
     """Open an anchored regular source without following directory/file links."""
     root = Path(root).absolute()
-    relative = validate_relative_path(relative)
+    relative = validate_source_relative_path(relative) if native_paths else validate_relative_path(relative)
     if not root.is_dir() or root.is_symlink() or getattr(root.lstat(), "st_file_attributes", 0) & 0x400:
         raise ValueError("source root must be a real non-reparse directory")
     if os.name == "nt":
         descriptor = _windows_source_descriptor(root, relative)
+    elif native_paths:
+        descriptor = _posix_source_descriptor(root, relative)
     else:
         reader = ManagedFS.__new__(ManagedFS)
         reader.root, reader.sources, reader.max_bytes = root, [], 2 ** 42
@@ -401,23 +453,25 @@ def open_source_stream(root: Path, relative: str):
         yield stream
 
 
-def hash_source_file(root: Path, relative: str, *, max_bytes: int = 2 ** 42) -> dict:
+def hash_source_file(root: Path, relative: str, *, max_bytes: int = 2 ** 42,
+                     native_paths: bool = False) -> dict:
     """Stream an exact stable source hash without loading large game assets."""
     digest, length = hashlib.sha256(), 0
-    for chunk in iter_source_file(root, relative, max_bytes=max_bytes):
+    for chunk in iter_source_file(root, relative, max_bytes=max_bytes, native_paths=native_paths):
         digest.update(chunk)
         length += len(chunk)
-    return {"path": validate_relative_path(relative), "sha256": digest.hexdigest(), "size": length}
+    validated = validate_source_relative_path(relative) if native_paths else validate_relative_path(relative)
+    return {"path": validated, "sha256": digest.hexdigest(), "size": length}
 
 
 def iter_source_file(root: Path, relative: str, *, chunk_size: int = 1024 * 1024,
-                     max_bytes: int = 2 ** 42) -> Iterator[bytes]:
+                     max_bytes: int = 2 ** 42, native_paths: bool = False) -> Iterator[bytes]:
     """Bounded chunks from one stable source, including pathname replacement checks."""
     if not isinstance(chunk_size, int) or isinstance(chunk_size, bool) or not 1 <= chunk_size <= 8 * 1024 * 1024:
         raise ValueError("source chunk size is outside bounds")
     if not isinstance(max_bytes, int) or isinstance(max_bytes, bool) or max_bytes < 0:
         raise ValueError("source byte budget must be nonnegative")
-    with open_source_stream(root, relative) as stream:
+    with open_source_stream(root, relative, native_paths=native_paths) as stream:
         before = os.fstat(stream.fileno())
         if not stat.S_ISREG(before.st_mode) or before.st_size > max_bytes:
             raise ValueError("hash input is not a bounded regular source file")
@@ -434,7 +488,7 @@ def iter_source_file(root: Path, relative: str, *, chunk_size: int = 1024 * 1024
             raise ValueError("source changed while hashing")
         # Workshop updates can replace a filename while the original open
         # handle remains stable. The final name must still identify that file.
-        with open_source_stream(root, relative) as current:
+        with open_source_stream(root, relative, native_paths=native_paths) as current:
             if identity(before) != identity(os.fstat(current.fileno())):
                 raise ValueError("source path changed during capture")
 

@@ -1,0 +1,1784 @@
+{
+  "format": "ck3-knowledge-1",
+  "revision": "ck3-reference-2026-10-30.1",
+  "game_id": "ck3",
+  "inspected_game_labels": [
+    "1.19.0.4"
+  ],
+  "runtime_qualified": false,
+  "game_observations": [],
+  "research_policy": {
+    "automatic_public_research": true,
+    "private_file_contents_in_searches": false,
+    "sources": [
+      "installed game documentation",
+      "public official documentation",
+      "mod-author explanations",
+      "pinned specialist references"
+    ],
+    "new_claims": "Keep sourced research distinct from inspected files and executed game observations. Preserve conflicting sources; never promote claims by confidence alone."
+  },
+  "sources": [
+    {
+      "id": "events",
+      "title": "Installed CK3 event documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/events/_events.info",
+      "sha256": "db52ce9b9d048c6df7dd880e035c700046878bc9e829f82b8af4c1cc6dede09b",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "interactions",
+      "title": "Installed CK3 character interaction documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/character_interactions/_character_interactions.info",
+      "sha256": "f360c05b72cd2b0d87885e570fa55e70e41089defb4675be5a82e390940d5d10",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "on-actions",
+      "title": "Installed CK3 on-action documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/on_action/_on_actions.info",
+      "sha256": "2bfbbf903d55a2417c988caf1479ef0ff91719c55128ce6357bca3d2c8e9b25f",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "history",
+      "title": "Installed CK3 history documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/history/_history.info",
+      "sha256": "09da767034fbcd89e8a9604e3a166c8f02911e8166f37c9abd28743eccb7d341",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "custom-localization",
+      "title": "Installed CK3 customizable localization documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/customizable_localization/_custom_loc.info",
+      "sha256": "c51aa9449e5ddf3a546756e05e9409b011cbec1ed42d40313d2ecb3fffeeec75",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "script-values",
+      "title": "Installed CK3 script-value documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/script_values/_script_values.info",
+      "sha256": "764ad711339c61bf239851bd52d87168dc1a2c91fe0c385c308ec4b85e2b5ef1",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "reader",
+      "title": "Installed CK3 reader actions and variables",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/reader_export/_reader_export.info",
+      "sha256": "6835aedc8ebeff8b9392eb99c76e61d4388984a5a58cc6d24136c6373f10d46f",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "widgets",
+      "title": "Installed CK3 scripted-widget documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/gui/scripted_widgets/_scripted_widgets.info",
+      "sha256": "c5e1e671c0328e37a11aa56004033f4609ed8709b56128b8ac4de2394b8ff3ad",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "traits",
+      "title": "Installed CK3 trait documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/traits/_traits.info",
+      "sha256": "124411b2fa6ee487b038486daa6e47b5836c5d19984d4555c4181965ab24df74",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "religions",
+      "title": "Installed CK3 religion documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/religion/religion_types/_religion_types.info",
+      "sha256": "f3bb6015c66efd47bfc6d521193fcbf5356c78e864d84a5246f1c1932da57014",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "decisions",
+      "title": "Installed CK3 decision documentation",
+      "kind": "installed_game_documentation",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/common/decisions/_decisions.info",
+      "sha256": "106977b58220107b66f537aadda965f5a0602140dfb9ba7c79f3ba8bdd91cd9e",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "D",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; original game text is not bundled."
+    },
+    {
+      "id": "localization-example",
+      "title": "Inspected installed CK3 localization example",
+      "kind": "installed_game_example",
+      "game_id": "ck3",
+      "game_version_label": "1.19.0.4",
+      "inspected_platform": "macos",
+      "relative_path": "game/localization/english/achievements_l_english.yml",
+      "sha256": "fef86e9b1eafa347a6baac12165ae410cb764902f458abbf26142ce04c462dd9",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "redistribution": "Reference only; game text is not bundled."
+    },
+    {
+      "id": "app-policy",
+      "title": "Accepted assistant interface and preservation policy",
+      "kind": "application_source",
+      "relative_path": "docs/decisions/0003-codex-agent-interface.md",
+      "sha256": "16883448946c76bf0083a8b2bab692227cb989ee28252f0abbd62e2ad61eaae1",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "P",
+      "executed_game_observation": false,
+      "game_id": "ck3",
+      "scope_note": "Application implementation or policy; does not establish game behavior."
+    },
+    {
+      "id": "ck3-policy",
+      "title": "Accepted CK3 game/platform scope",
+      "kind": "application_source",
+      "relative_path": "docs/decisions/0002-ck3-mac-first.md",
+      "sha256": "a301a23790760da96c59b12f1f5be72a502eb0eb7f4008376ac302f90283c5fa",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "P",
+      "executed_game_observation": false,
+      "game_id": "ck3",
+      "scope_note": "Application implementation or policy; does not establish game behavior."
+    },
+    {
+      "id": "schema-overlay",
+      "title": "CK3 advisory schema source and correction manifest",
+      "kind": "application_source",
+      "relative_path": "schemas/ck3/_manifest.json",
+      "sha256": "6a720e5019ee66b25118571366fd5708120cb221e711fa42ed401ec56d5a4e4a",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "game_id": "ck3",
+      "scope_note": "Application implementation or policy; does not establish game behavior."
+    },
+    {
+      "id": "ck3-inspector",
+      "title": "Current CK3 inspection implementation",
+      "kind": "application_source",
+      "relative_path": "backend/engine/ck3.py",
+      "sha256": "e4e87e71e4eef5c05619d097d4351ca230980311d5b39552e810c8dccbc6c006",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "game_id": "ck3",
+      "scope_note": "Application implementation or policy; does not establish game behavior."
+    },
+    {
+      "id": "discovery",
+      "title": "Current CK3 read-only discovery implementation",
+      "kind": "application_source",
+      "relative_path": "backend/engine/ck3_discovery.py",
+      "sha256": "0fa3e44c5c2808e67385f42031b4fc57e343e8547c590c149fc326e7c64213b5",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "game_id": "ck3",
+      "scope_note": "Application implementation or policy; does not establish game behavior."
+    },
+    {
+      "id": "localization-parser",
+      "title": "Current preservation-oriented localization parser",
+      "kind": "application_source",
+      "relative_path": "backend/engine/formats.py",
+      "sha256": "8cd230efc75e36d24084f7d9abf51d661ba90ffda083c69d3d09c8d2bbff39b9",
+      "inspected_at": "2026-10-30",
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "game_id": "ck3",
+      "scope_note": "Application implementation or policy; does not establish game behavior."
+    },
+    {
+      "id": "tiger-files",
+      "title": "Tiger file-set implementation",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/amtep/tiger/blob/9e3d3b25c7524cdcc86d5f4190f3f8cffbc4d630/src/fileset.rs",
+      "revision": "9e3d3b25c7524cdcc86d5f4190f3f8cffbc4d630",
+      "sha256": "495b836e2f72be793e0ccc644baa6dad0dcb584922eb4c35bd0e5a27c80bce98",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "tiger-readme",
+      "title": "Tiger capabilities and limitations",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/amtep/tiger/blob/9e3d3b25c7524cdcc86d5f4190f3f8cffbc4d630/README.md",
+      "revision": "9e3d3b25c7524cdcc86d5f4190f3f8cffbc4d630",
+      "sha256": "a483b03a081024e5cac1575132a1f0e0c63fd732dbc4ac1840cea5e2f6ba4178",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "cwtools-readme",
+      "title": "CWTools CK3 configuration usage",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/cwtools/cwtools-ck3-config/blob/27db56f995af6b73baebae43e04d044f1a0a0bbe/README.md",
+      "revision": "27db56f995af6b73baebae43e04d044f1a0a0bbe",
+      "sha256": "e3a2ce8f441d2d470ef10c21447203297dbb9e18966dcfc53df141273627e027",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "cwtools-scopes",
+      "title": "CWTools CK3 scope vocabulary",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/cwtools/cwtools-ck3-config/blob/27db56f995af6b73baebae43e04d044f1a0a0bbe/config/scopes.cwt",
+      "revision": "27db56f995af6b73baebae43e04d044f1a0a0bbe",
+      "sha256": "209d04697ae4620327145cddc0590f10a82f233512a386d6d59dbac717abc0ef",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "cwtools-effects",
+      "title": "CWTools scripted-effect declarations",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/cwtools/cwtools-ck3-config/blob/27db56f995af6b73baebae43e04d044f1a0a0bbe/config/common/scripted_effects.cwt",
+      "revision": "27db56f995af6b73baebae43e04d044f1a0a0bbe",
+      "sha256": "2bc25868ecf8b2d8e387a81cc5fd117ae638e57a8d99c7344c231f6ca7574215",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "cwtools-triggers",
+      "title": "CWTools scripted-trigger declarations",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/cwtools/cwtools-ck3-config/blob/27db56f995af6b73baebae43e04d044f1a0a0bbe/config/common/scripted_triggers.cwt",
+      "revision": "27db56f995af6b73baebae43e04d044f1a0a0bbe",
+      "sha256": "44bbf888624eeae3e748cdcbe01e2a7b7cb2986ae94d7e91cfabbb66121af96c",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "cwtools-effects-doc",
+      "title": "Generated CK3 effect reference archived by CWTools",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/cwtools/cwtools-ck3-config/blob/27db56f995af6b73baebae43e04d044f1a0a0bbe/script-docs/effects.log",
+      "revision": "27db56f995af6b73baebae43e04d044f1a0a0bbe",
+      "sha256": "8ba70e6e3e2f8d823ac692dde1c490b3d3ac2ae00d8983b5fd38f9fd1d576f53",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    },
+    {
+      "id": "cwtools-triggers-doc",
+      "title": "Generated CK3 trigger reference archived by CWTools",
+      "kind": "pinned_specialist_source",
+      "url": "https://github.com/cwtools/cwtools-ck3-config/blob/27db56f995af6b73baebae43e04d044f1a0a0bbe/script-docs/triggers.log",
+      "revision": "27db56f995af6b73baebae43e04d044f1a0a0bbe",
+      "sha256": "c2d9ccfb1417cbee0c6c41f50bb5862457a4fa86937e80aa7eea8a325fd23d53",
+      "inspected_at": "2026-10-30",
+      "game_id": "ck3",
+      "game_version_label": null,
+      "evidence_label": "V",
+      "executed_game_observation": false,
+      "scope_note": "A third-party implementation/reference at this revision. Its target game build was not established here; compare with installed documentation and retain disagreements."
+    }
+  ],
+  "entries": [
+    {
+      "id": "evidence-and-limits",
+      "title": "What is known, possible, and supported",
+      "topic": "limitations",
+      "summary": "Keep facts about the files, documented game behavior, measured behavior, and the assistant’s available actions separate.",
+      "tags": [
+        "limitations",
+        "impossible",
+        "hardcoded",
+        "unsupported",
+        "uncertain",
+        "evidence",
+        "test",
+        "capability"
+      ],
+      "claims": [
+        {
+          "basis": "application_policy",
+          "text": "A clean parse, matching version label, user preference, or confident explanation does not establish which contributions the game keeps. Read the current capability report before offering a change, test, activation, or undo.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Character-interaction documentation identifies specialized code and interface mechanisms. A script field’s existence does not imply that every engine behavior can be invented or replaced by adding script.",
+          "source_ids": [
+            "interactions"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "There is no universal catalog here of everything CK3 cannot do. Declare a game limitation only with evidence for the specific mechanism; otherwise describe the unanswered question or the current tool limitation.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Identify the exact requested player-visible behavior.",
+        "State whether the obstacle belongs to game support, available application actions, or missing evidence.",
+        "For an unanswered question, identify the specific source or discriminating test needed."
+      ],
+      "pitfalls": [
+        "Do not turn an absent schema field into a claim that CK3 cannot support it.",
+        "Do not call an unsupported application action an impossible modding task."
+      ],
+      "related_ids": [
+        "schemas-and-validators",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III modding documentation scripting limitations"
+      ]
+    },
+    {
+      "id": "mod-layout",
+      "title": "Payload folders, descriptors, and playsets",
+      "topic": "packaging",
+      "summary": "A CK3 mod has content and launcher metadata; inspect both before deciding what is actually available.",
+      "tags": [
+        "descriptor",
+        "descriptor.mod",
+        ".mod",
+        "workshop",
+        "local",
+        "mod folder",
+        "steam",
+        "playset",
+        "path",
+        "1158310"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "The CK3 adapter inspects external .mod registration files and payload descriptor.mod files using ordered script parsing. Names, paths, supported-version labels, Workshop identifiers, dependencies, and repeated replace_path entries are metadata observations.",
+          "source_ids": [
+            "discovery",
+            "ck3-inspector"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "CK3 content is addressed beneath its game directory; the adapter and Tiger distinguish this from EU5 resource-stage layout. A payload normally mirrors relevant content paths, including nested event directories.",
+          "source_ids": [
+            "ck3-inspector",
+            "tiger-files"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Launcher readiness and a selected checkbox do not prove a payload exists or was loaded. Resolve actual paths and preserve the captured selection, descriptors, and payload bytes together.",
+          "source_ids": [
+            "discovery",
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Resolve the selected playset and each enabled payload.",
+        "Compare launcher state with the recorded last-launch selection and report disagreement.",
+        "Use mod identities and source locations together; identical display names need not mean identical packages."
+      ],
+      "pitfalls": [
+        "A supported-version label is a compatibility claim, not a test result.",
+        "A missing payload cannot be treated as an empty compatible mod."
+      ],
+      "related_ids": [
+        "files-and-definitions",
+        "replacement-and-dependencies",
+        "platforms-and-paths"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III mod descriptor replace_path dependencies"
+      ]
+    },
+    {
+      "id": "files-and-definitions",
+      "title": "File replacement and repeated definitions",
+      "topic": "loading",
+      "summary": "Two mods sharing a filename and two mods defining the same game object are different questions.",
+      "tags": [
+        "load order",
+        "last mod wins",
+        "overwrite",
+        "override",
+        "duplicate",
+        "definition",
+        "file",
+        "priority",
+        "zz_"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "The inspection model records overlapping paths separately from repeated definition identities. It retains every source contribution instead of selecting an assumed winner.",
+          "source_ids": [
+            "ck3-inspector"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "Tiger has an explicit file-set ordering and replacement implementation. This is a specialist model to compare against the selected CK3 build; it is not archived game evidence for this engine.",
+          "source_ids": [
+            "tiger-files"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Investigate file selection, definition selection, and field composition separately. Changing playset order or adding a late-sorting filename is not a universal repair rule.",
+          "source_ids": [
+            "ck3-policy",
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Compare raw files and then the exact competing definitions.",
+        "Compare each contribution with the captured base-game definition; distinguish formatting-only copies from new behavior.",
+        "Inspect family-specific documentation and preserve any unresolved selection question."
+      ],
+      "pitfalls": [
+        "The same key in a different family need not be the same object.",
+        "Identical copied definitions are not evidence of two incompatible features."
+      ],
+      "related_ids": [
+        "ordered-script",
+        "on-actions",
+        "compatibility-patches"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III modding file override duplicate definitions load order"
+      ]
+    },
+    {
+      "id": "replacement-and-dependencies",
+      "title": "Replacement paths and declared dependencies",
+      "topic": "packaging",
+      "summary": "Broad replacement and missing prerequisites can affect far more than the first overlapping definition.",
+      "tags": [
+        "replace_path",
+        "dependency",
+        "dependencies",
+        "mask",
+        "replacement",
+        "prerequisite",
+        "total conversion"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "Descriptors can repeat replace_path and declare dependency names. The adapter keeps those occurrences and records dependency edges; it does not infer a proven strict load-order rule from a dependency declaration.",
+          "source_ids": [
+            "ck3-inspector"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "Tiger implements replacement paths as part of its loaded-mod file model. Its handling is a pinned implementation reference, not blanket authority for every path and CK3 release.",
+          "source_ids": [
+            "tiger-files"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "A replacement mask requires investigation of all potentially hidden contributions. A missing named prerequisite or payload is incomplete coverage, not permission to discard that mod.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Inspect all masks, dependency declarations and actual resolved payloads.",
+        "Check the source set affected by each mask, including files without duplicate object names.",
+        "Compare any proposed repair with the entire affected collection, not just its patch file."
+      ],
+      "pitfalls": [
+        "Do not flatten repeated masks into a dictionary.",
+        "Do not silently remove a missing dependency to obtain a clean report."
+      ],
+      "related_ids": [
+        "mod-layout",
+        "dependency-closure",
+        "compatibility-patches"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III replace_path mod dependencies"
+      ]
+    },
+    {
+      "id": "ordered-script",
+      "title": "Order, repeated entries, and blocks",
+      "topic": "language",
+      "summary": "Paradox script must retain occurrence order and repeated entries; ordinary dictionary merging loses information.",
+      "tags": [
+        "syntax",
+        "script",
+        "order",
+        "repeated",
+        "duplicate keys",
+        "list",
+        "block",
+        "merge",
+        "comments",
+        "encoding"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "Script-value formulas contain operations such as setting, adding, multiplying and clamping. Their sequence carries meaning; a set of keys is not an adequate representation of the formula.",
+          "source_ids": [
+            "script-values"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Event and on-action documentation distinguishes lists, weighted choices, triggers and effects. Similar braces do not make these interchangeable data structures.",
+          "source_ids": [
+            "events",
+            "on-actions"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Original bytes, comments, encoding, newline spelling, unknown syntax and repeated occurrences must survive unchanged outside declared edit spans. Parsing proves structure and preservation contracts, not gameplay validity.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Read complete affected statements in their source order.",
+        "Identify which blocks are conditions, effects, ordered choices or data lists before proposing an edit.",
+        "Use exact source hashes and occurrence locations for any allowed transformation."
+      ],
+      "pitfalls": [
+        "Do not sort effects or deduplicate callbacks merely because they look repetitive.",
+        "Do not automatically add competing numeric values; they may be alternative targets."
+      ],
+      "related_ids": [
+        "triggers-and-effects",
+        "reader-variables",
+        "script-values"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III scripting repeated effects script values"
+      ]
+    },
+    {
+      "id": "scopes-and-chains",
+      "title": "Scopes, actors, recipients, and event chains",
+      "topic": "language",
+      "summary": "A command acts on a particular kind of object in a particular execution context.",
+      "tags": [
+        "scope",
+        "root",
+        "prev",
+        "this",
+        "actor",
+        "recipient",
+        "saved scope",
+        "event target",
+        "chain",
+        "character",
+        "faith"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "Events can specify their root scope type; custom localization also declares the scope type it expects. Character-interaction documentation describes actor and recipient contexts.",
+          "source_ids": [
+            "events",
+            "custom-localization",
+            "interactions"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "An on-action effect and the events it fires are documented as separate chains: values or scopes set in the effect cannot be assumed to become available to those concurrently fired events.",
+          "source_ids": [
+            "on-actions"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "CWTools lists typed scopes; its archived effect reference describes saving a target for an unbroken event chain. These references are version-unspecified and need comparison with current installed documentation.",
+          "source_ids": [
+            "cwtools-scopes",
+            "cwtools-effects-doc"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Trace the starting context and every scope change into the affected block.",
+        "Check expected scope types of commands and helper calls.",
+        "Follow where saved targets are created, consumed, and lost across delayed or separate chains."
+      ],
+      "pitfalls": [
+        "Copying a valid effect into a different scope can change its meaning or make it invalid.",
+        "A name appearing in two places does not prove the target exists at both execution points."
+      ],
+      "related_ids": [
+        "triggers-and-effects",
+        "helpers-and-dynamic-references",
+        "on-actions"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III scripting scopes saved scopes event chain"
+      ]
+    },
+    {
+      "id": "triggers-and-effects",
+      "title": "Conditions, consequences, and scripted helpers",
+      "topic": "language",
+      "summary": "Conditions decide whether something applies; effects perform changes. Their surrounding scope and timing matter.",
+      "tags": [
+        "trigger",
+        "effect",
+        "conditions",
+        "consequences",
+        "AND",
+        "OR",
+        "NOT",
+        "limit",
+        "if",
+        "scripted_trigger",
+        "scripted_effect"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "Event and interaction formats contain separate condition and effect hooks. Event immediate effects and options occupy distinct positions in the event flow; interaction visibility, validity, response and execution are separate parts of one feature.",
+          "source_ids": [
+            "events",
+            "interactions"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "CWTools has separate scripted-trigger and scripted-effect declarations, including named helpers and parameterized calls. Its own rules include uncertain areas and do not establish all supported syntax.",
+          "source_ids": [
+            "cwtools-effects",
+            "cwtools-triggers"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Combining conditions can broaden or narrow access; combining effects can perform both consequences, possibly twice. Neither transformation is automatically preservation-safe.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Identify whether the disputed block checks state or changes state.",
+        "Read condition grouping and branch order before comparing meaning.",
+        "Expand the investigation into called helpers and inspect their expected parameters and scopes."
+      ],
+      "pitfalls": [
+        "A successful syntax check cannot prove the intended characters can use an interaction.",
+        "Do not move a condition into an effect or combine competing branches without a stated behavioral goal."
+      ],
+      "related_ids": [
+        "ordered-script",
+        "scopes-and-chains",
+        "helpers-and-dynamic-references"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III scripted triggers scripted effects scopes"
+      ]
+    },
+    {
+      "id": "helpers-and-dynamic-references",
+      "title": "Following related scripts and dynamic references",
+      "topic": "references",
+      "summary": "Understanding a feature often requires its helpers, names, scopes and callers, not just the overlapping block.",
+      "tags": [
+        "reference",
+        "helper",
+        "dependency",
+        "scripted_effect",
+        "scripted_trigger",
+        "dynamic",
+        "parameter",
+        "macro",
+        "indirect",
+        "closure"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "The CK3 inspector resolves selected literal references and separately labels dynamic, recovered, oversized and otherwise unsupported references. A target absent from the captured subset is not automatically an invalid game reference.",
+          "source_ids": [
+            "ck3-inspector"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Reader definitions can insert token sequences and substitute arguments before ordinary content is read. Looking only for literal names can miss the resulting references.",
+          "source_ids": [
+            "reader"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "CWTools recognizes scripted helpers with parameters and event-local declarations. Those declarations are useful search directions, not proof that every call has been understood.",
+          "source_ids": [
+            "cwtools-effects",
+            "cwtools-triggers"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Find the exact definition, callers, and helper calls in captured sources.",
+        "Track literal targets where supported and label generated names or uncertain scope paths explicitly.",
+        "Include localization, interface and asset links needed for the player-visible behavior."
+      ],
+      "pitfalls": [
+        "A text search result is a possible relationship, not a typed or executed call.",
+        "Do not claim complete coverage when macros or runtime-built names remain unresolved."
+      ],
+      "related_ids": [
+        "dependency-closure",
+        "reader-variables",
+        "scopes-and-chains"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III scripted effect parameters dynamic references"
+      ]
+    },
+    {
+      "id": "reader-variables",
+      "title": "Reader constants, token macros, and runtime variables",
+      "topic": "language",
+      "summary": "Values substituted while reading a file are different from variables used during gameplay.",
+      "tags": [
+        "reader_export",
+        "macro",
+        "constant",
+        "@",
+        "@define",
+        "@insert",
+        "variable",
+        "set_variable",
+        "set_local_variable",
+        "parse"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The installed reader-export documentation describes exported reader actions, constants, arithmetic expressions, token-block definitions and argument substitution. It says these actions operate on the token stream rather than understanding the game logic.",
+          "source_ids": [
+            "reader"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "The pinned CWTools effect reference describes runtime variable operations and saved scope values. It is a version-unspecified reference; do not infer lifetime or cross-chain visibility from similar names alone.",
+          "source_ids": [
+            "cwtools-effects-doc",
+            "cwtools-triggers-doc"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "A repair that renames a variable or helper must account for its producers and consumers. Unsupported reader constructs remain preserved and unresolved instead of being expanded with guessed semantics.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Determine whether each value is read-time substitution, a formula, a saved target or runtime state.",
+        "Trace definition locations, parameter replacements and consumers.",
+        "Check chain boundaries, object ownership and any documented expiry when relevant."
+      ],
+      "pitfalls": [
+        "An @ constant is not interchangeable with a character variable.",
+        "Do not replace macros with hand-expanded guesses and call the result equivalent."
+      ],
+      "related_ids": [
+        "script-values",
+        "scopes-and-chains",
+        "helpers-and-dynamic-references"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III reader_export reader actions variables"
+      ]
+    },
+    {
+      "id": "script-values",
+      "title": "Script values and numeric changes",
+      "topic": "language",
+      "summary": "A numeric-looking field may refer to a formula evaluated in the current context.",
+      "tags": [
+        "number",
+        "value",
+        "script_value",
+        "formula",
+        "add",
+        "multiply",
+        "min",
+        "max",
+        "balance",
+        "cost"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "Script values can be static values or formulas. Formula evaluation can use values available in the current scope and includes ordered arithmetic and bounding operations.",
+          "source_ids": [
+            "script-values"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Compare what each mod intends to change against a suitable baseline. Two different numbers may be design alternatives; adding their differences is not automatically justified. Preserve original numeric spelling and avoid binary-float rewrites.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Resolve named formulas and their current scope before explaining a cost or modifier.",
+        "Compare each formula in order, including branches and clamps.",
+        "Present competing balance choices as choices unless preservation can be demonstrated."
+      ],
+      "pitfalls": [
+        "Do not assume changing one constant affects only the first caller found.",
+        "A positive numeric difference does not always produce a larger final value."
+      ],
+      "related_ids": [
+        "ordered-script",
+        "scopes-and-chains",
+        "compatibility-patches"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III script values formulas scope"
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Events and dynamic descriptions",
+      "topic": "families",
+      "summary": "Event identity, triggering, immediate changes, options and displayed text must be investigated together.",
+      "tags": [
+        "event",
+        "events",
+        "namespace",
+        "title",
+        "desc",
+        "dynamic description",
+        "option",
+        "immediate",
+        "delayed"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The installed event documentation uses namespaces for event identifiers and supports dynamic description forms for titles and descriptions. A string-only schema is incomplete for these fields.",
+          "source_ids": [
+            "events"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Event type, root scope, trigger, immediate effects, portraits and options are distinct elements of the event definition. Their roles cannot be inferred from a generic block shape.",
+          "source_ids": [
+            "events"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Nested event files are part of CK3 source discovery. Repeated event identifiers require a scoped loading investigation rather than an assumed winner.",
+          "source_ids": [
+            "ck3-inspector",
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Check namespace plus event identity across all relevant files.",
+        "Inspect callers, required saved scopes, trigger conditions, immediate effects and every affected option.",
+        "Follow dynamic text and portrait references and distinguish hidden event behavior from visible presentation."
+      ],
+      "pitfalls": [
+        "Do not treat a dynamic title or description block as malformed solely because an advisory schema expects a string.",
+        "An event appearing on screen does not prove all its options or callers still work."
+      ],
+      "related_ids": [
+        "scopes-and-chains",
+        "localization",
+        "helpers-and-dynamic-references"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III event modding dynamic descriptions namespace"
+      ]
+    },
+    {
+      "id": "character-interactions",
+      "title": "Character interactions and calling allies",
+      "topic": "families",
+      "summary": "An interaction combines access rules, targets, responses, AI behavior, effects and presentation.",
+      "tags": [
+        "character interaction",
+        "call allies",
+        "call_ally_interaction",
+        "actor",
+        "recipient",
+        "acceptance",
+        "ai_will_do",
+        "on_accept",
+        "on_send"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "Character-interaction documentation describes actor/recipient context, visibility and validity checks, cooldowns, response text, and specialized interface or code features. Replacing the displayed action can affect more than its final effect block.",
+          "source_ids": [
+            "interactions"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Before proposing a call-allies change, compare each contributing version with the captured base game and inspect related helpers. If one contributor matches the base game, do not invent a second set of unique features to combine.",
+          "source_ids": [
+            "app-policy"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "Static differences do not establish whether an addition is lost in the actual playset. The relevant duplicate-selection and behavior questions require a scoped game test.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Compare the whole interaction and classify each actual change.",
+        "Inspect visibility, eligibility, AI response, costs, cooldowns, sent/accepted/refused outcomes, and linked helpers where affected.",
+        "Describe the player-visible goal and discriminating test before asking for a tradeoff."
+      ],
+      "pitfalls": [
+        "Keeping one full version can discard the other contributor’s distinct logic.",
+        "Duplicating an interaction or renaming its identifier can break code or other references."
+      ],
+      "related_ids": [
+        "dependency-closure",
+        "scopes-and-chains",
+        "compatibility-patches"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III character interactions call ally modding"
+      ]
+    },
+    {
+      "id": "on-actions",
+      "title": "On-actions, callback lists, and separate effect chains",
+      "topic": "families",
+      "summary": "The shipped documentation distinguishes adding a callback from conflicting direct trigger or effect blocks.",
+      "tags": [
+        "on_action",
+        "on action",
+        "hook",
+        "callback",
+        "pulse",
+        "fallback",
+        "append",
+        "effect chain"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The inspected on-action documentation allows declarations across files but explicitly warns that multiple direct trigger or effect blocks for one named on-action conflict. It describes adding a separately named on-action through the on_actions list as an extension pattern.",
+          "source_ids": [
+            "on-actions"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "The documentation says an on-action effect runs in a separate chain from events fired by that on-action. Scopes or local variables set there cannot be relied on by those events. Fallback refers to another on-action, and cyclic fallback can prevent progress.",
+          "source_ids": [
+            "on-actions"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "This documented pattern is not a qualified automatic repair capability. Its interaction with the complete selected stack and current executable still needs the required preservation and runtime checks.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Separate callback-list additions from direct trigger/effect replacements.",
+        "Preserve callback ordering and repeated contributions until their semantics are established.",
+        "Check event chains, delays, fallback loops and all affected callbacks in a proposed repair."
+      ],
+      "pitfalls": [
+        "Do not merge two effect blocks merely because both are called effects.",
+        "Do not assume a value saved in the on-action effect will exist in an event fired alongside it."
+      ],
+      "related_ids": [
+        "scopes-and-chains",
+        "events",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III on_action append on_actions effects separate chain"
+      ]
+    },
+    {
+      "id": "history",
+      "title": "Dated history and existing saves",
+      "topic": "families",
+      "summary": "History describes initial state and changes by date; it is not an ordinary collection of interchangeable fields.",
+      "tags": [
+        "history",
+        "date",
+        "dated",
+        "bookmark",
+        "character history",
+        "province history",
+        "save",
+        "start date"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The installed history documentation distinguishes initial key/value data from dated blocks that override it, and says available fields depend on the history type.",
+          "source_ids": [
+            "history"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Preserve dates and occurrence order, inspect references to titles and characters, and evaluate the intended start date. The current inspector keeps history symbolic instead of applying a generic definition merge.",
+          "source_ids": [
+            "ck3-inspector",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "A change that appears correct for a new start does not establish compatibility with an existing save. The relevant saved-state and migration questions must be checked separately.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Identify the history family and affected dates or bookmark.",
+        "Trace identities and relationships that must exist at each relevant date.",
+        "Keep new-game checks separate from any requested existing-save experiment."
+      ],
+      "pitfalls": [
+        "Do not merge dated changes as unordered dictionaries.",
+        "Do not use a normal save as a disposable test or promise that reordering mods repairs saved state."
+      ],
+      "related_ids": [
+        "updates-and-saves",
+        "dependency-closure",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III history modding dates save compatibility"
+      ]
+    },
+    {
+      "id": "localization",
+      "title": "Names, descriptions, and dynamic localization",
+      "topic": "families",
+      "summary": "Displayed wording has its own file format, language context, formatting expressions and dynamic scope requirements.",
+      "tags": [
+        "localization",
+        "localisation",
+        "translation",
+        "text",
+        "language",
+        "BOM",
+        "UTF-8",
+        "yml",
+        "dynamic",
+        "formatting",
+        "replace"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "The inspected English source uses a language header and quoted keyed entries. The application preserves raw bytes, revision text, language, occurrence order and replacement-folder placement instead of serializing it as ordinary YAML.",
+          "source_ids": [
+            "localization-example",
+            "localization-parser"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Custom localization declares expected scope types; dynamic event descriptions are supported by shipped documentation. Correct text keys alone do not establish that expressions run in an appropriate scope.",
+          "source_ids": [
+            "custom-localization",
+            "events"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Compare duplicate keys separately by language and source tier. Different wording can be intentional, and incomplete parsing or languages not checked must remain visible.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Check language header, filename, original encoding/BOM and complete quoted value.",
+        "Compare repeated values and formatting expressions, including references to custom localization.",
+        "Trace the object context used to evaluate dynamic wording."
+      ],
+      "pitfalls": [
+        "Do not normalize localization through a general YAML library.",
+        "Do not report an English wording change as a broken gameplay feature without evidence."
+      ],
+      "related_ids": [
+        "events",
+        "scopes-and-chains",
+        "files-and-definitions"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III localization custom localization formatting"
+      ]
+    },
+    {
+      "id": "gui-and-assets",
+      "title": "Interface files and assets",
+      "topic": "families",
+      "summary": "An interface conflict can involve widgets, context bindings, textures, sounds and code-supported presentation.",
+      "tags": [
+        "gui",
+        "interface",
+        "widget",
+        "texture",
+        "gfx",
+        "asset",
+        "mesh",
+        "sound",
+        "music",
+        "font",
+        "dds",
+        "map"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The inspected scripted-widget documentation maps GUI file paths to widget names and describes creating multiple widget instances. It also describes cross-file loading for that specific mechanism; this must not be generalized to all GUI definitions.",
+          "source_ids": [
+            "widgets"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Character interactions may select specialized interface/code mechanisms. Combining two UI layouts does not by itself combine the underlying behavior.",
+          "source_ids": [
+            "interactions"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Unknown asset formats stay preserved as opaque bytes. Equal filenames reveal an overlap, not whether two textures or models can be merged. Unsupported visual and map transformations require their own tooling and checks.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Trace the widget or interface entry to its bindings, script context and asset references.",
+        "Compare the complete affected file and paths, including case and Unicode differences.",
+        "Describe whether the conflict is presentation, behavior, missing resource, or currently unknown."
+      ],
+      "pitfalls": [
+        "Do not concatenate binary assets or generate guessed replacements.",
+        "A menu reaching the screen does not verify an affected in-game interaction or map."
+      ],
+      "related_ids": [
+        "platforms-and-paths",
+        "dependency-closure",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III GUI scripted widgets modding"
+      ]
+    },
+    {
+      "id": "traits-cultures-religions",
+      "title": "Traits, cultures, religions, and related content",
+      "topic": "families",
+      "summary": "Definitions in these families have linked identifiers, presentation and game-version-specific shapes.",
+      "tags": [
+        "trait",
+        "culture",
+        "religion",
+        "faith",
+        "doctrine",
+        "holy site",
+        "trait index",
+        "government",
+        "family",
+        "schema"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The inspected trait documentation describes manual indexes as an older system and uses trait-based localization defaults. Treating index as universally required or inferring different text keys from the original supplied schema would be misleading.",
+          "source_ids": [
+            "traits",
+            "schema-overlay"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Religion/faith nesting and holy-site placement require their family documentation. The supplied schema overlay relaxes unsupported assumptions rather than inventing fixed cardinality.",
+          "source_ids": [
+            "religions",
+            "schema-overlay"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Use exact family paths and source identities. Broad recursive matching can confuse neighboring families, such as scheme types and agent types, or court-position types and tasks.",
+          "source_ids": [
+            "ck3-inspector",
+            "schema-overlay"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Locate the exact family and installed documentation for the affected version.",
+        "Compare field changes and referenced definitions, names, icons and restrictions.",
+        "Treat schema deviations as investigation leads until supported by stronger evidence."
+      ],
+      "pitfalls": [
+        "Do not reassign identity numbers or move nested content just to satisfy an advisory schema.",
+        "Do not transfer a similarly named family’s rules from another Paradox game."
+      ],
+      "related_ids": [
+        "schemas-and-validators",
+        "dependency-closure",
+        "localization"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III trait modding religion faith holy sites"
+      ]
+    },
+    {
+      "id": "decisions-and-feature-families",
+      "title": "Decisions and other gameplay feature families",
+      "topic": "families",
+      "summary": "Use each family’s documented entry points instead of a generic merge for all gameplay blocks.",
+      "tags": [
+        "decision",
+        "activity",
+        "scheme",
+        "building",
+        "artifact",
+        "law",
+        "court position",
+        "gameplay",
+        "feature"
+      ],
+      "claims": [
+        {
+          "basis": "documented",
+          "text": "The installed decision documentation separates visibility, eligibility, costs, effects and AI use. A feature can remain visible while its requirements or consequences change.",
+          "source_ids": [
+            "decisions"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Activities, schemes, buildings and other families require their own documented field meanings and reference checks. Generic block schemas do not establish that independently changed fields compose safely.",
+          "source_ids": [
+            "schema-overlay",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "This library does not exhaustively model every field or runtime condition in these families. Retrieve the relevant captured .info file and related scripts when investigating an unfamiliar mechanism.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Identify the player-visible action and its exact family.",
+        "Read the installed family documentation and affected source contributions.",
+        "Trace conditions, costs, outcomes, timing and AI paths that the proposed change touches."
+      ],
+      "pitfalls": [
+        "Do not equate a visible button with a fully functioning feature.",
+        "Do not silently ignore unsupported fields while claiming preservation."
+      ],
+      "related_ids": [
+        "triggers-and-effects",
+        "dependency-closure",
+        "schemas-and-validators"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III decision activity scheme modding documentation"
+      ]
+    },
+    {
+      "id": "schemas-and-validators",
+      "title": "Using schemas, CWTools, and Tiger appropriately",
+      "topic": "validation",
+      "summary": "Validation aids find useful leads, but their coverage and game-version assumptions must stay visible.",
+      "tags": [
+        "schema",
+        "CWTools",
+        "Tiger",
+        "validator",
+        "validation",
+        "warning",
+        "false positive",
+        "version",
+        "supported"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "The supplied 24 CK3 schemas use a custom advisory vocabulary. The preserved manifest records original hashes and explicit corrections; generic blocks and empty helper field maps do not describe all game semantics.",
+          "source_ids": [
+            "schema-overlay"
+          ]
+        },
+        {
+          "basis": "inspected_source",
+          "text": "CWTools supplies CK3 editor configuration and scripting references. Tiger advertises syntax, scope, reference, localization and history checks while acknowledging false positives and update delays. Neither was executed by this reference lookup.",
+          "source_ids": [
+            "cwtools-readme",
+            "tiger-readme"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "A diagnostic must retain its tool/rule revision, source location and scope. A clean result or schema error cannot independently establish compatibility or authorize repair.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Check the selected game build against the reference’s provenance.",
+        "Compare a warning with current shipped documentation and the actual contribution.",
+        "Record disagreements and unsupported coverage instead of forcing source content into an incomplete rule."
+      ],
+      "pitfalls": [
+        "Do not claim Tiger ran merely because its documentation was read.",
+        "Do not promote third-party loading assumptions into measured engine rules."
+      ],
+      "related_ids": [
+        "evidence-and-limits",
+        "files-and-definitions",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "CWTools CK3 configuration",
+        "ck3-tiger documentation validation limitations"
+      ]
+    },
+    {
+      "id": "compatibility-patches",
+      "title": "Designing a compatibility patch",
+      "topic": "repairs",
+      "summary": "A patch must preserve the intended contributions and their dependencies; some designs require a user tradeoff.",
+      "tags": [
+        "patch",
+        "repair",
+        "merge",
+        "compatibility",
+        "preservation",
+        "balance",
+        "combine",
+        "choice",
+        "rename"
+      ],
+      "claims": [
+        {
+          "basis": "application_policy",
+          "text": "Prepare a concrete change in a separate managed fixes mod, tied to the exact captured sources. Keep downloaded originals untouched and obtain the user’s actual choice for a design sacrifice.",
+          "source_ids": [
+            "app-policy"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Compare each mod with the relevant baseline, retain all affected contributions, and follow dependency and downstream effects. Renaming an identifier, copying a whole file or summing values is not automatically safe.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "Some requested outcomes may be mutually exclusive. Determine that from the specific logic and intended experience; do not invent a combined result or call it verified before appropriate tests.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Explain the concrete behavior each mod adds or changes.",
+        "Present alternatives with what each keeps and gives up, including leaving the issue alone.",
+        "Check current preparation/testing/activation capabilities before offering the next action."
+      ],
+      "pitfalls": [
+        "User approval authorizes the chosen design; it does not establish loading behavior.",
+        "A patch that removes a warning may still remove a desired feature."
+      ],
+      "related_ids": [
+        "dependency-closure",
+        "testing-and-preservation",
+        "evidence-and-limits"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III compatibility patch mod author documentation"
+      ]
+    },
+    {
+      "id": "dependency-closure",
+      "title": "The complete affected feature",
+      "topic": "references",
+      "summary": "A repair’s scope extends to every contribution required for the affected behavior.",
+      "tags": [
+        "dependency",
+        "closure",
+        "reference",
+        "caller",
+        "consumer",
+        "helper",
+        "localization",
+        "assets",
+        "DLC",
+        "downstream"
+      ],
+      "claims": [
+        {
+          "basis": "application_policy",
+          "text": "Investigation must include callers, helpers, conditions, state, text, UI and assets needed for the affected feature. Check both the proposed patch and later contributions in the selected stack.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "Event scopes, dynamic descriptions, interaction hooks and reader substitution provide concrete ways for behavior to depend on content outside the first overlapping definition.",
+          "source_ids": [
+            "events",
+            "interactions",
+            "reader"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "Dynamic references and unsupported readers can leave the affected set incomplete. Report those unresolved boundaries; absence from a limited index is not proof of irrelevance.",
+          "source_ids": [
+            "ck3-inspector"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Start with the actual changed definition and all its source occurrences.",
+        "Follow supported relationships, then use bounded source search for plausible missing links.",
+        "Record each unresolved relationship and required test rather than silently dropping it."
+      ],
+      "pitfalls": [
+        "Do not limit inspection to files with identical paths.",
+        "Do not count a deferred or unreadable source as checked."
+      ],
+      "related_ids": [
+        "helpers-and-dynamic-references",
+        "compatibility-patches",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III mod compatibility scripted effects references"
+      ]
+    },
+    {
+      "id": "updates-and-saves",
+      "title": "Updates, baselines, and save compatibility",
+      "topic": "lifecycle",
+      "summary": "A patch is tied to the versions and state it was assessed against; changed inputs need reassessment.",
+      "tags": [
+        "update",
+        "save",
+        "savegame",
+        "baseline",
+        "version",
+        "stale",
+        "checksum",
+        "migration",
+        "mod update"
+      ],
+      "claims": [
+        {
+          "basis": "application_policy",
+          "text": "Source hashes, enabled order, executable/content/documentation/DLC context and reviewed choices determine whether an earlier investigation or repair remains current. A display version string alone is insufficient.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "documented",
+          "text": "History contains beginning-of-time data and dated changes. New-start history questions are distinct from the state already stored in an ongoing game.",
+          "source_ids": [
+            "history"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "This engine has not established general save migration or multiplayer/checksum compatibility for arbitrary repairs. Treat those as separate requested outcomes with specific evidence and disposable copies.",
+          "source_ids": [
+            "app-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Check whether game content, mods, playset order or knowledge sources changed.",
+        "Retain the old investigation historically and reassess the new inputs.",
+        "If an existing save matters, state the specific compatibility question and arrange an approved separate test."
+      ],
+      "pitfalls": [
+        "Do not silently reuse approval for different proposed bytes.",
+        "Do not promise that a new-game test proves an existing campaign will behave correctly."
+      ],
+      "related_ids": [
+        "history",
+        "testing-and-preservation",
+        "compatibility-patches"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III mod update existing save compatibility"
+      ]
+    },
+    {
+      "id": "platforms-and-paths",
+      "title": "Mac, Windows, and relocated files",
+      "topic": "platforms",
+      "summary": "Source discovery and portable output naming need separate platform checks.",
+      "tags": [
+        "mac",
+        "macos",
+        "windows",
+        "Steam library",
+        "Documents",
+        "path",
+        "case",
+        "Unicode",
+        "reserved",
+        "portable"
+      ],
+      "claims": [
+        {
+          "basis": "inspected_source",
+          "text": "The CK3 adapter discovers Steam libraries and launcher metadata, supports explicit locations, and distinguishes the Mac application executable from its sibling game content. Windows discovery contracts account for redirected Documents and Steam libraries.",
+          "source_ids": [
+            "discovery",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Preserve original path spelling and diagnose case/Unicode or Windows output-name hazards. Do not rename originals to match one platform’s comparison rules.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "Mac execution or inspection cannot qualify Windows runtime behavior. Native platform discovery, process isolation, activation and undo need their own actual checks.",
+          "source_ids": [
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Use the actual discovered installation and user-data locations.",
+        "Verify every resolved payload instead of trusting old absolute descriptor paths.",
+        "Bind results and capabilities to the selected platform and keep unperformed native checks explicit."
+      ],
+      "pitfalls": [
+        "Do not assume default Documents or Steam locations always apply.",
+        "Do not turn a synthetic Windows-path test on Mac into a claim of native Windows success."
+      ],
+      "related_ids": [
+        "mod-layout",
+        "gui-and-assets",
+        "testing-and-preservation"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III macOS Steam mod folder Windows Documents"
+      ]
+    },
+    {
+      "id": "testing-and-preservation",
+      "title": "What a convincing game test must establish",
+      "topic": "validation",
+      "summary": "A feature test needs a baseline, a discriminating observation, controlled inputs and recovery.",
+      "tags": [
+        "test",
+        "runtime",
+        "game",
+        "launch",
+        "logs",
+        "control",
+        "proof",
+        "conformance",
+        "enable",
+        "undo",
+        "rollback",
+        "preserve"
+      ],
+      "claims": [
+        {
+          "basis": "application_policy",
+          "text": "Use an approved disposable profile with captured input identities, verified active selection, baseline/individual/original/repaired comparisons as appropriate, and direct observations of the promised feature. Archive results and keep actual outcomes separate from proposed tests.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        },
+        {
+          "basis": "application_policy",
+          "text": "Reaching the menu, producing files or having clean logs does not establish preserved gameplay. Check the affected action and negative controls; do not enable an inactive experimental bundle without the required qualified path.",
+          "source_ids": [
+            "app-policy"
+          ]
+        },
+        {
+          "basis": "unknown",
+          "text": "This library contains no executed CK3 game observations and grants no production repair capability. Query the live capability report before offering a test, activation or undo.",
+          "source_ids": [
+            "app-policy",
+            "ck3-policy"
+          ]
+        }
+      ],
+      "investigation_steps": [
+        "Define what would distinguish each possible behavior before running a test.",
+        "Capture the exact setup and observe both intended behavior and relevant regressions.",
+        "Verify active state after failures and test restoration through the supported mechanism."
+      ],
+      "pitfalls": [
+        "Do not describe an unrun recipe or a synthetic test as a successful CK3 observation.",
+        "Do not enable a fix merely because the user approved its design."
+      ],
+      "related_ids": [
+        "evidence-and-limits",
+        "compatibility-patches",
+        "updates-and-saves"
+      ],
+      "public_research_queries": [
+        "Crusader Kings III mod testing debug documentation"
+      ]
+    }
+  ]
+}

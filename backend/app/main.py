@@ -18,6 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from backend.app.contracts import PAYLOADS
 from backend.app.service import Service
 from backend.app.store import Conflict, digest
+from backend.agent.contracts import AgentRequest
 
 
 class BodyBudgetMiddleware:
@@ -62,7 +63,7 @@ class BodyBudgetMiddleware:
 
 class Command(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    command: Literal["create_workspace", "scan", "stage", "decision", "validate", "export", "rollback", "investigate", "cancel", "backup", "runtime_probe", "configure_inference"]
+    command: Literal["create_workspace", "discover_ck3", "import_ck3", "scan", "stage", "decision", "validate", "export", "rollback", "investigate", "cancel", "backup", "runtime_probe", "configure_inference", "agent_index", "agent_prepare", "agent_apply", "agent_test", "agent_undo", "agent_check"]
     workspace_id: str | None = None
     payload: dict = Field(default_factory=dict)
     idempotency_key: str = Field(min_length=1, max_length=128)
@@ -74,12 +75,15 @@ class Command(BaseModel):
         return self
 
 
-def create_app(data_dir: Path | None = None, *, testing: bool = False) -> FastAPI:
+def create_app(data_dir: Path | None = None, *, testing: bool = False, frontend: bool = True,
+               endpoint: dict | None = None) -> FastAPI:
     root = Path(data_dir or os.environ.get("EU5_WORKSPACE", Path.cwd() / ".workspace"))
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         app.state.service = Service(root)
+        if endpoint is not None:
+            app.state.service.store.fs.write_bytes("agent/engine.json", json.dumps(endpoint).encode())
         yield
         app.state.service.close()
 
@@ -132,6 +136,16 @@ def create_app(data_dir: Path | None = None, *, testing: bool = False) -> FastAP
     def bootstrap(request: Request):
         return request.app.state.service.bootstrap()
 
+    @app.get("/api/engine")
+    def engine_identity(request: Request):
+        release = request.app.state.service.agent_release
+        return {"id": (endpoint or {}).get("id"), "data_dir": str(root.absolute()), "headless": not frontend,
+                "agent_release": {k: release[k] for k in ("version", "fingerprint")}}
+
+    @app.post("/api/agent")
+    def agent_operation(body: AgentRequest, request: Request):
+        return request.app.state.service.agent_request(body.operation, body.payload)
+
     @app.post("/api/commands", status_code=202)
     def command(body: Command, request: Request):
         if body.command != "create_workspace" and not body.workspace_id:
@@ -173,14 +187,25 @@ def create_app(data_dir: Path | None = None, *, testing: bool = False) -> FastAP
         from backend.app.projections import candidate_projection
         return candidate_projection(request.app.state.service.store.get("candidate", identifier))
 
+    @app.get("/api/ck3/discoveries/{identifier}")
+    def ck3_discovery(identifier: str, request: Request):
+        from backend.app.projections import discovery_projection
+        return discovery_projection(request.app.state.service.store.get("discovery", identifier))
+
     @app.get("/api/evidence/{identifier}")
     def evidence(identifier: str, request: Request):
         from backend.engine.evidence import EvidenceRegistry
         registry = EvidenceRegistry(request.app.state.service.root / "evidence-registry")
-        experiments = registry.experiments()
+        experiments = registry.experiments() + registry.experiments(game_id="ck3")
         for experiment in experiments:
             if experiment.get("id", experiment.get("experiment_id")) == identifier:
                 return experiment
+        if identifier == "ck3-advisory-v1":
+            from backend.engine.ck3 import schema_manifest
+            return {"id": identifier, "game_id": "ck3", "kind": "documentation_only", "label": "V",
+                    "schema_manifest": schema_manifest(), "conformed_rules": 0,
+                    "production_export_enabled": False,
+                    "limitations": ["Advisory inspected vocabulary; no executed CK3 loading evidence"]}
         try:
             return registry.get_profile(identifier)
         except (KeyError, ValueError):
@@ -196,7 +221,7 @@ def create_app(data_dir: Path | None = None, *, testing: bool = False) -> FastAP
         return FileResponse(path, filename=entry["name"], media_type="application/zip")
 
     dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
-    if dist.is_dir():
+    if frontend and dist.is_dir():
         app.mount("/", StaticFiles(directory=dist, html=True), name="workbench")
     app.add_middleware(BodyBudgetMiddleware)
     return app

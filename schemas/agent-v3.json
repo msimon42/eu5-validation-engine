@@ -1,0 +1,1275 @@
+{
+  "schema_version": 3,
+  "envelope": {
+    "additionalProperties": false,
+    "properties": {
+      "operation": {
+        "enum": [
+          "status",
+          "release",
+          "session",
+          "issues",
+          "inspect",
+          "proposal",
+          "challenge",
+          "answer",
+          "apply",
+          "test",
+          "enable",
+          "undo",
+          "context",
+          "check",
+          "remember",
+          "capabilities",
+          "search_knowledge",
+          "read_knowledge",
+          "search_sources",
+          "read_source",
+          "related_definitions",
+          "brief",
+          "missing_mods",
+          "read_sources",
+          "concerns",
+          "concern_evidence",
+          "record_review",
+          "investigation_report",
+          "missing_candidates",
+          "inspect_candidate",
+          "version_preference"
+        ],
+        "title": "Operation",
+        "type": "string"
+      },
+      "payload": {
+        "additionalProperties": true,
+        "title": "Payload",
+        "type": "object"
+      }
+    },
+    "required": [
+      "operation"
+    ],
+    "title": "AgentRequest",
+    "type": "object"
+  },
+  "payloads": {
+    "status": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "StrictModel",
+      "type": "object"
+    },
+    "release": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "StrictModel",
+      "type": "object"
+    },
+    "session": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id"
+      ],
+      "title": "Workspace",
+      "type": "object"
+    },
+    "issues": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "query": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Query",
+          "type": "string"
+        },
+        "area": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area"
+        },
+        "include_equal": {
+          "default": false,
+          "title": "Include Equal",
+          "type": "boolean"
+        },
+        "include_internal": {
+          "default": false,
+          "title": "Include Internal",
+          "type": "boolean"
+        },
+        "include_metadata": {
+          "default": false,
+          "title": "Include Metadata",
+          "type": "boolean"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id"
+      ],
+      "title": "Issues",
+      "type": "object"
+    },
+    "inspect": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "issue_id": {
+          "title": "Issue Id",
+          "type": "string"
+        },
+        "source_number": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Number"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 8192,
+          "maximum": 8192,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "issue_id"
+      ],
+      "title": "Inspect",
+      "type": "object"
+    },
+    "proposal": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "proposal_id"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "challenge": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        },
+        "purpose": {
+          "default": "choose",
+          "enum": [
+            "choose",
+            "test",
+            "enable",
+            "undo"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "proposal_id"
+      ],
+      "title": "Challenge",
+      "type": "object"
+    },
+    "answer": {
+      "additionalProperties": false,
+      "properties": {
+        "answer": {
+          "additionalProperties": true,
+          "title": "Answer",
+          "type": "object"
+        },
+        "signature": {
+          "maxLength": 64,
+          "minLength": 64,
+          "title": "Signature",
+          "type": "string"
+        }
+      },
+      "required": [
+        "answer",
+        "signature"
+      ],
+      "title": "Answer",
+      "type": "object"
+    },
+    "apply": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "proposal_id"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "test": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "proposal_id"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "enable": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "proposal_id"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "undo": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "proposal_id"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "context": {
+      "$defs": {
+        "DiscoverCK3": {
+          "additionalProperties": false,
+          "properties": {
+            "platform": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "macos",
+                    "windows"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Platform"
+            },
+            "steam_roots": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Steam Roots"
+            },
+            "user_data_path": {
+              "anyOf": [
+                {
+                  "maxLength": 32760,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "User Data Path"
+            },
+            "installation_path": {
+              "anyOf": [
+                {
+                  "maxLength": 32760,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Installation Path"
+            },
+            "playset_id": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Playset Id"
+            },
+            "root_overrides": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "maxProperties": 1000,
+              "title": "Root Overrides",
+              "type": "object"
+            }
+          },
+          "title": "DiscoverCK3",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "selection": {
+          "default": "current",
+          "enum": [
+            "current",
+            "resume"
+          ],
+          "title": "Selection",
+          "type": "string"
+        },
+        "workspace_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Workspace Id"
+        },
+        "playset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Playset Id"
+        },
+        "locations": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DiscoverCK3"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Context",
+      "type": "object"
+    },
+    "check": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goal"
+        }
+      },
+      "required": [
+        "context_id"
+      ],
+      "title": "Check",
+      "type": "object"
+    },
+    "remember": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goal"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "maxLength": 6000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "next_step": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Step"
+        },
+        "reviewed_issue_ids": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed Issue Ids"
+        }
+      },
+      "required": [
+        "context_id"
+      ],
+      "title": "Remember",
+      "type": "object"
+    },
+    "capabilities": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "StrictModel",
+      "type": "object"
+    },
+    "missing_mods": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "context_id"
+      ],
+      "title": "MissingMods",
+      "type": "object"
+    },
+    "search_knowledge": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Query",
+          "type": "string"
+        },
+        "game_version": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Game Version"
+        },
+        "topic": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Topic"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 10,
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "KnowledgeSearch",
+      "type": "object"
+    },
+    "read_knowledge": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "game_version": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Game Version"
+        }
+      },
+      "required": [
+        "entry_id"
+      ],
+      "title": "KnowledgeRead",
+      "type": "object"
+    },
+    "search_sources": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "query": {
+          "maxLength": 500,
+          "title": "Query",
+          "type": "string"
+        },
+        "kind": {
+          "default": "text",
+          "enum": [
+            "text",
+            "path",
+            "symbol"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "path_prefix": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path Prefix"
+        },
+        "owner": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Owner"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "query"
+      ],
+      "title": "SourceSearch",
+      "type": "object"
+    },
+    "read_source": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 8192,
+          "maximum": 8192,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "source_id"
+      ],
+      "title": "SourceRead",
+      "type": "object"
+    },
+    "related_definitions": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "target": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "target"
+      ],
+      "title": "Related",
+      "type": "object"
+    },
+    "brief": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "issue_id": {
+          "title": "Issue Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "issue_id"
+      ],
+      "title": "Brief",
+      "type": "object"
+    },
+    "read_sources": {
+      "$defs": {
+        "SourceExcerpt": {
+          "additionalProperties": false,
+          "properties": {
+            "source_id": {
+              "title": "Source Id",
+              "type": "string"
+            },
+            "offset": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 8192,
+              "maximum": 8192,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "source_id"
+          ],
+          "title": "SourceExcerpt",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "requests": {
+          "items": {
+            "$ref": "#/$defs/SourceExcerpt"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Requests",
+          "type": "array"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "requests"
+      ],
+      "title": "SourcesRead",
+      "type": "object"
+    },
+    "concerns": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "topic": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Topic"
+        },
+        "state": {
+          "anyOf": [
+            {
+              "enum": [
+                "pending",
+                "in_progress",
+                "explained_from_files",
+                "needs_user_choice",
+                "needs_game_test",
+                "blocked_by_missing_information"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "State"
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Priority"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id"
+      ],
+      "title": "Concerns",
+      "type": "object"
+    },
+    "concern_evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "concern_id": {
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 4,
+          "maximum": 4,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "continuation": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continuation"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "concern_id"
+      ],
+      "title": "ConcernEvidence",
+      "type": "object"
+    },
+    "record_review": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "concern_id": {
+          "title": "Concern Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "in_progress",
+            "explained_from_files",
+            "needs_user_choice",
+            "needs_game_test",
+            "blocked_by_missing_information"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "explanation": {
+          "default": "",
+          "maxLength": 6000,
+          "title": "Explanation",
+          "type": "string"
+        },
+        "player_impact": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Player Impact",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "maxItems": 4096,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "uncertainties": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "next_step": {
+          "default": "",
+          "maxLength": 1000,
+          "title": "Next Step",
+          "type": "string"
+        },
+        "user_question": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "User Question"
+        },
+        "unresolved_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "missing_source",
+                "unsupported_content",
+                "excluded_content",
+                "missing_documentation",
+                "unresolved_dependency",
+                "unknown_game_behavior"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unresolved Reason"
+        },
+        "expected_revision": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Expected Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id",
+        "concern_id",
+        "state"
+      ],
+      "title": "Review",
+      "type": "object"
+    },
+    "investigation_report": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "missing_offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Missing Offset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "index_id"
+      ],
+      "title": "InvestigationReport",
+      "type": "object"
+    },
+    "missing_candidates": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "context_id"
+      ],
+      "title": "MissingMods",
+      "type": "object"
+    },
+    "inspect_candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "context_id",
+        "candidate_id"
+      ],
+      "title": "CandidateInspection",
+      "type": "object"
+    },
+    "version_preference": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "preference": {
+          "enum": [
+            "preserve_current",
+            "open_to_change",
+            "undecided"
+          ],
+          "title": "Preference",
+          "type": "string"
+        }
+      },
+      "required": [
+        "context_id",
+        "preference"
+      ],
+      "title": "VersionPreference",
+      "type": "object"
+    }
+  }
+}

@@ -106,8 +106,8 @@ def test_streamed_large_asset_uses_bounded_reads_and_keeps_database_responsive(t
     original = safety.open_source_stream
     reads, queried = [], []
     @contextmanager
-    def bounded_reader(root, relative):
-        with original(root, relative) as stream:
+    def bounded_reader(root, relative, *, native_paths=False):
+        with original(root, relative, native_paths=native_paths) as stream:
             class Reader:
                 def fileno(self):
                     return stream.fileno()
@@ -161,7 +161,7 @@ def test_interrupted_or_changed_stream_never_publishes_a_blob(tmp_path, change):
         store.capture_source(source, "asset.dds", checkpoint=checkpoint,
                              max_bytes=1024 if change == "budget" else 16 * 1024 * 1024)
     assert not list((store.root / "blobs/sha256").glob("*/*"))
-    assert list((store.root / "blobs/ingest").iterdir()) == []
+    assert not list((store.root / "blobs/ingest").glob("*"))
     store.close()
 
 

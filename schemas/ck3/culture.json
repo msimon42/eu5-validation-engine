@@ -1,0 +1,52 @@
+{
+  "entity": "culture",
+  "game": "ck3",
+  "filePath": "common/culture/cultures/*.txt",
+  "requiredFields": {
+    "ethos": { "type": "reference", "refType": "culture_ethos" },
+    "heritage": { "type": "reference", "refType": "culture_heritage" },
+    "language": { "type": "reference", "refType": "language" },
+    "martial_custom": { "type": "reference", "refType": "martial_custom" },
+    "name_list": { "type": "reference", "refType": "name_list" }
+  },
+  "optionalFields": {
+    "color": { "type": "block" },
+    "traditions": { "type": "block" },
+    "ethnicities": { "type": "block" },
+    "graphical_cultures": { "type": "block" },
+    "coa_gfx": { "type": "block" },
+    "building_gfx": { "type": "block" },
+    "clothing_gfx": { "type": "block" },
+    "unit_gfx": { "type": "block" },
+    "male_names": { "type": "block" },
+    "female_names": { "type": "block" },
+    "dynasty_names": { "type": "block" },
+    "cadet_dynasty_names": { "type": "block" },
+    "dynasty_of_location_prefix": { "type": "string" },
+    "bastard_dynasty_prefix": { "type": "string" },
+    "dynasty_name_first": { "type": "boolean" },
+    "founder_named_dynasties": { "type": "boolean" },
+    "dynasty_title_names": { "type": "boolean" },
+    "always_use_patronym": { "type": "boolean" },
+    "patronym_prefix_male": { "type": "string" },
+    "patronym_suffix_male": { "type": "string" },
+    "patronym_prefix_female": { "type": "string" },
+    "patronym_suffix_female": { "type": "string" },
+    "pat_grf_name_chance": { "type": "number" },
+    "mat_grf_name_chance": { "type": "number" },
+    "father_name_chance": { "type": "number" },
+    "pat_grm_name_chance": { "type": "number" },
+    "mat_grm_name_chance": { "type": "number" },
+    "mother_name_chance": { "type": "number" },
+    "character_modifier": { "type": "block" },
+    "mercenary_names": { "type": "block" },
+    "dlc_requirement": { "type": "block" },
+    "created": { "type": "string" },
+    "parents": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_prefix",
+    "{key}_collective_noun"
+  ]
+}

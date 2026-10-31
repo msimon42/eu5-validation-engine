@@ -21,7 +21,7 @@ function server(options: { initialScan?: boolean; initialCandidate?: boolean; co
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const path = String(input);
     const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
-    if (path === '/api/bootstrap') return json({ session_token: 'private-session-token', version: '0.1.0', workspaces: [{ id: 'workspace-1', name: 'Synthetic lab', mode: 'synthetic' }], fixtures: [{ id: '003-disjoint-properties', name: '003 — Disjoint properties' }], profiles: [{ id: 'synthetic-contract-v1', name: 'Synthetic contract', evidence_label: 'P' }], experiments: [{ id: 'E01', name: 'Path selection', status: 'not_run' }], inference, capabilities: { production_export_enabled: false } });
+    if (path === '/api/bootstrap') return json({ session_token: 'private-session-token', version: '0.1.0', workspaces: [{ id: 'workspace-1', name: 'Synthetic lab', mode: 'synthetic' }], fixtures: [{ id: '003-disjoint-properties', name: '003 — Disjoint properties' }], profiles: [{ id: 'synthetic-contract-v1', name: 'Synthetic contract', evidence_label: 'P' }], experiments: [{ id: 'E01', name: 'Path selection', status: 'not_run' }], ck3_experiments: [{ id: 'CK3-FILES-01', game_id: 'ck3', name: 'CK3 file selection', status: 'not_run' }], inference, capabilities: { production_export_enabled: false } });
     if (path === '/api/workspaces/workspace-1') return json({ workspace: { id: 'workspace-1', name: 'Synthetic lab', mode: 'synthetic', revision: 7 }, scans: scanned ? [{ id: 'scan-1' }] : [], candidates: staged ? [{ id: 'candidate-1' }] : [], releases: [], decisions: [], jobs: [] });
     if (path === '/api/scans/scan-1') return json(options.conflict ? { ...scan, analysis: { ...scan.analysis, findings: [{ id: 'conflict', title: 'Competing exact values', category: 'confirmed_incompatibility', message: 'A requires x2 and B requires x5.' }] } } : scan);
     if (path === '/api/candidates/candidate-1') return json({ ...candidate, validation: validated ? candidate.validation : undefined });
@@ -47,6 +47,16 @@ beforeEach(() => vi.restoreAllMocks());
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe('local workspace workflows', () => {
+  it('keeps the EU5 conformance backlog separate from the CK3 catalog', async () => {
+    server(); const user = userEvent.setup(); render(<App />);
+    await screen.findByText('Start with a reproducible snapshot');
+    await user.click(screen.getByRole('button', { name: /Rules & evidence/ }));
+    await user.click(screen.getByRole('tab', { name: 'Conformance backlog' }));
+    expect(screen.getByText('E01')).toBeVisible();
+    expect(screen.getByText('Path selection')).toBeVisible();
+    expect(screen.queryByText('CK3-FILES-01')).not.toBeInTheDocument();
+  });
+
   it('scans, stages and exports an explicitly inactive experimental bundle through authenticated commands', async () => {
     const { commands } = server(); const user = userEvent.setup(); render(<App />);
     await screen.findByText('Start with a reproducible snapshot');

@@ -1,0 +1,25 @@
+{
+  "entity": "law",
+  "game": "ck3",
+  "filePath": "common/laws/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "default": { "type": "boolean" },
+    "can_have": { "type": "block" },
+    "can_keep": { "type": "block" },
+    "can_pass": { "type": "block" },
+    "should_show_for_holdings": { "type": "block" },
+    "revoke_cost": { "type": "block" },
+    "pass_cost": { "type": "block" },
+    "flag": { "type": "string" },
+    "modifier": { "type": "block" },
+    "succession_type": { "type": "string" },
+    "on_pass": { "type": "block" },
+    "on_revoke": { "type": "block" },
+    "ai_will_do": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

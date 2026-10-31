@@ -2,7 +2,35 @@
 
 Plan date: **27 October 2026**. Status: **proposed implementation plan (P)**, ready to execute in work packages. This plan is derived from specification revision 2.0; it does not establish new EU5 behavior or passing application tests.
 
+**CK3 complete investigations, 30 October 2026:** the accepted
+[investigation decision](decisions/0005-complete-ck3-investigations.md) adds bounded
+combined evidence, reusable projections, complete concern accounting, structured
+reviews, local candidate searches and campaign-version preferences. These improve
+file investigation; game testing and broader repairs remain separate milestones.
+
 Implementation has begun. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the working application, checks actually executed, implementation decisions, and outstanding Windows/game qualification. The starting-point description below records the state when this plan was written.
+
+**CK3 agent interface, 30 October 2026:** the accepted
+[Codex interface decision](decisions/0003-codex-agent-interface.md) replaces the
+dashboard as CK3's primary interface. [Agent operations](operations/AGENT.md)
+describe delivered inspection/choice/inactive-preparation tools and the remaining
+real-game test, activation and undo acceptance milestone. That milestone remains
+unfinished and cannot be satisfied by synthetic tests.
+
+**CK3 context and knowledge, 30 October 2026:** the accepted
+[startup and knowledge decision](decisions/0004-agent-context-and-knowledge.md)
+adds automatic briefings, coordinated checks, resumable objectives, sourced CK3
+references and captured-source investigation. The context increment preserves
+the earlier real-game acceptance milestone and its separate capability gates.
+
+**CK3 extension, 28 October 2026:** the accepted [Mac-first game-adapter decision](decisions/0002-ck3-mac-first.md)
+adds a separate CK3 investigation lane without changing the specification source
+package or EU5 milestones. Its first increment delivers game/platform identity,
+Steam/launcher discovery and read-only import, immutable snapshots, advisory schema
+overlays, source investigation and inactive writer primitives. CK3 loading and
+repair capabilities remain unknown/gated pending separately archived Mac/Windows
+conformance and complete preservation. See [CK3 operations and coverage](operations/CK3.md)
+and the status ledger for executed checks and remaining qualification.
 
 ## 1. Starting point and intended outcome
 

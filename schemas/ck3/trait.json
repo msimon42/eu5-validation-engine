@@ -1,0 +1,71 @@
+{
+  "entity": "trait",
+  "game": "ck3",
+  "filePath": "common/traits/*.txt",
+  "requiredFields": {
+    "index": { "type": "number" }
+  },
+  "optionalFields": {
+    "category": {
+      "type": "string",
+      "validValues": [
+        "personality",
+        "health",
+        "fame",
+        "lifestyle",
+        "commander",
+        "court",
+        "winter_commander",
+        "dynasty",
+        "genetic_trait"
+      ]
+    },
+    "icon": { "type": "string" },
+    "diplomacy": { "type": "number" },
+    "martial": { "type": "number" },
+    "stewardship": { "type": "number" },
+    "intrigue": { "type": "number" },
+    "learning": { "type": "number" },
+    "prowess": { "type": "number" },
+    "monthly_prestige": { "type": "number" },
+    "monthly_piety": { "type": "number" },
+    "attraction_opinion": { "type": "number" },
+    "same_opinion": { "type": "number" },
+    "opposite_opinion": { "type": "number" },
+    "opposites": { "type": "list" },
+    "compatibility": { "type": "block" },
+    "can_have": { "type": "block" },
+    "potential": { "type": "block" },
+    "is_genetic": { "type": "boolean" },
+    "genetic_constraint_key": { "type": "string" },
+    "birth": { "type": "number" },
+    "inherit_chance": { "type": "number" },
+    "both_parent_has_trait_inherit_chance": { "type": "number" },
+    "can_inherit": { "type": "boolean" },
+    "good": { "type": "boolean" },
+    "fame": { "type": "boolean" },
+    "immortal": { "type": "boolean" },
+    "incapacitating": { "type": "boolean" },
+    "disabling": { "type": "boolean" },
+    "lifestyle_trait": { "type": "boolean" },
+    "level": { "type": "number" },
+    "parent": { "type": "reference", "refType": "trait" },
+    "minimum_age": { "type": "number" },
+    "maximum_age": { "type": "number" },
+    "ruler_designer_cost": { "type": "number" },
+    "shown_in_ruler_designer": { "type": "boolean" },
+    "valid_sex": { "type": "string", "validValues": ["male", "female", "all"] },
+    "enabled": { "type": "boolean" },
+    "custom_description": { "type": "string" },
+    "desc": { "type": "string" },
+    "name": { "type": "string" },
+    "health": { "type": "number" },
+    "fertility": { "type": "number" },
+    "dominant_gene": { "type": "string" },
+    "genetic_point_score": { "type": "number" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

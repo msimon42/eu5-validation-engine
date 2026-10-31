@@ -1,0 +1,17 @@
+{
+  "entity": "dynasty_legacy",
+  "game": "ck3",
+  "filePath": "common/dynasty_legacies/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "perks": { "type": "block" },
+    "is_shown": { "type": "block" },
+    "can_be_picked": { "type": "block" },
+    "ai_chance": { "type": "block" },
+    "icon": { "type": "string" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

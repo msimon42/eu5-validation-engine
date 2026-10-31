@@ -1,0 +1,20 @@
+{
+  "entity": "lifestyle",
+  "game": "ck3",
+  "filePath": "common/lifestyles/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "is_highlighted": { "type": "block" },
+    "is_valid": { "type": "block" },
+    "is_valid_showing_failures_only": { "type": "block" },
+    "xp_per_level": { "type": "number" },
+    "base_xp_gain": { "type": "number" },
+    "icon": { "type": "string" },
+    "highlighted_icon": { "type": "string" }
+  },
+  "localizationKeys": [
+    "{key}_name",
+    "{key}_desc",
+    "{key}_highlight_desc"
+  ]
+}

@@ -32,7 +32,7 @@ def _manifest_view(candidate: dict) -> dict:
         if isinstance(value, list):
             return [clean(item) for item in value]
         return value
-    fields = ("id", "workspace_id", "mode", "inputs", "validation", "profile",
+    fields = ("id", "workspace_id", "game_id", "target_platform", "mode", "inputs", "validation", "profile",
               "build_fingerprint", "decisions")
     result = {key: clean(candidate[key]) for key in fields if key in candidate}
     plan = candidate.get("plan", {})
@@ -164,6 +164,9 @@ class ReleaseManager:
         else:
             raise ValueError("registered conformed profile required")
         self.evidence.validate_profile(profile, require_conformed=True)
+        if (candidate.get("game_id", "eu5") != profile.get("game_id", "eu5") or
+                candidate.get("target_platform", "windows") != profile.get("target_platform", "windows")):
+            raise ValueError("candidate game/platform differs from measured profile")
         if candidate.get("build_fingerprint") != profile["build_fingerprint"]:
             raise ValueError("candidate target fingerprint differs from measured profile")
         scope = candidate.get("plan", {}).get("affected_scope")

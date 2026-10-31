@@ -1,0 +1,11 @@
+interface:
+  display_name: "CK3 Mod Assistant"
+  short_description: "Check your mods and discuss approved fixes"
+  default_prompt: "Use $ck3-mod-agent to check my CK3 mods and explain what needs fixing."
+policy:
+  allow_implicit_invocation: true
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ck3_mod_agent"
+      description: "Local CK3 inspection and approved changes"

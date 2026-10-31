@@ -1,0 +1,48 @@
+{
+  "entity": "men_at_arms",
+  "game": "ck3",
+  "filePath": "common/men_at_arms_types/*.txt",
+  "requiredFields": {
+    "type": {
+      "type": "string",
+      "validValues": [
+        "heavy_infantry",
+        "light_infantry",
+        "pikemen",
+        "heavy_cavalry",
+        "light_cavalry",
+        "archer_cavalry",
+        "archers",
+        "skirmishers",
+        "siege_weapon",
+        "elephant_cavalry",
+        "camel_cavalry"
+      ]
+    }
+  },
+  "optionalFields": {
+    "damage": { "type": "number" },
+    "toughness": { "type": "number" },
+    "pursuit": { "type": "number" },
+    "screen": { "type": "number" },
+    "siege_value": { "type": "number" },
+    "stack": { "type": "number" },
+    "terrain_bonus": { "type": "block" },
+    "terrain_penalty": { "type": "block" },
+    "counters": { "type": "block" },
+    "winter_bonus": { "type": "block" },
+    "buy_cost": { "type": "block" },
+    "low_maintenance_cost": { "type": "block" },
+    "high_maintenance_cost": { "type": "block" },
+    "can_recruit": { "type": "block" },
+    "max": { "type": "block" },
+    "icon": { "type": "string" },
+    "max_sub_regiments": { "type": "number" },
+    "ai_quality": { "type": "block" },
+    "allowed_in_hired_troops": { "type": "boolean" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

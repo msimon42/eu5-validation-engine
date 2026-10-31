@@ -7,6 +7,7 @@ from pathlib import Path
 
 from backend.app.contracts import PAYLOADS
 from backend.app.main import Command, create_app
+from backend.agent.contracts import AgentRequest, MODELS as AGENT_PAYLOADS
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -45,6 +46,9 @@ def outputs():
     return {
         ROOT / "schemas" / "commands-v1.json": json.dumps({"schema_version": 1, "envelope": Command.model_json_schema(), "payloads": schemas}, indent=2) + "\n",
         ROOT / "schemas" / "openapi.json": json.dumps(create_app().openapi(), indent=2) + "\n",
+        ROOT / "schemas" / "agent-v3.json": json.dumps({"schema_version": 3,
+            "envelope": AgentRequest.model_json_schema(),
+            "payloads": {name: model.model_json_schema() for name, model in AGENT_PAYLOADS.items()}}, indent=2) + "\n",
         ROOT / "frontend" / "src" / "generated" / "contracts.ts": "\n".join(lines) + "\n",
     }
 

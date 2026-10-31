@@ -215,11 +215,26 @@ class Store:
             return Path(result["path"])
 
     def capture_source(self, source_root: Path, relative: str, *, checkpoint=None,
-                       max_bytes: int = 2 ** 42) -> dict:
+                       max_bytes: int = 2 ** 42, native_paths: bool = False) -> dict:
         """Stream an immutable source copy; large opaque payloads never enter JSON."""
-        temporary = f"blobs/ingest/{uuid.uuid4().hex}.tmp"
         with self.lock:
             self._check_database()
+        observed = hash_source_file(source_root, relative, max_bytes=max_bytes, native_paths=native_paths)
+        final = f"blobs/sha256/{observed['sha256'][:2]}/{observed['sha256']}"
+        with self.lock:
+            self._check_database()
+            present = self.fs.resolve(final).exists()
+        if present:
+            # A fresh full source hash selects the content address. Verify the
+            # complete existing blob before reusing it; neither timestamps nor
+            # an existing filename are evidence that its bytes are intact.
+            actual = hash_source_file(self.root, final, max_bytes=max_bytes)
+            if actual["sha256"] != observed["sha256"] or actual["size"] != observed["size"]:
+                raise Conflict("Immutable streamed blob integrity failure")
+            if checkpoint:
+                checkpoint(observed["size"])
+            return {"sha256": observed["sha256"], "size": observed["size"]}
+        temporary = f"blobs/ingest/{uuid.uuid4().hex}.tmp"
         try:
             with self.fs._parent(temporary, create=True) as (parent, name):
                 options = {} if parent == -1 else {"dir_fd": parent}
@@ -227,7 +242,7 @@ class Store:
                 descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600, **options)
                 checksum, size = hashlib.sha256(), 0
                 with os.fdopen(descriptor, "wb") as output:
-                    for chunk in iter_source_file(source_root, relative, max_bytes=max_bytes):
+                    for chunk in iter_source_file(source_root, relative, max_bytes=max_bytes, native_paths=native_paths):
                         size += len(chunk)
                         checksum.update(chunk)
                         output.write(chunk)
@@ -236,6 +251,8 @@ class Store:
                     output.flush()
                     os.fsync(output.fileno())
             sha = checksum.hexdigest()
+            if sha != observed["sha256"] or size != observed["size"]:
+                raise Conflict("Source changed between hashing and capture")
             final = f"blobs/sha256/{sha[:2]}/{sha}"
             with self.lock:
                 self._check_database()

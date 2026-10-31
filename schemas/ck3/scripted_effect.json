@@ -1,0 +1,8 @@
+{
+  "entity": "scripted_effect",
+  "game": "ck3",
+  "filePath": "common/scripted_effects/*.txt",
+  "requiredFields": {},
+  "optionalFields": {},
+  "localizationKeys": []
+}

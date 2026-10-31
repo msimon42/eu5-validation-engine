@@ -1,0 +1,37 @@
+{
+  "entity": "court_position",
+  "game": "ck3",
+  "filePath": "common/court_positions/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "skill": { "type": "string" },
+    "minimum_rank": { "type": "string" },
+    "is_shown": { "type": "block" },
+    "valid_position": { "type": "block" },
+    "valid_character": { "type": "block" },
+    "revoke_cost": { "type": "block" },
+    "salary": { "type": "block" },
+    "base_aptitude": { "type": "block" },
+    "aptitude_level_breakpoints": { "type": "block" },
+    "opinion": { "type": "block" },
+    "modifier": { "type": "block" },
+    "aptitude_level_1_modifier": { "type": "block" },
+    "aptitude_level_2_modifier": { "type": "block" },
+    "aptitude_level_3_modifier": { "type": "block" },
+    "aptitude_level_4_modifier": { "type": "block" },
+    "aptitude_level_5_modifier": { "type": "block" },
+    "base_employer_modifier": { "type": "block" },
+    "scaling_employer_modifier": { "type": "block" },
+    "candidate_score": { "type": "block" },
+    "on_court_position_received": { "type": "block" },
+    "on_court_position_revoked": { "type": "block" },
+    "on_court_position_invalidated": { "type": "block" },
+    "search_for_courtier": { "type": "block" },
+    "court_position_category": { "type": "string" },
+    "auto_fill": { "type": "boolean" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

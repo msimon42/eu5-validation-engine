@@ -1,0 +1,31 @@
+{
+  "entity": "culture_tradition",
+  "game": "ck3",
+  "filePath": "common/culture/traditions/*.txt",
+  "requiredFields": {
+    "category": {
+      "type": "string",
+      "validValues": ["realm", "combat", "societal", "ritual", "regional"]
+    }
+  },
+  "optionalFields": {
+    "parameters": { "type": "block" },
+    "is_shown": { "type": "block" },
+    "can_pick": { "type": "block" },
+    "cost": { "type": "block" },
+    "ai_will_do": { "type": "block" },
+    "character_modifier": { "type": "block" },
+    "county_modifier": { "type": "block" },
+    "province_modifier": { "type": "block" },
+    "culture_modifier": { "type": "block" },
+    "doctrine_character_modifier": { "type": "block" },
+    "is_valid_for_culture": { "type": "block" },
+    "can_pick_for_culture": { "type": "block" },
+    "description": { "type": "block" },
+    "name": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}_name",
+    "{key}_desc"
+  ]
+}

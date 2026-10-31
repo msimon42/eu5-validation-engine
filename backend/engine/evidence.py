@@ -12,6 +12,10 @@ from .safety import ManagedFS, sha256_bytes, validate_relative_path
 STAGES = {"loading_screen", "main_menu", "in_game"}
 LABELS = {"V", "D", "C", "I", "H", "P"}
 EXPERIMENT_IDS = tuple(f"E{number:02d}" for number in range(1, 26))
+CK3_EXPERIMENT_IDS = ("CK3-PACKAGE-01", "CK3-FILES-01", "CK3-DEFINITIONS-01", "CK3-ON-ACTIONS-01",
+                      "CK3-LOCALIZATION-01", "CK3-HISTORY-01", "CK3-PATHS-01", "CK3-RUNTIME-01")
+GAME_STAGES = {"eu5": STAGES, "ck3": {"game"}}
+GAME_PLATFORMS = {"eu5": {"windows"}, "ck3": {"macos", "windows"}}
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
 _HASH = re.compile(r"^[a-f0-9]{64}$")
 
@@ -36,24 +40,38 @@ def validate_fingerprint(value: object) -> dict:
     return value
 
 
+def _game_scope(game_id: object, platform: object = None) -> tuple[str, str]:
+    if not isinstance(game_id, str) or game_id not in GAME_STAGES:
+        raise ValueError("unsupported evidence game identity")
+    if platform is None:
+        platform = "windows"
+    if not isinstance(platform, str) or platform not in GAME_PLATFORMS[game_id]:
+        raise ValueError("unsupported evidence target platform")
+    return game_id, platform
+
+
 class EvidenceRegistry:
     def __init__(self, root: Path):
         self.fs = ManagedFS(root)
         self.root = self.fs.root
 
-    def experiments(self) -> list[dict]:
+    def experiments(self, game_id: str = "eu5", platform: str | None = None) -> list[dict]:
+        _game_scope(game_id, platform)
         results = []
-        for identifier in EXPERIMENT_IDS:
+        identifiers = CK3_EXPERIMENT_IDS if game_id == "ck3" else EXPERIMENT_IDS
+        for identifier in identifiers:
             records = []
             directory = self.root / "conformance"
             if directory.exists():
                 for path in sorted(directory.glob("*.json")):
                     record = json.loads(self.fs.read_bytes(f"conformance/{path.name}"))
-                    if record.get("experiment_id") == identifier:
+                    if (record.get("experiment_id") == identifier and record.get("game_id", "eu5") == game_id
+                            and (platform is None or record.get("platform", "windows") == platform)):
+                        self.verify_conformance(record)
                         records.append(record["id"])
             results.append({"id": identifier, "status": "proposed_not_run" if not records
                             else "passed_with_scope", "records": records,
-                            "label": "P" if not records else "C"})
+                            "label": "P" if not records else "C", "game_id": game_id, "platform": platform})
         return results
 
     def _immutable(self, category: str, identifier: str, value: dict) -> dict:
@@ -78,11 +96,15 @@ class EvidenceRegistry:
         if not isinstance(record, dict):
             raise ValueError("conformance record must be an object")
         _identifier(record.get("id"))
-        if record.get("experiment_id") not in EXPERIMENT_IDS:
+        game_id = record.get("game_id", "eu5")
+        if game_id == "ck3" and record.get("platform") is None:
+            raise ValueError("CK3 conformance requires an explicit target platform")
+        game_id, platform = _game_scope(game_id, record.get("platform", "windows"))
+        identifiers = CK3_EXPERIMENT_IDS if game_id == "ck3" else EXPERIMENT_IDS
+        if record.get("experiment_id") not in identifiers:
             raise ValueError("unknown experiment identifier")
-        if (record.get("tier") != "conformance" or record.get("platform") != "windows"
-                or record.get("outcome") != "passed_with_scope"):
-            raise ValueError("only executed Windows conformance can support a C rule")
+        if record.get("tier") != "conformance" or record.get("outcome") != "passed_with_scope":
+            raise ValueError("only executed scoped game conformance can support a C rule")
         for key in ("executed", "cold_start", "active_state_confirmed"):
             if record.get(key) is not True:
                 raise ValueError(f"missing trusted runtime prerequisite: {key}")
@@ -90,7 +112,7 @@ class EvidenceRegistry:
             raise ValueError("direct observation and discriminating negative control required")
         validate_fingerprint(record.get("build_fingerprint"))
         scope = record.get("scope", {})
-        if scope.get("stage") not in STAGES or not scope.get("family") or "*" in str(scope):
+        if scope.get("stage") not in GAME_STAGES[game_id] or not scope.get("family") or "*" in str(scope):
             raise ValueError("conformance must have exact stage and family scope")
         artifacts = record.get("artifacts")
         if not isinstance(artifacts, list) or not artifacts:
@@ -129,6 +151,10 @@ class EvidenceRegistry:
             kind = "documented"
         if kind not in {"synthetic", "documented", "conformed"}:
             raise ValueError("unknown profile kind")
+        game_id = profile.get("game_id", "eu5")
+        if kind == "conformed" and game_id == "ck3" and profile.get("target_platform") is None:
+            raise ValueError("CK3 conformed profiles require an explicit target platform")
+        game_id, platform = _game_scope(game_id, profile.get("target_platform"))
         if (self.root / "quarantine" / f"{identifier}.json").exists():
             raise ValueError("profile is quarantined")
         if require_conformed and kind != "conformed":
@@ -149,7 +175,7 @@ class EvidenceRegistry:
                 raise ValueError("synthetic/documentation profiles cannot manufacture C rules")
             selectors = rule.get("selectors", {})
             stages, families = selectors.get("stages", []), selectors.get("families", [])
-            if not stages or not families or not set(stages) <= STAGES or "*" in str(selectors):
+            if not stages or not families or not set(stages) <= GAME_STAGES[game_id] or "*" in str(selectors):
                 raise ValueError("rule requires exact nonempty family/stage selectors")
             if not rule.get("version") or not rule.get("invalidation_keys"):
                 raise ValueError("rule version and invalidation dependencies are required")
@@ -160,6 +186,10 @@ class EvidenceRegistry:
                 covered_fields = set()
                 for reference in rule["evidence"]:
                     record = self.get_conformance(reference)
+                    if record.get("game_id", "eu5") != game_id:
+                        raise ValueError("rule evidence belongs to a different game")
+                    if record.get("platform", "windows") != platform:
+                        raise ValueError("rule evidence belongs to a different target platform")
                     if record["build_fingerprint"] != profile["build_fingerprint"]:
                         raise ValueError("rule evidence belongs to a different target fingerprint")
                     covered.add((record["scope"]["stage"], record["scope"]["family"]))

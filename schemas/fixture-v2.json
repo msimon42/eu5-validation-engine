@@ -47,6 +47,12 @@
         "id": {
           "type": "string"
         },
+        "game_id": {
+          "const": "eu5"
+        },
+        "target_platform": {
+          "const": "windows"
+        },
         "kind": {
           "enum": [
             "synthetic",

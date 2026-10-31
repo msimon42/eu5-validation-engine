@@ -1,0 +1,292 @@
+{
+  "schema_format": "ck3-advisory-1",
+  "revision": 1,
+  "source": {
+    "status": "user_supplied_unversioned",
+    "provenance": "Not supplied; original declarations retained byte-for-byte.",
+    "game_build": "unqualified",
+    "license": "not recorded"
+  },
+  "policy": {
+    "unknown_fields": "preserve",
+    "validation": "advisory",
+    "loading_semantics": "unknown",
+    "production_export_enabled": false
+  },
+  "originals": [
+    {
+      "path": "activity_type.json",
+      "sha256": "6df8479cb9d7e08cc864a61d20f71c053a22a83c3c0c624109bdb7723d755a9f"
+    },
+    {
+      "path": "artifact.json",
+      "sha256": "93cf4009556054fd0cc85bd195fd8a508dec1276be65932b477083f1e599a863"
+    },
+    {
+      "path": "bookmark.json",
+      "sha256": "5ae34bf417a72801314b71c04fdedb7bb8d8c0df81d300de6b0fc1d2b013cfa3"
+    },
+    {
+      "path": "building.json",
+      "sha256": "89886a8c46c30cd9468682e13020a7a58d5a5bb670f281bccaacb60c27b0cd1f"
+    },
+    {
+      "path": "character_interaction.json",
+      "sha256": "860cf61ebf43e677e10b9a0aa3cbe81fe11a774691be3bf2c87ef1cac1c4ea2f"
+    },
+    {
+      "path": "court_position.json",
+      "sha256": "5870325b25c348de46e53e2267f1b5b3eb109473196e5ee8a5c9b8f1d8268703"
+    },
+    {
+      "path": "culture.json",
+      "sha256": "cd1a44b2c4aa0ea5afab5524a3c9c16a3b8e822af0316a17ba02d507deb5aa1e"
+    },
+    {
+      "path": "culture_tradition.json",
+      "sha256": "cb0ce23196ab94931afc6904faf0ed743ba26cde2247fe7ba4f1281347687e57"
+    },
+    {
+      "path": "decision.json",
+      "sha256": "232577739a02f2a20521aaf8cbf64214aa4ed18a23bc66c666b2573df5fa4a9a"
+    },
+    {
+      "path": "doctrine.json",
+      "sha256": "d7dbbde453e89746d66913de8e3d65face869051e7eb09bfa6e9504636473b9a"
+    },
+    {
+      "path": "dynasty_legacy.json",
+      "sha256": "40af1b3c5e36e3c6fc3cb3c0d4e28a5955ce2eb4919afc5fbb20e753fb6e4814"
+    },
+    {
+      "path": "event.json",
+      "sha256": "450667980f21122b4bbde349e5dcdb89adb11a86fc340182381b1cba74e91fe0"
+    },
+    {
+      "path": "government_type.json",
+      "sha256": "fa8e503cde5107654419ca301fbb627eb8c470e9d910ed869000be9f63d71c38"
+    },
+    {
+      "path": "holy_site.json",
+      "sha256": "1d14c2c3b6596afa87843d941e5d8d8fd28e355786917f163b0497448cdd2cdc"
+    },
+    {
+      "path": "law.json",
+      "sha256": "4a93083af2ce872aac258faf9cbc759d617fcea23af702b5c3a653bcdee4290f"
+    },
+    {
+      "path": "lifestyle.json",
+      "sha256": "06edc05ca866a4d54765a6009ddc1a87cb8490eae674ccb774f59f3ee2a0f6ff"
+    },
+    {
+      "path": "men_at_arms.json",
+      "sha256": "7d2c3ab9c262ea58d66e16ce844ec876f49c034be849206e20aefeb0cf381c30"
+    },
+    {
+      "path": "on_action.json",
+      "sha256": "b4577993180618fba46dcb5acf73069ce77d7248819af7a7eb4aa7d007fecb8c"
+    },
+    {
+      "path": "religion.json",
+      "sha256": "08a362ce9a2418d9ffe83a9d43b5b6ab5b1739cd9471d84c22730e637d390b64"
+    },
+    {
+      "path": "scheme.json",
+      "sha256": "2be70119c77a43a83b8d2631f7193964fe6e4eb45b70e7584075ae093402285e"
+    },
+    {
+      "path": "scripted_effect.json",
+      "sha256": "5f8266695d360d7a882262b27b1d73ab5d4ccbe6f88a88a2df050f82fbd3c3c4"
+    },
+    {
+      "path": "scripted_trigger.json",
+      "sha256": "5b262409f760d238f08c48eef422195afab7040c67010d8eff1f387402b90994"
+    },
+    {
+      "path": "struggle.json",
+      "sha256": "7da897eefa133d45ca03ab2d04e092d53a5908b070680807b90d96929a02d25f"
+    },
+    {
+      "path": "trait.json",
+      "sha256": "d9794d6bc07b177edf507d09e836ed6c6cf64fa1f9cfccf23ad495d2369573ba"
+    }
+  ],
+  "inspection_evidence": [
+    {
+      "id": "ck3-local-traits-info",
+      "label": "V",
+      "relative_path": "game/common/traits/_traits.info",
+      "sha256": "124411b2fa6ee487b038486daa6e47b5836c5d19984d4555c4181965ab24df74"
+    },
+    {
+      "id": "ck3-local-events-info",
+      "label": "V",
+      "relative_path": "game/events/_events.info",
+      "sha256": "db52ce9b9d048c6df7dd880e035c700046878bc9e829f82b8af4c1cc6dede09b"
+    },
+    {
+      "id": "ck3-local-on-actions-info",
+      "label": "V",
+      "relative_path": "game/common/on_action/_on_actions.info",
+      "sha256": "2bfbbf903d55a2417c988caf1479ef0ff91719c55128ce6357bca3d2c8e9b25f"
+    },
+    {
+      "id": "ck3-local-religion-info",
+      "label": "V",
+      "relative_path": "game/common/religion/religion_types/_religion_types.info",
+      "sha256": "f3bb6015c66efd47bfc6d521193fcbf5356c78e864d84a5246f1c1932da57014"
+    },
+    {
+      "id": "ck3-local-decisions-info",
+      "label": "V",
+      "relative_path": "game/common/decisions/_decisions.info",
+      "sha256": "106977b58220107b66f537aadda965f5a0602140dfb9ba7c79f3ba8bdd91cd9e"
+    }
+  ],
+  "overlays": {
+    "court_position": {
+      "filePath": "common/court_positions/types/*.txt"
+    },
+    "doctrine": {
+      "filePath": "common/religion/doctrine_types/*.txt"
+    },
+    "government_type": {
+      "filePath": "common/governments/*.txt"
+    },
+    "holy_site": {
+      "filePath": "common/religion/holy_site_types/*.txt"
+    },
+    "struggle": {
+      "filePath": "common/struggle/struggles/*.txt"
+    },
+    "scheme": {
+      "filePath": "common/schemes/scheme_types/*.txt",
+      "relaxEnums": [
+        "type"
+      ]
+    },
+    "religion": {
+      "filePath": "common/religion/religion_types/*.txt",
+      "optionalize": [
+        "doctrine"
+      ],
+      "removeFields": [
+        "holy_site"
+      ],
+      "notes": [
+        "Faiths and holy sites are nested entities; this overlay does not validate their contents."
+      ]
+    },
+    "trait": {
+      "optionalize": [
+        "index"
+      ],
+      "removeFields": [
+        "is_genetic"
+      ],
+      "fields": {
+        "genetic": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "desc": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "icon": {
+          "type": [
+            "string",
+            "block"
+          ]
+        }
+      },
+      "relaxEnums": [
+        "category"
+      ],
+      "localizationKeys": [
+        "trait_{key}",
+        "trait_{key}_desc"
+      ]
+    },
+    "event": {
+      "fields": {
+        "title": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "desc": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "opening": {
+          "type": [
+            "string",
+            "block"
+          ]
+        }
+      },
+      "relaxEnums": [
+        "type"
+      ],
+      "notes": [
+        "Event namespaces are declarations, not event entities. Localization patterns are hints, not required names."
+      ]
+    },
+    "on_action": {
+      "fields": {
+        "fallback": {
+          "type": "reference",
+          "refType": "on_action"
+        },
+        "random_on_actions": {
+          "type": "block"
+        },
+        "first_valid_on_action": {
+          "type": "block"
+        },
+        "weight_multiplier": {
+          "type": "block"
+        }
+      }
+    },
+    "decision": {
+      "fields": {
+        "title": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "desc": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "selection_tooltip": {
+          "type": [
+            "string",
+            "block"
+          ]
+        },
+        "confirm_text": {
+          "type": [
+            "string",
+            "block"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "entity": "activity_type",
+  "game": "ck3",
+  "filePath": "common/activities/activity_types/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "is_shown": { "type": "block" },
+    "is_valid": { "type": "block" },
+    "can_start": { "type": "block" },
+    "on_start": { "type": "block" },
+    "on_complete": { "type": "block" },
+    "on_monthly": { "type": "block" },
+    "cost": { "type": "block" },
+    "phases": { "type": "block" },
+    "options": { "type": "block" },
+    "max_guests": { "type": "number" },
+    "guest_invite_rules": { "type": "block" },
+    "travel_entourage_selection": { "type": "block" },
+    "ai_check_interval": { "type": "number" },
+    "ai_will_do": { "type": "block" },
+    "ui_predicted_options": { "type": "block" },
+    "icon": { "type": "string" },
+    "cooldown": { "type": "block" },
+    "desc": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

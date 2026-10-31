@@ -37,6 +37,58 @@
         }
       }
     },
+    "/api/engine": {
+      "get": {
+        "summary": "Engine Identity",
+        "operationId": "engine_identity_api_engine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent": {
+      "post": {
+        "summary": "Agent Operation",
+        "operationId": "agent_operation_api_agent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/commands": {
       "post": {
         "summary": "Command",
@@ -291,6 +343,43 @@
         }
       }
     },
+    "/api/ck3/discoveries/{identifier}": {
+      "get": {
+        "summary": "Ck3 Discovery",
+        "operationId": "ck3_discovery_api_ck3_discoveries__identifier__get",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/evidence/{identifier}": {
       "get": {
         "summary": "Evidence",
@@ -368,12 +457,66 @@
   },
   "components": {
     "schemas": {
+      "AgentRequest": {
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "status",
+              "release",
+              "session",
+              "issues",
+              "inspect",
+              "proposal",
+              "challenge",
+              "answer",
+              "apply",
+              "test",
+              "enable",
+              "undo",
+              "context",
+              "check",
+              "remember",
+              "capabilities",
+              "search_knowledge",
+              "read_knowledge",
+              "search_sources",
+              "read_source",
+              "related_definitions",
+              "brief",
+              "missing_mods",
+              "read_sources",
+              "concerns",
+              "concern_evidence",
+              "record_review",
+              "investigation_report",
+              "missing_candidates",
+              "inspect_candidate",
+              "version_preference"
+            ],
+            "title": "Operation"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operation"
+        ],
+        "title": "AgentRequest"
+      },
       "Command": {
         "properties": {
           "command": {
             "type": "string",
             "enum": [
               "create_workspace",
+              "discover_ck3",
+              "import_ck3",
               "scan",
               "stage",
               "decision",
@@ -384,7 +527,13 @@
               "cancel",
               "backup",
               "runtime_probe",
-              "configure_inference"
+              "configure_inference",
+              "agent_index",
+              "agent_prepare",
+              "agent_apply",
+              "agent_test",
+              "agent_undo",
+              "agent_check"
             ],
             "title": "Command"
           },

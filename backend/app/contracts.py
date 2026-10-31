@@ -23,6 +23,8 @@ class Input(StrictModel):
 class CreateWorkspace(StrictModel):
     name: str = Field(default="New workspace", min_length=1, max_length=120)
     mode: Literal["synthetic", "game"] = "synthetic"
+    game_id: Literal["eu5", "ck3"] = "eu5"
+    target_platform: Literal["macos", "windows"] | None = None
     sources: list[Source] = Field(default_factory=list, max_length=1000)
     fixture_path: str | None = Field(default=None, min_length=1, max_length=32760)
 
@@ -33,6 +35,19 @@ class Scan(StrictModel):
     playset: list[str] = Field(default_factory=list, max_length=1000)
     baselines: dict | None = None
     profile_id: str | None = None
+
+
+class DiscoverCK3(StrictModel):
+    platform: Literal["macos", "windows"] | None = None
+    steam_roots: list[str] | None = Field(default=None, max_length=100)
+    user_data_path: str | None = Field(default=None, min_length=1, max_length=32760)
+    installation_path: str | None = Field(default=None, min_length=1, max_length=32760)
+    playset_id: str | None = Field(default=None, min_length=1, max_length=200)
+    root_overrides: dict[str, str] = Field(default_factory=dict, max_length=1000)
+
+
+class ImportCK3(StrictModel):
+    discovery_id: str = Field(min_length=1, max_length=200)
 
 
 class Stage(StrictModel):
@@ -64,6 +79,24 @@ class Rollback(StrictModel):
 class Investigate(Stage):
     mode: Literal["replay", "live"] = "replay"
     replay: list[dict] = Field(default_factory=list, max_length=100)
+
+
+class AgentIndex(StrictModel):
+    scan_id: str
+
+
+class AgentCheck(StrictModel):
+    context_id: str
+
+
+class AgentPrepare(StrictModel):
+    index_id: str
+    issue_id: str
+    combined_base64: str | None = Field(default=None, max_length=180000)
+
+
+class AgentProposal(StrictModel):
+    proposal_id: str
 
 
 class Cancel(StrictModel):
@@ -98,6 +131,9 @@ class InferencePolicy(StrictModel):
 
 
 PAYLOADS = {
+    "agent_index": AgentIndex, "agent_prepare": AgentPrepare, "agent_check": AgentCheck,
+    "agent_apply": AgentProposal, "agent_test": AgentProposal, "agent_undo": AgentProposal,
+    "discover_ck3": DiscoverCK3, "import_ck3": ImportCK3,
     "create_workspace": CreateWorkspace, "scan": Scan, "stage": Stage,
     "decision": Decision, "validate": Validate, "export": Export,
     "rollback": Rollback, "investigate": Investigate, "cancel": Cancel,

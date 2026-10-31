@@ -6,6 +6,8 @@
       "command": {
         "enum": [
           "create_workspace",
+          "discover_ck3",
+          "import_ck3",
           "scan",
           "stage",
           "decision",
@@ -16,7 +18,13 @@
           "cancel",
           "backup",
           "runtime_probe",
-          "configure_inference"
+          "configure_inference",
+          "agent_index",
+          "agent_prepare",
+          "agent_apply",
+          "agent_test",
+          "agent_undo",
+          "agent_check"
         ],
         "title": "Command",
         "type": "string"
@@ -66,6 +74,213 @@
     "type": "object"
   },
   "payloads": {
+    "agent_index": {
+      "additionalProperties": false,
+      "properties": {
+        "scan_id": {
+          "title": "Scan Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scan_id"
+      ],
+      "title": "AgentIndex",
+      "type": "object"
+    },
+    "agent_prepare": {
+      "additionalProperties": false,
+      "properties": {
+        "index_id": {
+          "title": "Index Id",
+          "type": "string"
+        },
+        "issue_id": {
+          "title": "Issue Id",
+          "type": "string"
+        },
+        "combined_base64": {
+          "anyOf": [
+            {
+              "maxLength": 180000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Combined Base64"
+        }
+      },
+      "required": [
+        "index_id",
+        "issue_id"
+      ],
+      "title": "AgentPrepare",
+      "type": "object"
+    },
+    "agent_check": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "context_id"
+      ],
+      "title": "AgentCheck",
+      "type": "object"
+    },
+    "agent_apply": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "proposal_id"
+      ],
+      "title": "AgentProposal",
+      "type": "object"
+    },
+    "agent_test": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "proposal_id"
+      ],
+      "title": "AgentProposal",
+      "type": "object"
+    },
+    "agent_undo": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "proposal_id"
+      ],
+      "title": "AgentProposal",
+      "type": "object"
+    },
+    "discover_ck3": {
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "anyOf": [
+            {
+              "enum": [
+                "macos",
+                "windows"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Platform"
+        },
+        "steam_roots": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Steam Roots"
+        },
+        "user_data_path": {
+          "anyOf": [
+            {
+              "maxLength": 32760,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "User Data Path"
+        },
+        "installation_path": {
+          "anyOf": [
+            {
+              "maxLength": 32760,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Installation Path"
+        },
+        "playset_id": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Playset Id"
+        },
+        "root_overrides": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 1000,
+          "title": "Root Overrides",
+          "type": "object"
+        }
+      },
+      "title": "DiscoverCK3",
+      "type": "object"
+    },
+    "import_ck3": {
+      "additionalProperties": false,
+      "properties": {
+        "discovery_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Discovery Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "discovery_id"
+      ],
+      "title": "ImportCK3",
+      "type": "object"
+    },
     "create_workspace": {
       "$defs": {
         "Source": {
@@ -109,6 +324,31 @@
           ],
           "title": "Mode",
           "type": "string"
+        },
+        "game_id": {
+          "default": "eu5",
+          "enum": [
+            "eu5",
+            "ck3"
+          ],
+          "title": "Game Id",
+          "type": "string"
+        },
+        "target_platform": {
+          "anyOf": [
+            {
+              "enum": [
+                "macos",
+                "windows"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Platform"
         },
         "sources": {
           "items": {

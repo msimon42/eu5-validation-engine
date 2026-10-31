@@ -1,0 +1,32 @@
+{
+  "entity": "government_type",
+  "game": "ck3",
+  "filePath": "common/government_types/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "create_cadet_branches": { "type": "boolean" },
+    "rulers_should_have_dynasty": { "type": "boolean" },
+    "dynasty_named_realms": { "type": "boolean" },
+    "council": { "type": "boolean" },
+    "regiments_prestige_as_gold": { "type": "boolean" },
+    "fallback": { "type": "number" },
+    "primary_holding": { "type": "reference", "refType": "holding_type" },
+    "valid_holdings": { "type": "block" },
+    "preferred_holdings": { "type": "block" },
+    "required_county_holdings": { "type": "block" },
+    "always_use_patronym": { "type": "boolean" },
+    "color": { "type": "block" },
+    "flag": { "type": "string" },
+    "vassal_contract": { "type": "block" },
+    "character_modifier": { "type": "block" },
+    "court_generate_spouses": { "type": "boolean" },
+    "court_generate_commander": { "type": "boolean" },
+    "ai": { "type": "block" },
+    "house_unity": { "type": "block" },
+    "can_get_government": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

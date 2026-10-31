@@ -1,6 +1,42 @@
-# Testing the application without EU5
+# Testing the application without a game installation
 
-The synthetic browser lane runs on macOS before deployment to the Windows 11 VM. It tests the built UI, real FastAPI application, SQLite state, physical synthetic mod files, and downloaded export bytes. It needs no game installation or OpenRouter credentials. Passing results establish synthetic application contracts only; they do not establish EU5 loading or gameplay rules.
+The CK3 product interface is [the Codex agent](AGENT.md). Its tests use the real
+headless engine and local tool connection, including native user-choice forms;
+they run with the backend pytest suite. The browser lane below checks the
+optional developer UI and existing EU5 workflow.
+
+## Fresh Codex conversations
+
+The agent acceptance lane also runs the actual installed Codex client in fresh,
+ephemeral conversations. It uses a disposable Steam layout, launcher selection,
+two small mods and a separate managed library. Seed discovery/import only, so the
+first conversation must perform its own check. Override only the connector's
+data-directory argument for the temporary library; retain the installed skill,
+permission settings and the user's model selection. No actual game is required.
+
+The first request asks to check the current playset and explain what needs
+attention, without launching a game or changing mods. Verify context discovery,
+completed checking, source and knowledge use, grouped plain-language findings,
+saved notes and honest gameplay limits. Captured external launcher descriptors
+must be accessible through the engine, including replacement settings.
+
+A second fresh conversation says “Continue reviewing my CK3 mods” without any
+history or IDs. It must recover the saved investigation, distinguish historical
+findings from current verification, and avoid another scan/hash job unless the
+user asks for one. Record actual tool calls, final answers, job/scan counts and
+source hashes before/after. Both runs must preserve all source bytes and create
+no fixes or active-state changes. Retain transcripts and results in ignored
+managed reports; these are application evaluations, not CK3 conformance evidence.
+
+The noninteractive client uses `codex exec --ephemeral --json --sandbox read-only`
+with the temporary connector argument override. Do not turn off all approvals to
+make the test pass. Installation supplies narrow defaults for inspection and
+managed housekeeping while preserving explicit user policies. Native choice-form
+responses and refusal paths remain a separate SDK transport test lane.
+
+## Synthetic browser lane
+
+The synthetic browser lane runs on macOS before deployment to the Windows 11 VM. It tests the built UI, real FastAPI application, SQLite state, physical synthetic mod files, and downloaded export bytes. It needs no game installation or OpenRouter credentials. Passing results establish synthetic application contracts only; they do not establish EU5 or CK3 loading or gameplay rules.
 
 ## One-command browser run
 
@@ -35,6 +71,7 @@ Each test materializes fixtures in an owned temporary folder, starts a backend w
 | F13 malformed source | Preserve input bytes; block repair/export and produce no generated files |
 | F18 incomplete preservation | Allow safe mechanical staging while an unknown obligation blocks export |
 | Changed F03 source | An external edit after validation makes export fail as stale; preserve that edit and write no artifact |
+| CK3 discovery and inspection | Create a CK3 workspace; discover a synthetic Steam installation and launcher SQLite state; select/rediscover/import a reversed saved playset; scan nested scripts/localization/assets; inspect duplicate sources and unknown effective results; keep repairs gated and original/launcher bytes unchanged |
 
 All scenarios verify that no active release or playset configuration is written. Source hashes remain unchanged except for the deliberate external edit in the stale-source scenario. Fixtures use explicit synthetic profiles and author baselines; they cannot acquire conformance status or production promotion permission.
 
@@ -81,3 +118,23 @@ npm test
 For an already prepared frontend, the individual browser steps are `npm run test:e2e:install`, `npm run test:e2e:types`, `npm run build`, and `npm run test:e2e`. The test harness uses the repository `.venv` by default; `EU5_E2E_PYTHON` can explicitly select the Python interpreter.
 
 GitHub Actions configures backend, component and browser checks on both macOS and Windows. It installs Chromium and uploads browser reports and test results for seven days when a job fails. That workflow is separate from running the launcher and EU5 in the user's VM. Current executed results and unrun Windows/game qualification are recorded in [implementation status](../IMPLEMENTATION_STATUS.md).
+# CK3 agent investigation evaluations
+
+The version-three regression tests cover concern accounting, source and policy
+changes, interrupted reviews, native MCP calls, candidate searches and explicit
+alternative inspections. They use synthetic temporary roots and do not establish
+CK3 gameplay behavior.
+
+`uv run python -m scripts.benchmark_agent` measures cold/warm investigation
+lookup using 58,000 synthetic metadata entries by default. It records response
+latency, cache memory and rebuilds, with original-byte preservation checks.
+It is not a full-game scanner benchmark. Timing thresholds belong in this
+dedicated lane rather than deterministic unit tests.
+
+For opt-in fresh Codex conversations, run
+`uv run python scripts/evaluate_ck3_agent.py create`, then pass the returned
+temporary root to the same script's `run ROOT check`, `run ROOT resume`, and
+`run ROOT candidate` lanes. The lanes use the normal configured model and
+approval policies, save transcripts, compare all original source hashes, and
+record job counts. They require Codex access and local process permissions.
+Stop only the temporary engine identified by that root after evaluating it.

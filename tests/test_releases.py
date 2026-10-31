@@ -57,7 +57,7 @@ def test_experimental_export_is_inactive_and_excludes_original_corpus(tmp_path):
     assert manager.export_bundle(item) == bundle
 
 
-@pytest.mark.parametrize("mutation", ["synthetic", "missing_gate", "unknown", "omit_obligation", "unconformed", "scope", "stale"])
+@pytest.mark.parametrize("mutation", ["synthetic", "missing_gate", "unknown", "omit_obligation", "unconformed", "scope", "stale", "game", "platform"])
 def test_promotion_fails_closed(tmp_path, mutation):
     manager = ReleaseManager(tmp_path)
     item = candidate(manager)
@@ -76,6 +76,10 @@ def test_promotion_fails_closed(tmp_path, mutation):
         item["plan"]["affected_scope"][0]["family"] = "unmeasured"
     if mutation == "stale":
         actual["source-id"] = "2" * 64
+    if mutation == "game":
+        item.update(game_id="ck3", target_platform="windows")
+    if mutation == "platform":
+        item.update(game_id="eu5", target_platform="macos")
     with pytest.raises(ValueError):
         manager.promote(item, actual, verify_activation=observer)
     assert manager.active() is None

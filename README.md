@@ -1,6 +1,31 @@
 # EU5 Mod Engine
 
-A local workbench for inspecting EU5 mod stacks, tracing lost contributions, staging preservation-based repairs, and exporting reviewable bundles. Python/FastAPI, React/TypeScript, and one local SQLite file; no database server or hosted account is needed.
+A local engine for inspecting mod collections, preserving their original files,
+and preparing reviewed changes. **For CK3, the conversation in Codex is the
+interface.** Ask it to check your mods, explain overlapping changes, and walk
+through a small group of choices. No dashboard or separate AI account is needed.
+
+One-time setup from this checkout, with Codex and uv installed:
+
+```sh
+uv sync --extra dev
+uv run mod-engine install-agent --data-dir .workspace/ck3
+```
+
+Reconnect local tools or reopen Codex after setup. Then say “Check my current CK3
+playset.” The assistant starts its local engine as needed and remembers progress.
+Say “Continue reviewing my mods” to resume the previous investigation. It now
+receives a current briefing and can search a sourced CK3 reference library and
+related scripts without requiring you to supply internal IDs or past messages.
+This path does not require Node or a browser. See [agent setup and current
+limits](docs/operations/AGENT.md).
+
+CK3 inspection supports macOS and Windows source layouts. Approved changes can
+currently be prepared in a separate, inactive fixes mod for the call-allies
+action. Actual game testing and normal-playset activation remain unavailable
+until their separate checks are established; this is **not yet the complete
+fix/test/enable release**. The existing EU5 workbench and optional developer
+dashboard remain available below.
 
 ## Test on macOS before using the VM
 
@@ -14,7 +39,7 @@ uv run python scripts/test_e2e.py --headed
 
 uv supplies the pinned Python 3.12 runtime. On first use, the runner installs locked frontend dependencies and Chromium into the project cache, builds the UI, and starts the actual application for each test. No EU5 installation, Windows VM, OpenRouter account, or API key is needed.
 
-The five browser tests read physical synthetic mod files and exercise repair/export, explicit conflict decisions, malformed input, unknown preservation obligations, and stale-source rejection. They use real HTTP requests and SQLite state, check the downloaded ZIP and original byte hashes, and verify that no playset is activated. Each test gets temporary state and a separate local port, so an existing preview can stay open. **All five passed on macOS.** GitHub Actions runs the same suite on macOS and Windows; the user's VM and game checks are separate.
+The six browser tests read physical synthetic files and exercise EU5 repair/export, explicit conflict decisions, malformed input, unknown preservation obligations, stale-source rejection, and CK3 discovery/import/inspection. They use real HTTP requests and SQLite state, check output and original byte hashes, and verify that no playset is activated. Each test gets temporary state and a separate local port, so an existing preview can stay open. **All six passed on macOS.** GitHub Actions is configured to run the suite on macOS and Windows; native Windows and game checks remain separate.
 
 Open `frontend/playwright-report/index.html` after a run. Failure reports include screenshots, traces, and backend logs. See [testing operations](docs/operations/TESTING.md) for coverage and debugging commands.
 

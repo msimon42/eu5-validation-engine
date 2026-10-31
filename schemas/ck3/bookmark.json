@@ -1,0 +1,19 @@
+{
+  "entity": "bookmark",
+  "game": "ck3",
+  "filePath": "common/bookmarks/bookmarks/*.txt",
+  "requiredFields": {
+    "start_date": { "type": "string" },
+    "is_playable": { "type": "boolean" }
+  },
+  "optionalFields": {
+    "group": { "type": "string" },
+    "weight": { "type": "block" },
+    "ai_will_do": { "type": "block" },
+    "character": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

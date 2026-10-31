@@ -14,9 +14,11 @@ from .parser import Node, digest
 
 MODE_ORDER = ["INJECT_OR_CREATE", "REPLACE_OR_CREATE", "TRY_INJECT", "TRY_REPLACE", "INJECT", "REPLACE"]
 DEFAULT_PROFILE = {"id": "eu5-docs-cutoff-2026-10-26", "kind": "documentation_only",
+                   "game_id": "eu5", "target_platform": "windows",
                    "revision": 1, "families": [], "readers": {}, "independent_fields": [],
                    "production_export_enabled": False, "conformed_rules": [], "evidence_label": "D"}
 SYNTHETIC_PROFILE = {"id": "synthetic-contract-v1", "kind": "synthetic", "revision": 1,
+                     "game_id": "eu5", "target_platform": "windows",
                      "families": ["testdb"], "bare_registration": "first_reject_duplicates",
                      "mode_order": MODE_ORDER, "production_export_enabled": False,
                      "conformed_rules": [], "evidence_label": "P",
@@ -28,6 +30,10 @@ SYNTHETIC_PROFILE = {"id": "synthetic-contract-v1", "kind": "synthetic", "revisi
 def normalized_profile(profile: dict | None) -> dict:
     if profile is not None and not isinstance(profile, dict):
         raise ValueError("profile must be an object")
+    if profile and profile.get("game_id", "eu5") != "eu5":
+        raise ValueError("EU5 loading cannot consume another game's profile; use its game adapter")
+    if profile and profile.get("target_platform", "windows") != "windows":
+        raise ValueError("EU5 loading profiles require the Windows target scope")
     synthetic = bool(profile and profile.get("kind") == "synthetic")
     result = copy.deepcopy(SYNTHETIC_PROFILE if synthetic else DEFAULT_PROFILE)
     if profile:

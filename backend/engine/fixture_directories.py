@@ -39,6 +39,8 @@ _OWNER = {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"}
 _PROFILE_PROPERTIES = {
     "id": {"type": "string", "minLength": 1, "maxLength": 200},
     "kind": {"const": "synthetic"},
+    "game_id": {"const": "eu5"},
+    "target_platform": {"const": "windows"},
     "revision": {"type": "integer", "minimum": 1},
     "production_export_enabled": {"const": False},
     "conformed_rules": {"const": []},

@@ -1,9 +1,10 @@
 import type { CommandKind } from './generated/contracts';
 export type Row = Record<string, unknown>;
-export interface Workspace extends Row { id: string; name?: string; mode?: string; revision?: number }
+export interface Workspace extends Row { id: string; name?: string; mode?: string; revision?: number; game_id?: 'eu5' | 'ck3'; target_platform?: 'windows' | 'macos' }
 export interface Bootstrap extends Row {
   session_token: string; version: string; workspaces: Workspace[];
   fixtures: (Row | string)[]; profiles: (Row | string)[]; experiments: (Row | string)[];
+  ck3_experiments?: (Row | string)[];
   capabilities: Row;
   inference?: Row;
 }
@@ -38,3 +39,4 @@ export function label(value: unknown, fallback = 'Unknown'): string {
 }
 export function object(value: unknown): Row { return value && typeof value === 'object' && !Array.isArray(value) ? value as Row : {}; }
 export function idOf(value: Row): string { return text(value.id ?? value.scan_id ?? value.candidate_id, ''); }
+export function gameName(value: Row | undefined): string { return value?.game_id === 'ck3' ? 'Crusader Kings III' : 'Europa Universalis V'; }

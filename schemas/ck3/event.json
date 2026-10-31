@@ -1,0 +1,49 @@
+{
+  "entity": "event",
+  "game": "ck3",
+  "filePath": "events/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "type": {
+      "type": "string",
+      "validValues": [
+        "character_event",
+        "letter_event",
+        "court_event",
+        "duel_event",
+        "fullscreen_event",
+        "empty"
+      ]
+    },
+    "hidden": { "type": "boolean" },
+    "title": { "type": "string" },
+    "desc": { "type": "string" },
+    "theme": { "type": "reference", "refType": "event_theme" },
+    "option": { "type": "block" },
+    "override_background": { "type": "block" },
+    "override_icon": { "type": "block" },
+    "override_sound": { "type": "block" },
+    "override_environment": { "type": "block" },
+    "left_portrait": { "type": "block" },
+    "right_portrait": { "type": "block" },
+    "lower_left_portrait": { "type": "block" },
+    "lower_center_portrait": { "type": "block" },
+    "lower_right_portrait": { "type": "block" },
+    "trigger": { "type": "block" },
+    "weight_multiplier": { "type": "block" },
+    "mean_time_to_happen": { "type": "block" },
+    "immediate": { "type": "block" },
+    "on_trigger_fail": { "type": "block" },
+    "on_complete": { "type": "block" },
+    "after": { "type": "block" },
+    "cooldown": { "type": "block" },
+    "orphan": { "type": "boolean" },
+    "scope": { "type": "string" },
+    "window": { "type": "string" },
+    "widget": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}.t",
+    "{key}.desc"
+  ]
+}

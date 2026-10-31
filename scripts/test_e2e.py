@@ -55,7 +55,7 @@ def main() -> int:
     run(*npm_command, "run", "test:e2e:types")
     run(*npm_command, "run", "build")
     run(*npm_command, "run", "test:e2e", "--", *sys.argv[1:])
-    print("\nReal-browser synthetic tests passed. No EU5 installation, VM, API key or game observation was used.")
+    print("\nReal-browser synthetic tests passed. No EU5/CK3 installation, VM, API key or game observation was used.")
     print("Report: frontend/playwright-report/index.html")
     return 0
 

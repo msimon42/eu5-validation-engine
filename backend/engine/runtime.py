@@ -200,18 +200,22 @@ class RuntimeWorker:
                  observer: Callable[[dict], dict] | None = None,
                  launcher: Callable[[list[str]], object] | None = None,
                  launch_enabled: bool = False):
+        if target and target.get("game_id", "eu5") != "eu5":
+            raise ValueError("This runtime worker is scoped to EU5; CK3 runtime is unqualified")
         self.fs = ManagedFS(root)
         self.root = self.fs.root
         self.target = dict(target or {})
         if target is None and (self.root / "target.json").exists():
             self.target = json.loads(self.fs.read_bytes("target.json"))
+        if self.target.get("game_id", "eu5") != "eu5":
+            raise ValueError("Saved runtime target belongs to a different game")
         self.observer, self.launcher = observer, launcher
         self.launch_enabled = launch_enabled
         self.fs.write_bytes(".locks/owner", b"one runtime worker\n")
 
     def status(self) -> dict:
         available = os.name == "nt"
-        return {"platform": "windows" if available else "unsupported", "available": available,
+        return {"game_id": "eu5", "platform": "windows" if available else "unsupported", "available": available,
                 "launch_enabled": available and self.launch_enabled,
                 "target_configured": bool(self.target), "active_state": "unknown",
                 "playset_writes": False, "headless_validator": "not_established",
@@ -221,9 +225,11 @@ class RuntimeWorker:
         return discover(**kwargs)
 
     def configure_target(self, selection: dict) -> dict:
-        allowed = {"executable", "content_roots", "docs_roots", "dlc_roots", "log_root", "version_display"}
+        allowed = {"game_id", "executable", "content_roots", "docs_roots", "dlc_roots", "log_root", "version_display"}
         if not isinstance(selection, dict) or not set(selection) <= allowed:
             raise ValueError("target selection contains unsupported capabilities")
+        if selection.get("game_id", "eu5") != "eu5":
+            raise ValueError("This runtime worker is scoped to EU5; CK3 runtime is unqualified")
         executable = Path(selection.get("executable", ""))
         if not executable.is_absolute():
             raise ValueError("select an absolute installed executable")
@@ -236,7 +242,7 @@ class RuntimeWorker:
                source.resolve() in self.root.parents for source in sources):
             raise ValueError("runtime state and selected installation sources cannot overlap")
         captured = fingerprint_installation(executable, **roots)
-        self.target = {**selection, **captured}
+        self.target = {**selection, **captured, "game_id": "eu5", "target_platform": "windows"}
         self.fs.write_bytes("target.json", canonical_bytes(self.target))
         return self.target
 
@@ -268,7 +274,7 @@ class RuntimeWorker:
         if not isinstance(timeout, (int, float)) or isinstance(timeout, bool) or not 0 < timeout <= 600:
             raise ValueError("probe timeout is outside bounds")
         identifier = f"run-{uuid.uuid4().hex}"
-        record = {"id": identifier, "recipe": recipe, "platform": "windows" if os.name == "nt" else "unsupported",
+        record = {"id": identifier, "game_id": "eu5", "recipe": recipe, "platform": "windows" if os.name == "nt" else "unsupported",
                   "executed": False, "outcome": "not_run", "cold_start": False,
                   "active_state_confirmed": False, "raw_logs": [], "milestones": [],
                   "source_changes": [], "playset_writes": False}

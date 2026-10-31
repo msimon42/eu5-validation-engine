@@ -1,0 +1,19 @@
+{
+  "entity": "holy_site",
+  "game": "ck3",
+  "filePath": "common/religion/holy_sites/*.txt",
+  "requiredFields": {
+    "county": { "type": "reference", "refType": "landed_title" }
+  },
+  "optionalFields": {
+    "flag": { "type": "string" },
+    "character_modifier": { "type": "block" },
+    "county_modifier": { "type": "block" },
+    "is_active": { "type": "block" },
+    "is_valid": { "type": "block" }
+  },
+  "localizationKeys": [
+    "{key}",
+    "{key}_desc"
+  ]
+}

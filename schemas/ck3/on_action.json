@@ -1,0 +1,16 @@
+{
+  "entity": "on_action",
+  "game": "ck3",
+  "filePath": "common/on_action/*.txt",
+  "requiredFields": {},
+  "optionalFields": {
+    "trigger": { "type": "block" },
+    "on_actions": { "type": "block" },
+    "events": { "type": "block" },
+    "random_events": { "type": "block" },
+    "first_valid": { "type": "block" },
+    "effect": { "type": "block" },
+    "fallback": { "type": "block" }
+  },
+  "localizationKeys": []
+}

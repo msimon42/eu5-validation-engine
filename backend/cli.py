@@ -12,6 +12,13 @@ def main():
     serve = sub.add_parser("serve", help="Start the local API and built frontend")
     serve.add_argument("--data-dir", type=Path, default=Path.cwd() / ".workspace")
     serve.add_argument("--port", type=int, default=8765)
+    engine = sub.add_parser("engine", help="Start the local engine without a dashboard")
+    engine.add_argument("--data-dir", type=Path, default=Path.cwd() / ".workspace")
+    engine.add_argument("--port", type=int, default=0)
+    agent = sub.add_parser("agent-tools", help="Connect Codex to the local CK3 engine")
+    agent.add_argument("--data-dir", type=Path, default=Path.cwd() / ".workspace")
+    install = sub.add_parser("install-agent", help="Install the CK3 conversation workflow and local Codex tools")
+    install.add_argument("--data-dir", type=Path, default=Path.cwd() / ".workspace")
     fixtures = sub.add_parser("fixtures", help="Run executable synthetic contracts")
     fixtures.add_argument("--id", default=None)
     materialize = sub.add_parser("materialize", help="Create a new synthetic mod folder tree for offline testing")
@@ -26,7 +33,16 @@ def main():
     restore.add_argument("source", type=Path)
     restore.add_argument("destination", type=Path)
     args = parser.parse_args()
-    if args.command == "serve":
+    if args.command == "install-agent":
+        from backend.agent.install import install
+        print(json.dumps(install(args.data_dir), indent=2))
+    elif args.command == "engine":
+        from backend.agent.connection import run_engine
+        run_engine(args.data_dir, args.port)
+    elif args.command == "agent-tools":
+        from backend.agent.server import run_tools
+        run_tools(args.data_dir)
+    elif args.command == "serve":
         import uvicorn
         from backend.app.main import create_app
         uvicorn.run(create_app(args.data_dir), host="127.0.0.1", port=args.port, workers=1)
